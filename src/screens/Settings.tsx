@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { LANGS, getLang, setLang, t, type Lang } from '../i18n';
 import { checkForUpdate, hardReload, useUpdateAvailable } from '../lib/update';
 import { baseMediaUrls, cachedCount, downloadAllMedia } from '../lib/offline';
+import { BackupBlock } from '../components/BackupBlock';
 
 // Total size of public/media, shown as an estimate before downloading
 const MEDIA_MB = 40;
@@ -124,9 +125,7 @@ export function Settings({ onBack }: { onBack: () => void }) {
 
       {/* Backup */}
       <div className="m muted sec">// {t('settings.backup')}</div>
-      <div className="dash">
-        <p className="body">{t('settings.backup.soon')}</p>
-      </div>
+      <BackupBlock />
     </div>
   );
 }

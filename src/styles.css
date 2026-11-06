@@ -281,3 +281,11 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 .body3d canvas { display: block; }
 .chip.chip-pink { background: var(--pink); border-color: var(--pink); color: var(--ink); font-weight: 700; }
 .hist-line > span:first-child { white-space: nowrap; }
+
+/* ===== Weekly report ===== */
+.report-card { display: flex; flex-direction: column; gap: 6px; width: 100%; text-align: left; margin-top: 12px; }
+.cyan-grid { border-color: var(--cyan); }
+.cyan-grid > div { border-right-color: var(--cyan); }
+.cyan-grid b { color: var(--cyan); font-size: 24px; }
+.cmp-row { display: grid; grid-template-columns: 1fr auto 18px; gap: 10px; align-items: center; background: var(--card); padding: 9px 10px; margin-top: 4px; }
+.cmp-name { text-transform: none; font-family: var(--font-head); font-weight: 800; font-size: 13px; letter-spacing: 0; }

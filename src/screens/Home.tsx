@@ -11,6 +11,9 @@ import { History, WorkoutView } from './History';
 import { WorkoutRow } from '../components/WorkoutRow';
 import { ProgramBlock } from '../components/ProgramBlock';
 import { ImportPlan } from './ImportPlan';
+import { WeeklyReport } from './WeeklyReport';
+import { weekday } from '../lib/dates';
+import { addDays, weekStartOf } from '../lib/stats';
 
 export function Home({ onSettings, onOpenWorkout }: { onSettings: () => void; onOpenWorkout: (w: Workout) => void }) {
   const now = new Date();
@@ -20,7 +23,13 @@ export function Home({ onSettings, onOpenWorkout }: { onSettings: () => void; on
   const programs = useLiveQuery(() => db.programs.toArray(), []);
   const program = programs?.[0];
   const [importing, setImporting] = useState(false);
+  const [report, setReport] = useState<number | null>(null);
+  // Sunday: report for this week. Monday: for the week that just ended.
+  const wd = weekday(now);
+  const reportWeek = wd === 7 ? weekStartOf(Date.now()) : wd === 1 ? addDays(weekStartOf(Date.now()), -7) : null;
   const workouts = useLiveQuery(() => db.workouts.orderBy('startedAt').reverse().limit(30).toArray(), []);
+  const reportHasData =
+    reportWeek !== null && (workouts ?? []).some((w) => w.endedAt && w.startedAt >= reportWeek && w.startedAt < addDays(reportWeek, 7));
   const active = workouts?.find((w) => !w.endedAt);
   const recent = (workouts ?? []).filter((w) => w.endedAt).slice(0, 3);
   const [editing, setEditing] = useState<Template | 'new' | null>(null);
@@ -59,6 +68,16 @@ export function Home({ onSettings, onOpenWorkout }: { onSettings: () => void; on
             {t('home.noProgram.text')}
           </p>
         </div>
+      )}
+
+      {reportWeek !== null && reportHasData && (
+        <button className="slab cyan report-card" onClick={() => setReport(reportWeek)}>
+          <span className="m">
+            {fmt(new Date(addDays(reportWeek, 6)), { weekday: 'short', day: '2-digit', month: 'short' })} · {t('report.ready')}
+          </span>
+          <b className="h h-m">{t('report.cardTitle')} →</b>
+          <span className="m">{t('report.cardHint')}</span>
+        </button>
       )}
 
       {!active && (
@@ -147,6 +166,7 @@ export function Home({ onSettings, onOpenWorkout }: { onSettings: () => void; on
         </Sheet>
       )}
       {editing && <TemplateEditor edit={editing === 'new' ? undefined : editing} onClose={() => setEditing(null)} />}
+      {report !== null && <WeeklyReport start={report} onClose={() => setReport(null)} />}
       {importing && <ImportPlan onClose={() => setImporting(false)} onDone={() => setImporting(false)} />}
       {history && <History onOpen={onOpenWorkout} onClose={() => setHistory(false)} />}
       {view && (

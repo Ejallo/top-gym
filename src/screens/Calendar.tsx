@@ -10,6 +10,8 @@ import { Header } from '../components/Header';
 import { Sheet } from '../components/Sheet';
 import { WorkoutRow } from '../components/WorkoutRow';
 import { WorkoutView } from './History';
+import { WeeklyReport } from './WeeklyReport';
+import { weekStartOf } from '../lib/stats';
 
 /** Day colour by the main muscle group of the workout. */
 const COLOR: Partial<Record<Group, string>> = { legs: 'b', back: 'c', cardio: 'c' };
@@ -20,6 +22,7 @@ export function Calendar({ onSettings, onOpenWorkout }: { onSettings: () => void
   const [day, setDay] = useState<Date | null>(null);
   const [view, setView] = useState<Workout | null>(null);
   const [goalOpen, setGoalOpen] = useState(false);
+  const [report, setReport] = useState<number | null>(null);
   const workouts = useFinishedWorkouts();
   const list = useExercises();
   const program = useLiveQuery(() => db.programs.toArray(), [])?.[0];
@@ -77,6 +80,10 @@ export function Calendar({ onSettings, onOpenWorkout }: { onSettings: () => void
         </button>
       </div>
 
+      <button className="btn outline small" style={{ marginBottom: 10 }} onClick={() => setReport(weekStartOf(Date.now()))}>
+        {t('report.open')} →
+      </button>
+
       <div className="btn-row" style={{ marginBottom: 10 }}>
         <button className="btn ghost small" onClick={() => shift(-1)} aria-label={t('cal.prev')}>
           ←
@@ -133,6 +140,9 @@ export function Calendar({ onSettings, onOpenWorkout }: { onSettings: () => void
           {onDay(day).map((w) => (
             <WorkoutRow key={w.id} w={w} onOpen={() => setView(w)} />
           ))}
+          <button className="btn ghost small" style={{ marginTop: 14 }} onClick={() => setReport(weekStartOf(day.getTime()))}>
+            {t('report.forThisWeek')} →
+          </button>
           {view && (
             <WorkoutView
               w={view}
@@ -148,6 +158,7 @@ export function Calendar({ onSettings, onOpenWorkout }: { onSettings: () => void
         </Sheet>
       )}
 
+      {report !== null && <WeeklyReport start={report} onClose={() => setReport(null)} />}
       {goalOpen && (
         <Sheet onClose={() => setGoalOpen(false)}>
           <div className="h h-l">{t('cal.goalTitle')}</div>
