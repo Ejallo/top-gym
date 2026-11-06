@@ -1,0 +1,183 @@
+import { useState } from 'react';
+import { useLiveQuery } from 'dexie-react-hooks';
+import { t } from '../i18n';
+import { db, type Program, type Template, type Workout } from '../lib/db';
+import { fmt, weekday, weekdayNames } from '../lib/dates';
+import { Sheet } from './Sheet';
+import { TemplateEditor } from './TemplateEditor';
+
+const DAY = 86400000;
+
+/** Monday 00:00 of the current week. */
+function weekStart(now = new Date()): number {
+  const d = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  return d.getTime() - (weekday(d) - 1) * DAY;
+}
+
+/**
+ * Home block of the active weekly program: today's planned day (or rest + next day),
+ * the Mon–Sun strip with done/planned days, and a sheet to view and edit the days.
+ */
+export function ProgramBlock({
+  program,
+  workouts,
+  canStart,
+  onStart,
+}: {
+  program: Program;
+  workouts: Workout[];
+  canStart: boolean;
+  onStart: (tpl: Template) => void;
+}) {
+  const templates = useLiveQuery(() => db.templates.where('id').anyOf(program.days.map((d) => d.templateId)).toArray(), [program.id]);
+  const [open, setOpen] = useState(false);
+  const byId = new Map((templates ?? []).map((x) => [x.id, x]));
+  const names = weekdayNames();
+  const today = weekday(new Date());
+  const plannedOn = (wd: number) => program.days.filter((d) => d.weekday === wd);
+  const todayDay = plannedOn(today)[0];
+  const todayTpl = todayDay && byId.get(todayDay.templateId);
+  const next = [...program.days].sort((a, b) => ((a.weekday - today + 7) % 7 || 7) - ((b.weekday - today + 7) % 7 || 7))[0];
+  const nextTpl = next && byId.get(next.templateId);
+
+  // Days of this week with a finished workout
+  const ws = weekStart();
+  const doneDays = new Set(
+    workouts.filter((w) => w.endedAt && w.startedAt >= ws && w.startedAt < ws + 7 * DAY).map((w) => weekday(new Date(w.startedAt))),
+  );
+  // Today's plan counts as done only when its own template was trained today
+  const dayStart = ws + (today - 1) * DAY;
+  const doneToday = workouts.some((w) => w.endedAt && w.templateId === todayDay?.templateId && w.startedAt >= dayStart);
+
+  if (!templates) return null;
+
+  return (
+    <>
+      {!canStart ? null : todayTpl ? (
+        <div className={'slab ' + (doneToday ? 'cyan' : 'lime')}>
+          <div className="row m">
+            <span>{doneToday ? '✓ ' : ''}{t('prog.today')}</span>
+            <span>{names[today - 1]}</span>
+          </div>
+          <div className="h h-l" style={{ marginTop: 8 }}>
+            {todayTpl.name}
+          </div>
+          <div className="m" style={{ marginTop: 8 }}>
+            {t('home.tplCount', { n: todayTpl.items.length, sets: todayTpl.items.reduce((a, x) => a + (x.sets || 0), 0) })}
+          </div>
+          {canStart && (
+            <button className="btn ink" style={{ marginTop: 12, height: 44 }} onClick={() => onStart(todayTpl)}>
+              {t('prog.start')} →
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="dash">
+          <div className="h h-m">{t('prog.rest')}</div>
+          {nextTpl && (
+            <p className="m muted" style={{ marginTop: 8 }}>
+              {t('prog.next', { day: names[next.weekday - 1], title: nextTpl.name })}
+            </p>
+          )}
+        </div>
+      )}
+
+      <button className="m muted sec row" style={{ width: '100%' }} onClick={() => setOpen(true)}>
+        <span>// {t('prog.week', { name: program.name })}</span>
+        <span className="lime">→</span>
+      </button>
+      <div className="week-strip">
+        {names.map((n, i) => {
+          const wd = i + 1;
+          const planned = plannedOn(wd).length > 0;
+          const done = doneDays.has(wd);
+          const cls = done ? 'done' : planned ? 'planned' : '';
+          return (
+            <div key={wd} className={'wd ' + cls + (wd === today ? ' today' : '')}>
+              <span>{n.toUpperCase()}</span>
+              <b>{done ? '✓' : wd === today ? '●' : planned ? '·' : ''}</b>
+            </div>
+          );
+        })}
+      </div>
+
+      {open && <ProgramSheet program={program} templates={byId} onClose={() => setOpen(false)} onStart={onStart} canStart={canStart} />}
+    </>
+  );
+}
+
+function ProgramSheet({
+  program,
+  templates,
+  canStart,
+  onStart,
+  onClose,
+}: {
+  program: Program;
+  templates: Map<string, Template>;
+  canStart: boolean;
+  onStart: (tpl: Template) => void;
+  onClose: () => void;
+}) {
+  const [edit, setEdit] = useState<Template | null>(null);
+  const names = weekdayNames();
+
+  const remove = async () => {
+    if (!confirm(t('prog.disableConfirm', { name: program.name }))) return;
+    await db.templates.where('id').anyOf(program.days.map((d) => d.templateId)).delete();
+    await db.programs.delete(program.id);
+    onClose();
+  };
+
+  return (
+    <Sheet onClose={onClose}>
+      <div className="m muted">// {t('prog.title')}</div>
+      <div className="h h-l" style={{ marginTop: 6 }}>
+        {program.name}
+      </div>
+      <div className="m muted" style={{ marginTop: 8 }}>
+        {t('prog.imported', { date: fmt(new Date(program.importedAt), { day: 'numeric', month: 'long' }) })}
+      </div>
+
+      <div className="m muted sec">// {t('prog.days')}</div>
+      {[...program.days]
+        .sort((a, b) => a.weekday - b.weekday)
+        .map((d) => {
+          const tpl = templates.get(d.templateId);
+          if (!tpl) return null;
+          return (
+            <div key={d.templateId} className="view-entry">
+              <div className="row">
+                <span className="m lime">{names[d.weekday - 1].toUpperCase()}</span>
+                <span className="m muted">{t('home.tplCount', { n: tpl.items.length, sets: tpl.items.reduce((a, x) => a + (x.sets || 0), 0) })}</span>
+              </div>
+              <b className="h h-m" style={{ display: 'block', marginTop: 6 }}>
+                {tpl.name}
+              </b>
+              <div className="btn-row" style={{ marginTop: 10 }}>
+                <button className="btn ghost small" onClick={() => setEdit(tpl)}>
+                  {t('ex.edit')}
+                </button>
+                {canStart && (
+                  <button
+                    className="btn outline small"
+                    onClick={() => {
+                      onClose();
+                      onStart(tpl);
+                    }}
+                  >
+                    {t('prog.start')} →
+                  </button>
+                )}
+              </div>
+            </div>
+          );
+        })}
+
+      <button className="btn ghost small pink-text" style={{ marginTop: 20 }} onClick={() => void remove()}>
+        {t('prog.disable')}
+      </button>
+      {edit && <TemplateEditor edit={edit} onClose={() => setEdit(null)} />}
+    </Sheet>
+  );
+}

@@ -29,7 +29,7 @@ export function TemplateEditor({ edit, onClose }: { edit?: Template; onClose: ()
   const save = async () => {
     if (!name.trim()) return setError(t('tpl.nameRequired'));
     if (!items.length) return setError(t('tpl.itemsRequired'));
-    await db.templates.put({ id: edit?.id ?? uid('t_'), name: name.trim(), items, createdAt: edit?.createdAt ?? Date.now() });
+    await db.templates.put({ ...edit, id: edit?.id ?? uid('t_'), name: name.trim(), items, createdAt: edit?.createdAt ?? Date.now() });
     onClose();
   };
 

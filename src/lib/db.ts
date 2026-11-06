@@ -43,6 +43,8 @@ export interface Template {
   name: string;
   items: PlanItem[];
   createdAt: number;
+  /** Set for program days: such templates live under the program, not in the templates list */
+  programId?: string;
 }
 
 /** Weekly program: weekday (1 = Monday … 7 = Sunday) → template. One is active at a time. */

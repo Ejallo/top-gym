@@ -9,11 +9,17 @@ import { TemplateEditor } from '../components/TemplateEditor';
 import { Sheet } from '../components/Sheet';
 import { History, WorkoutView } from './History';
 import { WorkoutRow } from '../components/WorkoutRow';
+import { ProgramBlock } from '../components/ProgramBlock';
+import { ImportPlan } from './ImportPlan';
 
 export function Home({ onSettings, onOpenWorkout }: { onSettings: () => void; onOpenWorkout: (w: Workout) => void }) {
   const now = new Date();
   const sub = `// ${fmt(now, { weekday: 'short', day: '2-digit', month: 'short' })} · ${t('home.week', { n: isoWeek(now) })}`;
-  const templates = useLiveQuery(() => db.templates.orderBy('name').toArray(), []);
+  // Program days are templates too, but they live under the program block
+  const templates = useLiveQuery(async () => (await db.templates.orderBy('name').toArray()).filter((x) => !x.programId), []);
+  const programs = useLiveQuery(() => db.programs.toArray(), []);
+  const program = programs?.[0];
+  const [importing, setImporting] = useState(false);
   const workouts = useLiveQuery(() => db.workouts.orderBy('startedAt').reverse().limit(30).toArray(), []);
   const active = workouts?.find((w) => !w.endedAt);
   const recent = (workouts ?? []).filter((w) => w.endedAt).slice(0, 3);
@@ -40,9 +46,13 @@ export function Home({ onSettings, onOpenWorkout }: { onSettings: () => void; on
         onSettings={onSettings}
       />
 
-      {active ? (
-        <ActiveCard w={active} onOpen={() => onOpenWorkout(active)} />
-      ) : (
+      {active && <ActiveCard w={active} onOpen={() => onOpenWorkout(active)} />}
+      {program && workouts && (
+        <div>
+          <ProgramBlock program={program} workouts={workouts} canStart={!active} onStart={(tpl) => void start(tpl)} />
+        </div>
+      )}
+      {!active && programs && !program && (
         <div className="dash">
           <div className="h h-m">{t('home.noProgram.title')}</div>
           <p className="body" style={{ marginTop: 8 }}>
@@ -52,11 +62,11 @@ export function Home({ onSettings, onOpenWorkout }: { onSettings: () => void; on
       )}
 
       {!active && (
-        <div className="btn-row" style={{ marginTop: 10 }}>
+        <div className="btn-row" style={{ marginTop: program ? 14 : 10 }}>
           <button className="btn outline small" onClick={() => void start()}>
             {t('home.free')}
           </button>
-          <button className="btn ghost small" disabled title={t('home.soon')}>
+          <button className="btn ghost small" onClick={() => setImporting(true)}>
             {t('home.import')}
           </button>
         </div>
@@ -137,6 +147,7 @@ export function Home({ onSettings, onOpenWorkout }: { onSettings: () => void; on
         </Sheet>
       )}
       {editing && <TemplateEditor edit={editing === 'new' ? undefined : editing} onClose={() => setEditing(null)} />}
+      {importing && <ImportPlan onClose={() => setImporting(false)} onDone={() => setImporting(false)} />}
       {history && <History onOpen={onOpenWorkout} onClose={() => setHistory(false)} />}
       {view && (
         <WorkoutView
