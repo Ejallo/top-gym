@@ -4,7 +4,7 @@ import { checkForUpdate, hardReload, useUpdateAvailable } from '../lib/update';
 import { baseMediaUrls, cachedCount, downloadAllMedia } from '../lib/offline';
 
 // Total size of public/media, shown as an estimate before downloading
-const MEDIA_MB = 33;
+const MEDIA_MB = 40;
 
 function OfflineMedia() {
   const [state, setState] = useState<{ done: number; total: number; running: boolean; failed: boolean } | null>(null);
