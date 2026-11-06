@@ -1,0 +1,12 @@
+name = "top-gym-api"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+
+[vars]
+# Shared OAuth client with Deutsch Reader (public value)
+GOOGLE_CLIENT_ID = "638517168513-2n5pta330caejvn46sfljo74dd4tlhk8.apps.googleusercontent.com"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "top-gym-db"
+database_id = "ac97d91c-6d76-4731-851c-215547594690"

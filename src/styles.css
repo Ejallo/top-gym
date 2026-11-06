@@ -289,3 +289,6 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 .cyan-grid b { color: var(--cyan); font-size: 24px; }
 .cmp-row { display: grid; grid-template-columns: 1fr auto 18px; gap: 10px; align-items: center; background: var(--card); padding: 9px 10px; margin-top: 4px; }
 .cmp-name { text-transform: none; font-family: var(--font-head); font-weight: 800; font-size: 13px; letter-spacing: 0; }
+
+/* ===== Account ===== */
+.google-btn { min-height: 44px; }

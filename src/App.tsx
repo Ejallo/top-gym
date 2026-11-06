@@ -17,7 +17,12 @@ export function App() {
   const [tab, setTab] = useState<Tab>(
     initial === 'calendar' || initial === 'progress' || initial === 'exercises' ? initial : 'workout',
   );
-  const [settings, setSettings] = useState(initial === 'settings');
+  // Back from Google sign-in: show the account block
+  const [settings, setSettings] = useState(() => {
+    const fromLogin = sessionStorage.getItem('openSettings') === '1';
+    sessionStorage.removeItem('openSettings');
+    return initial === 'settings' || fromLogin;
+  });
   const updateAvailable = useUpdateAvailable();
   const openSettings = () => setSettings(true);
   const [workout, setWorkout] = useState<Workout | null>(null);

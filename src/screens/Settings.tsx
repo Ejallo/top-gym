@@ -3,6 +3,7 @@ import { LANGS, getLang, setLang, t, type Lang } from '../i18n';
 import { checkForUpdate, hardReload, useUpdateAvailable } from '../lib/update';
 import { baseMediaUrls, cachedCount, downloadAllMedia } from '../lib/offline';
 import { BackupBlock } from '../components/BackupBlock';
+import { AccountBlock } from '../components/AccountBlock';
 
 // Total size of public/media, shown as an estimate before downloading
 const MEDIA_MB = 40;
@@ -67,6 +68,11 @@ export function Settings({ onBack }: { onBack: () => void }) {
       <div className="h h-l" style={{ marginBottom: 18 }}>
         {t('settings.title')}
       </div>
+
+      {/* Account */}
+      <div className="m muted" style={{ marginBottom: 8 }}>// {t('account.title')}</div>
+      <AccountBlock />
+      <div style={{ height: 18 }} />
 
       {/* Update */}
       <div className="card">

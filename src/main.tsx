@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { registerSW } from 'virtual:pwa-register';
 import { App } from './App';
 import { startUpdateChecks } from './lib/update';
+import { startSync, takeLoginFromUrl } from './lib/sync';
 import './styles.css';
 
 // iOS only re-checks the service worker on a cold start, so ask for updates
@@ -19,12 +20,20 @@ registerSW({
   },
 });
 
-// Ask iOS not to evict local data (works for apps added to the Home Screen)
-void navigator.storage?.persist?.();
-startUpdateChecks();
+async function start() {
+  // Back from Google sign-in: the server put a session into the URL fragment
+  const login = await takeLoginFromUrl();
+  if (login === 'error') sessionStorage.setItem('loginError', '1');
+  if (login) sessionStorage.setItem('openSettings', '1');
+  // Ask iOS not to evict local data (works for apps added to the Home Screen)
+  void navigator.storage?.persist?.();
+  startUpdateChecks();
+  startSync();
+  createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+      <App />
+    </StrictMode>,
+  );
+}
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-);
+void start();
