@@ -4,7 +4,7 @@ import { hardReload, useUpdateAvailable } from './lib/update';
 import { TabBar, type Tab } from './components/TabBar';
 import { Home } from './screens/Home';
 import { Calendar } from './screens/Calendar';
-import { Placeholder } from './screens/Placeholder';
+import { Progress } from './screens/Progress';
 import { Exercises } from './screens/Exercises';
 import { Settings } from './screens/Settings';
 import { WorkoutScreen } from './screens/WorkoutScreen';
@@ -47,8 +47,8 @@ export function App() {
       ) : (
         <>
           {tab === 'workout' && <Home onSettings={openSettings} onOpenWorkout={setWorkout} />}
-          {tab === 'calendar' && <Calendar onSettings={openSettings} />}
-          {tab === 'progress' && <Placeholder title="progress.title" text="progress.empty" onSettings={openSettings} />}
+          {tab === 'calendar' && <Calendar onSettings={openSettings} onOpenWorkout={setWorkout} />}
+          {tab === 'progress' && <Progress onSettings={openSettings} />}
           {tab === 'exercises' && <Exercises onSettings={openSettings} />}
         </>
       )}

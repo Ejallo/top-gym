@@ -3,16 +3,11 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { t } from '../i18n';
 import { db, type Program, type Template, type Workout } from '../lib/db';
 import { fmt, weekday, weekdayNames } from '../lib/dates';
+import { addDays, weekStartOf } from '../lib/stats';
 import { Sheet } from './Sheet';
 import { TemplateEditor } from './TemplateEditor';
 
-const DAY = 86400000;
-
-/** Monday 00:00 of the current week. */
-function weekStart(now = new Date()): number {
-  const d = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  return d.getTime() - (weekday(d) - 1) * DAY;
-}
+const weekStart = () => weekStartOf(Date.now());
 
 /**
  * Home block of the active weekly program: today's planned day (or rest + next day),
@@ -43,10 +38,10 @@ export function ProgramBlock({
   // Days of this week with a finished workout
   const ws = weekStart();
   const doneDays = new Set(
-    workouts.filter((w) => w.endedAt && w.startedAt >= ws && w.startedAt < ws + 7 * DAY).map((w) => weekday(new Date(w.startedAt))),
+    workouts.filter((w) => w.endedAt && w.startedAt >= ws && w.startedAt < addDays(ws, 7)).map((w) => weekday(new Date(w.startedAt))),
   );
   // Today's plan counts as done only when its own template was trained today
-  const dayStart = ws + (today - 1) * DAY;
+  const dayStart = addDays(ws, today - 1);
   const doneToday = workouts.some((w) => w.endedAt && w.templateId === todayDay?.templateId && w.startedAt >= dayStart);
 
   if (!templates) return null;

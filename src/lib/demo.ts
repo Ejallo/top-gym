@@ -36,6 +36,21 @@ export async function seedDemo(): Promise<Workout | undefined> {
     ],
   });
   await db.workouts.bulkPut([done('w_demo1', 2, 70), done('w_demo2', 5, 67.5)]);
+  // 8 weeks of history: bench creeping up, a legs day each week
+  const SQUAT = (await findId('barbell full squat')) ?? BENCH;
+  const history: Workout[] = [];
+  for (let wk = 1; wk <= 8; wk++) {
+    const benchW = 72.5 - wk * 1.25;
+    history.push({ ...done(`w_demo_b${wk}`, wk * 7 + 1, benchW) });
+    history.push({
+      id: `w_demo_l${wk}`,
+      title: 'Ноги',
+      startedAt: Date.now() - (wk * 7 + 3) * day,
+      endedAt: Date.now() - (wk * 7 + 3) * day + 50 * 60000,
+      entries: [{ exerciseId: SQUAT, rest: '3 мин', sets: [1, 2, 3, 4].map(() => ({ weight: 100 - wk * 2.5, reps: 5, done: true })) }],
+    });
+  }
+  await db.workouts.bulkPut(history);
   const running: Workout = {
     id: 'w_demo_run',
     title: 'Грудь + трицепс',

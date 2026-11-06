@@ -5,6 +5,37 @@ import { exercisesChanged, type Exercise } from '../lib/exercises';
 import { Sheet } from './Sheet';
 import { ExerciseMedia } from './ExerciseMedia';
 import { CustomExerciseForm } from './CustomExerciseForm';
+import { ExerciseProgress, setLabel } from './ExerciseProgress';
+import { fmt } from '../lib/dates';
+import { sessionsFor, useFinishedWorkouts } from '../lib/stats';
+
+/** Last sessions of the exercise with a link to the full progress view. */
+function ExerciseHistory({ ex }: { ex: Exercise }) {
+  const workouts = useFinishedWorkouts();
+  const [open, setOpen] = useState(false);
+  const sessions = workouts ? sessionsFor(ex.id, workouts) : [];
+  if (!sessions.length) return null;
+  return (
+    <>
+      <div className="row sec">
+        <span className="m muted">// {t('ex.history', { n: sessions.length })}</span>
+        <button className="m lime" onClick={() => setOpen(true)}>
+          {t('ex.progress')} →
+        </button>
+      </div>
+      {[...sessions]
+        .reverse()
+        .slice(0, 4)
+        .map((s) => (
+          <div key={s.workoutId} className="hist-line row m">
+            <span>{fmt(new Date(s.date), { day: '2-digit', month: 'short' })}</span>
+            <span className="hist-sets">{s.sets.map((x) => setLabel(x, ex.type)).join(' · ')}</span>
+          </div>
+        ))}
+      {open && <ExerciseProgress ex={ex} onClose={() => setOpen(false)} />}
+    </>
+  );
+}
 
 export function ExerciseDetail({ ex, onClose }: { ex: Exercise; onClose: () => void }) {
   const [editing, setEditing] = useState(false);
@@ -46,6 +77,8 @@ export function ExerciseDetail({ ex, onClose }: { ex: Exercise; onClose: () => v
 
       <div className="m muted sec">// {t('ex.type')}</div>
       <div className="m">{t(`type.${ex.type}`)}</div>
+
+      <ExerciseHistory ex={ex} />
 
       {ex.side && (
         <>

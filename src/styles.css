@@ -252,3 +252,32 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 .toggle.lime-toggle .toggle-box { background: var(--lime); border-color: var(--lime); color: var(--ink); }
 .import-ex { display: grid; grid-template-columns: 16px 1fr auto; gap: 8px; padding: 5px 0; border-top: 1px dashed var(--line); }
 .import-ex:first-child { border-top: none; }
+
+/* ===== Calendar stage 4 ===== */
+.cal button.day { text-align: left; display: flex; flex-direction: column; justify-content: space-between; }
+.cal .day i { font-style: normal; font-size: 9px; align-self: flex-end; }
+.cal .day.done { color: var(--ink); font-weight: 700; }
+.cal .day.done.a { background: var(--lime); }
+.cal .day.done.b { background: var(--pink); }
+.cal .day.done.c { background: var(--cyan); }
+.cal .day.planned { background: transparent; outline: 1.5px dashed var(--lime); outline-offset: -1.5px; color: var(--lime); }
+.cal .day.today { outline: 2px solid var(--text); outline-offset: -2px; }
+.cal-legend { margin-top: 12px; line-height: 1.8; }
+.stats-grid > button { padding: 12px 4px; text-align: center; display: flex; flex-direction: column; gap: 4px; align-items: center; }
+.goal-chip { width: 44px; height: 44px; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+
+/* ===== Progress ===== */
+.bars { display: flex; align-items: flex-end; gap: 4px; border-bottom: 1px solid var(--line-2); }
+.bars i { flex: 1; background: #2a2a2a; min-width: 4px; }
+.bars i.hi { background: var(--lime); }
+.bars-labels { display: flex; justify-content: space-between; margin-top: 6px; color: var(--dim); }
+.big-num { font-size: 56px; line-height: 0.85; }
+.hist-line { background: var(--card); padding: 9px 10px; margin-top: 4px; border-left: 3px solid var(--line-2); align-items: flex-start; }
+.hist-line:first-of-type { border-left-color: var(--lime); }
+.hist-sets { text-align: right; color: var(--text); text-transform: none; }
+.body-card { border: 1px solid var(--line); }
+.body-card-head { padding: 10px 10px 0; }
+.body3d { width: 100%; cursor: grab; }
+.body3d canvas { display: block; }
+.chip.chip-pink { background: var(--pink); border-color: var(--pink); color: var(--ink); font-weight: 700; }
+.hist-line > span:first-child { white-space: nowrap; }
