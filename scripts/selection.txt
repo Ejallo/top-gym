@@ -1,0 +1,417 @@
+# Curated base: exact ExerciseDB names (case-insensitive). One per line. '#' = comment.
+# == chest (50)
+barbell bench press
+barbell incline bench press
+barbell decline bench press
+barbell wide bench press
+barbell guillotine bench press
+Barbell Reverse-Grip Incline Bench Press
+dumbbell bench press
+dumbbell incline bench press
+dumbbell decline bench press
+dumbbell incline palm-in press
+dumbbell incline hammer press
+dumbbell lying hammer press
+dumbbell neutral grip bench press
+dumbbell incline alternate press
+Dumbbell Single-Arm Incline Chest Press
+dumbbell fly
+dumbbell incline fly
+dumbbell decline fly
+dumbbell pullover
+dumbbell straight arm pullover
+smith bench press
+smith incline bench press
+smith decline bench press
+Smith Wide-Grip Bench Press
+Machine Chest Press
+Machine Incline Chest Press
+Machine Decline Chest Press
+Machine Seated Fly
+cable seated chest press
+cable incline bench press
+Cable Crossover
+cable low fly
+cable middle fly
+cable incline fly
+cable decline fly
+cable upper chest crossovers
+cable standing fly
+cable lying fly
+chest dip
+assisted chest dip (kneeling)
+weighted straight bar dip
+wide-grip chest dip on high parallel bars
+push-up
+incline push-up
+decline push-up
+wide hand push up
+Kneeling Push-Up
+archer push up
+clap push up
+weighted svend press
+# == back (60)
+pull-up
+Wide-Grip Pull-Up
+Pull-Up (Neutral Grip)
+chin-up
+Close-Grip Chin-Up
+assisted pull-up
+Machine Assisted Pull-Up
+weighted pull-up
+Reverse-Grip Pull-Up
+muscle up
+scapular pull-up
+cable pulldown
+cable bar lateral pulldown
+cable lat pulldown full range of motion
+twin handle parallel grip lat pulldown
+cable lateral pulldown with v-bar
+cable underhand pulldown
+Reverse-Grip Machine Lat Pulldown
+Machine Front Pulldown
+Cable Single-Arm Pulldown
+cable straight arm pulldown
+cable straight arm pulldown (with rope)
+barbell bent over row
+barbell pendlay row
+Barbell Reverse-Grip Bent Over Row
+barbell incline row
+dumbbell bent over row
+Dumbbell Single-Arm Bent-Over Row
+dumbbell incline row
+Dumbbell Reverse-Grip Row
+dumbbell palm rotational bent over row
+Kettlebell Single-Arm Row
+kettlebell alternating renegade row
+cable seated row
+cable low seated row
+cable seated wide-grip row
+cable rope seated row
+cable standing row (v-bar)
+Cable Single-Arm Bent Over Row
+Machine Seated Row
+Machine High Row
+Machine T Bar Row
+Machine Bent Over Row
+Machine Unilateral Row
+smith bent over row
+EZ-Bar Reverse-Grip Bent Over Row
+inverted row
+inverted row bent knees
+barbell pullover
+Machine Pullover
+barbell shrug
+dumbbell shrug
+cable shrug
+smith shrug
+Machine Shrug
+hyperextension
+hyperextension (on bench)
+Machine Back Extension
+Machine Reverse Hyperextension
+lower back curl
+# == shoulders (50)
+barbell seated overhead press
+Barbell Standing Close-Grip Military Press
+barbell standing wide military press
+standing behind neck press
+dumbbell seated shoulder press
+dumbbell seated shoulder press (parallel grip)
+dumbbell standing overhead press
+Dumbbell Single-Arm Shoulder Press
+dumbbell arnold press
+dumbbell push press
+Machine Shoulder Press
+Machine Military Press
+smith shoulder press
+smith seated shoulder press
+cable shoulder press
+kettlebell arnold press
+Kettlebell Two-Arm Military Press
+barbell thruster
+dumbbell lateral raise
+dumbbell seated lateral raise
+Dumbbell Single-Arm Lateral Raise
+Dumbbell Incline Single-Arm Lateral Raise
+cable lateral raise
+Cable Single-Arm Lateral Raise
+Machine Lateral Raise
+landmine lateral raise
+dumbbell lateral to front raise
+dumbbell front raise
+dumbbell seated front raise
+barbell front raise
+cable front raise
+weighted front raise
+dumbbell rear fly
+dumbbell rear lateral raise
+dumbbell reverse fly
+dumbbell incline rear lateral raise
+dumbbell lying rear lateral raise
+Machine Seated Reverse Fly
+Cable Crossover Reverse Fly
+cable seated rear lateral raise
+cable rear delt row (with rope)
+cable standing rear delt row (with rope)
+barbell rear delt row
+barbell upright row
+barbell wide-grip upright row
+dumbbell upright row
+cable upright row
+smith upright row
+dumbbell cuban press
+cable standing shoulder external rotation
+# == biceps (35)
+barbell curl
+EZ-Bar Curl
+EZ-Bar Close-Grip Curl
+barbell drag curl
+Barbell Standing Wide-Grip Biceps Curl
+barbell preacher curl
+EZ-Bar Close-Grip Preacher Curl
+EZ-Bar Spider Curl
+barbell reverse curl
+EZ-Bar Reverse-Grip Curl
+dumbbell biceps curl
+dumbbell alternate biceps curl
+dumbbell hammer curl
+dumbbell cross body hammer curl
+dumbbell incline curl
+dumbbell incline hammer curl
+dumbbell concentration curl
+dumbbell preacher curl
+dumbbell preacher hammer curl
+dumbbell zottman curl
+dumbbell reverse spider curl
+Dumbbell Seated Biceps Curl
+dumbbell seated hammer curl
+dumbbell prone incline curl
+dumbbell high curl
+cable curl
+cable hammer curl (with rope)
+cable preacher curl
+cable overhead curl
+cable concentration curl
+Cable Single-Arm Curl
+cable reverse curl
+Machine Biceps Curl
+Machine Preacher Curl
+biceps narrow pull-ups
+# == triceps (35)
+barbell close-grip bench press
+ez-bar close-grip bench press
+smith close-grip bench press
+barbell jm bench press
+barbell lying triceps extension skull crusher
+EZ-Bar Lying Close-Grip Triceps Extension Behind Head
+barbell seated overhead triceps extension
+EZ-Bar Seated Triceps Extension
+EZ-Bar Standing French Press
+dumbbell lying triceps extension
+dumbbell seated triceps extension
+dumbbell standing triceps extension
+Dumbbell Standing Single-Arm Extension
+dumbbell incline triceps extension
+dumbbell kickback
+Dumbbell Single-Arm Kickback
+dumbbell tate press
+dumbbell close-grip press
+cable pushdown
+cable pushdown (with rope attachment)
+cable triceps pushdown (v-bar)
+cable reverse-grip pushdown
+Cable Single-Arm Triceps Pushdown
+cable overhead triceps extension (rope attachment)
+Cable High Pulley Overhead Triceps Extension
+cable kickback
+cable lying triceps extension
+Machine Triceps Extension
+Machine Seated Dip
+triceps dip
+Weighted Triceps Dips
+bench dip (knees bent)
+triceps dip (between benches)
+close-grip push-up
+diamond push-up
+# == forearms (10)
+barbell wrist curl
+barbell reverse wrist curl
+dumbbell over bench wrist curl
+dumbbell reverse wrist curl
+dumbbell seated palms up wrist curl
+cable wrist curl
+cable reverse wrist curl
+barbell standing back wrist curl
+wrist rollerer
+farmers walk
+# == legs (80)
+barbell full squat
+barbell high bar squat
+barbell low bar squat
+barbell front squat
+barbell wide squat
+barbell narrow stance squat
+barbell zercher squat
+barbell overhead squat
+barbell bench squat
+barbell hack squat
+barbell jump squat
+dumbbell goblet squat
+dumbbell squat
+kettlebell goblet squat
+kettlebell front squat
+smith squat
+smith full squat
+smith front squat (clean grip)
+smith hack squat
+smith sumo squat
+sled hack squat
+sled 45° leg press
+sled 45° leg wide press
+Sled 45 Degrees Single-Leg Press
+smith leg press
+Machine Horizontal Single-Leg Press
+quads (bodyweight squat)
+jump squat
+sissy squat
+Single Leg Squat (Pistol)
+curtsey squat
+Weighted Cossack Squats
+barbell lunge
+barbell rear lunge
+barbell lateral lunge
+barbell split squat
+barbell step-up
+dumbbell lunge
+dumbbell rear lunge
+dumbbell single leg split squat
+dumbbell step-up
+walking lunge
+Forward Lunge
+split squats
+smith single leg split squat
+lunge with jump
+Machine Leg Extension
+Machine Seated Leg Curl
+Machine Lying Leg Curl
+Machine Kneeling Leg Curl
+standing single leg curl
+Lying Dumbbell Leg Curl
+glute-ham raise
+inverse leg curl (bench support)
+barbell deadlift
+barbell sumo deadlift
+trap bar deadlift
+barbell romanian deadlift
+Barbell Straight-Leg Deadlift
+barbell rack pull
+barbell single leg deadlift
+dumbbell deadlift
+dumbbell romanian deadlift
+dumbbell stiff leg deadlift
+dumbbell single leg deadlift
+smith deadlift
+cable deadlift
+barbell good morning
+kettlebell swing
+cable pull through (with rope)
+barbell glute bridge
+Barbell Glute Bridge Two-Leg On Bench
+low glute bridge on floor
+single leg bridge with outstretched leg
+glute bridge march
+cable standing hip extension
+Machine Hip Extension
+Machine Seated Hip Abduction
+Machine Seated Hip Adduction
+cable hip adduction
+side hip abduction
+monster walk
+power clean
+barbell clean and press
+dumbbell clean
+Dumbbell Single-Arm Snatch
+# == calves (15)
+barbell standing calf raise
+barbell seated calf raise
+dumbbell standing calf raise
+dumbbell seated calf raise
+dumbbell single leg calf raise
+bodyweight standing calf raise
+standing calf raise (on a staircase)
+Machine Standing Calf Raise
+Machine Seated Calf Raise
+Machine Calf Press
+sled 45° calf press
+smith standing leg calf raise
+donkey calf raise
+hack calf raise
+cable standing calf raise
+# == abs (45)
+crunch floor
+sit-up
+decline crunch
+decline sit-up
+weighted crunch
+weighted decline sit-up
+Bicycle Crunch
+reverse crunch
+cable reverse crunch
+oblique crunch
+cross body crunch
+tuck crunch
+cable kneeling crunch
+cable standing crunch
+cable seated crunch
+Machine Seated Crunch
+hanging leg raise
+Hanging Straight-Leg Raise
+hanging oblique knee raise
+assisted hanging knee raise
+Captains Chair Straight-Leg Raise
+vertical leg raise (on parallel bars)
+lying leg raise flat bench
+seated leg raise
+flutter kicks
+jackknife sit-up
+v-sit on floor
+russian twist
+weighted russian twist
+dead bug
+weighted front plank
+bodyweight incline side plank
+side bridge
+front plank with twist
+Barbell Rollout
+Barbell Standing Ab Rollout
+cable twist
+cable side bend
+dumbbell side bend
+band horizontal pallof press
+cable judo flip
+Lying Windshield Wipers
+l-sit on floor
+mountain climber
+inchworm
+# == cardio (20)
+run
+run (equipment)
+walking on incline treadmill
+stationary bike run
+stationary bike walk
+walk elliptical cross trainer
+walking on stepmill
+ski ergometer
+jump rope
+burpee
+battling ropes
+Jack Jump
+Star Jump
+high knee against wall
+skater hops
+bear crawl
+push to run
+Scissor Jumps
+Semi Squat Jump
+kettlebell thruster

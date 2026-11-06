@@ -1,6 +1,45 @@
 import { useEffect, useState } from 'react';
 import { LANGS, getLang, setLang, t, type Lang } from '../i18n';
 import { checkForUpdate, hardReload, useUpdateAvailable } from '../lib/update';
+import { baseMediaUrls, cachedCount, downloadAllMedia } from '../lib/offline';
+
+// Total size of public/media, shown as an estimate before downloading
+const MEDIA_MB = 33;
+
+function OfflineMedia() {
+  const [state, setState] = useState<{ done: number; total: number; running: boolean; failed: boolean } | null>(null);
+
+  useEffect(() => {
+    void baseMediaUrls().then(async (urls) => setState({ done: await cachedCount(urls), total: urls.length, running: false, failed: false }));
+  }, []);
+
+  const run = async () => {
+    setState((s) => (s ? { ...s, running: true, failed: false } : s));
+    const r = await downloadAllMedia((done, total) => setState({ done, total, running: true, failed: false }));
+    setState({ ...r, running: false, failed: r.done < r.total });
+  };
+
+  const complete = state && state.total > 0 && state.done >= state.total;
+  return (
+    <div className="card">
+      <p className="body">{t('settings.offline.text', { mb: MEDIA_MB })}</p>
+      {complete ? (
+        <p className="status lime">{t('settings.offline.done')}</p>
+      ) : (
+        <>
+          <button className="btn outline small" style={{ marginTop: 10 }} disabled={!state || state.running} onClick={() => void run()}>
+            {state?.running ? t('settings.offline.progress', { done: state.done, total: state.total }) : t('settings.offline.download')}
+          </button>
+          {state && !state.running && state.done > 0 && (
+            <p className={'status ' + (state.failed ? 'pink' : 'muted')}>
+              {state.failed ? t('settings.offline.failed', { done: state.done, total: state.total }) : `${state.done} / ${state.total}`}
+            </p>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
 
 type UpdState = 'idle' | 'checking' | 'latest' | 'offline';
 
@@ -78,6 +117,10 @@ export function Settings({ onBack }: { onBack: () => void }) {
           {persisted ? '✓ ' + t('settings.storage.persisted') : t('settings.storage.notPersisted')}
         </span>
       </div>
+
+      {/* Offline media */}
+      <div className="m muted sec">// {t('settings.offline')}</div>
+      <OfflineMedia />
 
       {/* Backup */}
       <div className="m muted sec">// {t('settings.backup')}</div>

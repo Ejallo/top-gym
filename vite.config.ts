@@ -26,7 +26,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['apple-touch-icon.png', 'icon.svg'],
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        // data/*.json = exercise base; version.json must stay out of the precache (update check)
+        globPatterns: ['**/*.{js,css,html,svg,png,woff2}', 'data/*.json'],
         // Exercise gifs are large: cache each one the first time it is shown instead of precaching all
         globIgnores: ['**/media/**'],
         runtimeCaching: [
@@ -34,6 +35,16 @@ export default defineConfig({
             urlPattern: ({ url }) => url.pathname.includes('/media/'),
             handler: 'CacheFirst',
             options: { cacheName: 'top-gym-media', expiration: { maxEntries: 2000 } },
+          },
+          {
+            // Gifs of exercises added from the full online base (no CORS: opaque responses, status 0)
+            urlPattern: ({ url }) => url.hostname === 'static.exercisedb.dev',
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'top-gym-media-full',
+              expiration: { maxEntries: 500 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
           },
           {
             urlPattern: ({ url }) => url.origin.includes('fonts.googleapis.com') || url.origin.includes('fonts.gstatic.com'),

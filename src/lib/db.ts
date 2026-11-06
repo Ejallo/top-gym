@@ -3,15 +3,25 @@ import Dexie, { type Table } from 'dexie';
 // Local data model. Everything stays on the device (IndexedDB).
 
 export type ExerciseType = 'weight_reps' | 'reps' | 'time' | 'cardio';
+/** Section an own exercise belongs to besides its muscle group. */
+export type Category = 'rehab';
+/** Which side is trained (rehab often works one limb). */
+export type Side = 'left' | 'right' | 'both';
 
 /** User-made exercise or one pulled from the full online base. Base exercises ship as static JSON. */
 export interface CustomExercise {
   id: string; // 'c_<random>' for own, ExerciseDB id for downloaded
   name: string;
-  muscles: string[];
+  en?: string; // original English name for downloaded ones
+  muscles: string[]; // app muscle keys, primary first
+  secondary?: string[];
+  equipment?: string;
   type: ExerciseType;
-  gif?: string; // cached media url
-  photo?: Blob;
+  steps?: string[];
+  gif?: string; // media url (cached by the service worker)
+  photos?: Blob[]; // up to 8, downscaled JPEG
+  category?: Category;
+  side?: Side;
   videoUrl?: string;
   source: 'own' | 'full';
   createdAt: number;

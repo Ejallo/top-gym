@@ -5,6 +5,7 @@ import { TabBar, type Tab } from './components/TabBar';
 import { Home } from './screens/Home';
 import { Calendar } from './screens/Calendar';
 import { Placeholder } from './screens/Placeholder';
+import { Exercises } from './screens/Exercises';
 import { Settings } from './screens/Settings';
 
 export function App() {
@@ -38,7 +39,7 @@ export function App() {
           {tab === 'workout' && <Home onSettings={openSettings} />}
           {tab === 'calendar' && <Calendar onSettings={openSettings} />}
           {tab === 'progress' && <Placeholder title="progress.title" text="progress.empty" onSettings={openSettings} />}
-          {tab === 'exercises' && <Placeholder title="exercises.title" text="exercises.empty" onSettings={openSettings} />}
+          {tab === 'exercises' && <Exercises onSettings={openSettings} />}
         </>
       )}
 
