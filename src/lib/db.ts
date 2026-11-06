@@ -66,6 +66,9 @@ export interface WorkoutEntry {
   exerciseId: string;
   rest?: string;
   note?: string;
+  /** Target from the template/program, shown as a hint */
+  plan?: { sets: number; reps?: string; weight?: number; time?: number; distance?: number };
+  side?: Side;
   sets: SetEntry[];
 }
 

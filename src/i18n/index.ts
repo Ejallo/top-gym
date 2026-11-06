@@ -28,9 +28,21 @@ export function locale(): string {
 
 /** Translates a key; {name} placeholders are filled from vars. */
 export function t(key: Key, vars?: Record<string, string | number>): string {
-  let s = dicts[lang][key] ?? ru[key];
+  let s: string = dicts[lang][key] ?? ru[key];
+  // Plural forms 'one|few|many|other' are picked by vars.n through Intl.PluralRules
+  if (s.includes('|') && typeof vars?.n === 'number') {
+    const forms = s.split('|');
+    const order = ['one', 'few', 'many', 'other'];
+    const cat = new Intl.PluralRules(locale()).select(vars.n);
+    s = forms[order.indexOf(cat)] ?? forms[forms.length - 1];
+  }
   if (vars) for (const [k, v] of Object.entries(vars)) s = s.replaceAll(`{${k}}`, String(v));
   return s;
+}
+
+/** Number in the UI locale: 62,5 · 1 240 */
+export function num(n: number): string {
+  return n.toLocaleString(locale(), { maximumFractionDigits: 2 });
 }
 
 /** Translates a key built at runtime (e.g. 'eq.' + equipment); unknown keys return the fallback. */

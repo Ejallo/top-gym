@@ -7,6 +7,9 @@ import { Calendar } from './screens/Calendar';
 import { Placeholder } from './screens/Placeholder';
 import { Exercises } from './screens/Exercises';
 import { Settings } from './screens/Settings';
+import { WorkoutScreen } from './screens/WorkoutScreen';
+import type { Workout } from './lib/db';
+import { seedDemo } from './lib/demo';
 
 export function App() {
   // ?screen=calendar|progress|exercises|settings opens a screen directly (handy for screenshots)
@@ -17,11 +20,16 @@ export function App() {
   const [settings, setSettings] = useState(initial === 'settings');
   const updateAvailable = useUpdateAvailable();
   const openSettings = () => setSettings(true);
+  const [workout, setWorkout] = useState<Workout | null>(null);
+
+  useEffect(() => {
+    if (import.meta.env.DEV) void seedDemo().then((w) => w && setWorkout(w));
+  }, []);
 
   // Braces matter: new Chrome returns a Promise from scrollTo, and an effect must not return it
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [tab, settings]);
+  }, [tab, settings, workout]);
 
   return (
     <div className="app">
@@ -32,17 +40,20 @@ export function App() {
         </div>
       )}
 
-      {settings ? (
+      {workout ? (
+        <WorkoutScreen key={workout.id} initial={workout} onClose={() => setWorkout(null)} />
+      ) : settings ? (
         <Settings onBack={() => setSettings(false)} />
       ) : (
         <>
-          {tab === 'workout' && <Home onSettings={openSettings} />}
+          {tab === 'workout' && <Home onSettings={openSettings} onOpenWorkout={setWorkout} />}
           {tab === 'calendar' && <Calendar onSettings={openSettings} />}
           {tab === 'progress' && <Placeholder title="progress.title" text="progress.empty" onSettings={openSettings} />}
           {tab === 'exercises' && <Exercises onSettings={openSettings} />}
         </>
       )}
 
+      {!workout && (
       <TabBar
         tab={tab}
         onTab={(next) => {
@@ -50,6 +61,7 @@ export function App() {
           setTab(next);
         }}
       />
+      )}
     </div>
   );
 }
