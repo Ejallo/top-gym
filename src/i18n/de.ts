@@ -163,6 +163,7 @@ MEIN ZIEL UND MEINE BEDINGUNGEN:
   'folder.x': 'X',
   'folder.y': 'Y',
   'folder.count': '{n} Training|{n} Trainings',
+  'folder.add': '+ Training hinzufügen',
   'folder.empty': '+ Füge das erste Training zu diesem Block hinzu',
   'rehab.title': 'Reha',
   'rehab.tileEmpty': 'Eigenes Programm',

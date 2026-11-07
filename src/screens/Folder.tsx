@@ -26,17 +26,17 @@ export function FolderScreen({ folder, hasActive, onStart, onBack }: { folder: F
           + {t('home.newTemplate')}
         </button>
       </div>
-      {templates && templates.length === 0 && (
-        <button className="dash-btn m" style={{ marginTop: 0 }} onClick={() => setEditing('new')}>
-          {t('folder.empty')}
-        </button>
-      )}
       {templates?.map((tpl, i) => (
         <button key={tpl.id} className={'tpl-card' + (i === 0 ? ' first' : '')} onClick={() => setMenu(tpl)}>
           <span className="m">{t('home.tplCount', { n: tpl.items.length, sets: tpl.items.reduce((a, x) => a + (x.sets || 0), 0) })}</span>
           <b className="h h-m">{tpl.name}</b>
         </button>
       ))}
+      {templates && (
+        <button className="dash-btn m" style={templates.length ? undefined : { marginTop: 0 }} onClick={() => setEditing('new')}>
+          {t(templates.length ? 'folder.add' : 'folder.empty')}
+        </button>
+      )}
 
       {menu && (
         <TemplateMenu

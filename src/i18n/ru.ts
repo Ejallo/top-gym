@@ -160,6 +160,7 @@ export const ru = {
   'folder.x': 'X',
   'folder.y': 'Y',
   'folder.count': '{n} тренировка|{n} тренировки|{n} тренировок|{n} тренировки',
+  'folder.add': '+ Добавить тренировку',
   'folder.empty': '+ Добавь первую тренировку в этот блок',
   'rehab.title': 'Реабилитация',
   'rehab.tileEmpty': 'Своя программа',
