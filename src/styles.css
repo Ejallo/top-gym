@@ -221,6 +221,7 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 .wk-ex > span { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .wk-ex b { line-height: 0.95; }
 .wk-note { margin-top: 6px; color: #9a9a9a; }
+.wk-pin { margin-top: 8px; padding: 6px 9px; border-left: 3px solid var(--cyan); background: var(--card); }
 .set-grid { display: grid; gap: 6px; align-items: center; margin-top: 6px; }
 .set-grid.weight_reps, .set-grid.cardio { grid-template-columns: 30px 1fr 1fr 44px; }
 .set-grid.reps, .set-grid.time { grid-template-columns: 30px 1fr 44px; }

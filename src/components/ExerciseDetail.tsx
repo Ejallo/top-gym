@@ -8,6 +8,39 @@ import { CustomExerciseForm } from './CustomExerciseForm';
 import { ExerciseProgress, setLabel } from './ExerciseProgress';
 import { fmt } from '../lib/dates';
 import { sessionsFor, useFinishedWorkouts } from '../lib/stats';
+import { setPin, usePins } from '../lib/pins';
+
+/** Pinned note: shown in every workout with this exercise; edited here or from the workout note sheet. */
+function PinNote({ ex }: { ex: Exercise }) {
+  const pin = usePins()[ex.id] ?? '';
+  const [edit, setEdit] = useState<string | null>(null);
+  if (edit !== null)
+    return (
+      <label className="field">
+        <span className="m lime">// {t('ex.pin')}</span>
+        <textarea rows={2} autoFocus value={edit} placeholder={t('wk.pinPh')} onChange={(e) => setEdit(e.target.value)} />
+        <button
+          className="btn lime small"
+          style={{ marginTop: 8 }}
+          onClick={() => {
+            void setPin(ex.id, edit);
+            setEdit(null);
+          }}
+        >
+          {t('custom.save')}
+        </button>
+      </label>
+    );
+  return pin ? (
+    <button className="body wk-pin" style={{ display: 'block', textAlign: 'left', width: '100%' }} onClick={() => setEdit(pin)}>
+      📌 {pin}
+    </button>
+  ) : (
+    <button className="m muted" style={{ display: 'block', marginTop: 12 }} onClick={() => setEdit('')}>
+      {t('ex.pinAdd')}
+    </button>
+  );
+}
 
 /** Last sessions of the exercise with a link to the full progress view. */
 function ExerciseHistory({ ex }: { ex: Exercise }) {
@@ -60,6 +93,8 @@ export function ExerciseDetail({ ex, onClose }: { ex: Exercise; onClose: () => v
         {ex.name}
       </div>
       {ex.en.toLowerCase() !== ex.name.toLowerCase() &&<div className="m muted" style={{ marginTop: 6, textTransform: 'none' }}>{ex.en}</div>}
+
+      <PinNote ex={ex} />
 
       <div className="m muted sec">// {t('ex.muscles')}</div>
       <div className="chips">

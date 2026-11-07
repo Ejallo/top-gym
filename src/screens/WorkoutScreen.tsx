@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { num, t } from '../i18n';
+import { num, t, tk } from '../i18n';
 import { db, type SetEntry, type Workout, type WorkoutEntry } from '../lib/db';
-import { useExercises, type Exercise } from '../lib/exercises';
+import { matches, useExercises, type Exercise } from '../lib/exercises';
 import { clock, entryFor, fillFromPlan, minutes, planText, totals, useNow } from '../lib/workouts';
 import { ExerciseMedia } from '../components/ExerciseMedia';
 import { ExerciseDetail } from '../components/ExerciseDetail';
@@ -11,6 +11,9 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { applyHint, lastSets, progressionHint, type Hint } from '../lib/progression';
 import { cue, mmss, unlockAudio, useCountdown, useWakeLock } from '../lib/hold';
 import { DEFAULT_HOLD, PREP, cooldownFor, startMobility } from '../lib/mobility';
+import { setPin, usePins } from '../lib/pins';
+import { alternatives, swapEntry } from '../lib/swap';
+import { Sheet } from '../components/Sheet';
 
 const UNITS = () => ({ kg: t('unit.kg'), min: t('unit.min'), km: t('unit.km'), sec: t('unit.sec') });
 
@@ -33,6 +36,8 @@ export function WorkoutScreen({
   const [picking, setPicking] = useState(false);
   const [info, setInfo] = useState<Exercise | null>(null);
   const [noteFor, setNoteFor] = useState<number | null>(null);
+  const [swapFor, setSwapFor] = useState<number | null>(null);
+  const pins = usePins();
   const [summary, setSummary] = useState(false);
   const [hold, setHold] = useState<{ i: number; k: number } | null>(null);
   const [effortFor, setEffortFor] = useState<{ i: number; k: number } | null>(null);
@@ -175,6 +180,7 @@ export function WorkoutScreen({
                 {e.rest && <>// {t('wk.rest')} — {e.rest}</>}
               </div>
             )}
+            {pins[e.exerciseId] && <p className="body wk-pin">📌 {pins[e.exerciseId]}</p>}
             {e.note && <p className="body wk-note">✎ {e.note}</p>}
             {history && (
               <HintLine
@@ -281,6 +287,7 @@ export function WorkoutScreen({
               )}
               <span className="tools-break" />
               <button onClick={() => setNoteFor(i)}>✎ {t('wk.note')}</button>
+              {ex && <button onClick={() => setSwapFor(i)}>⇄ {t('wk.swap')}</button>}
               <span style={{ flex: 1 }} />
               <button onClick={() => moveEntry(i, -1)} aria-label="up">↑</button>
               <button onClick={() => moveEntry(i, 1)} aria-label="down">↓</button>
@@ -346,12 +353,27 @@ export function WorkoutScreen({
           onClose={() => setEffortFor(null)}
         />
       )}
+      {swapFor !== null && byId.get(w.entries[swapFor]?.exerciseId) && (
+        <SwapSheet
+          ex={byId.get(w.entries[swapFor].exerciseId)!}
+          all={list ?? []}
+          history={history ?? []}
+          onPick={(id) => {
+            setW((x) => ({ ...x, entries: swapEntry(x.entries, swapFor, id) }));
+            setSwapFor(null);
+          }}
+          onClose={() => setSwapFor(null)}
+        />
+      )}
       {noteFor !== null && (
         <NoteSheet
           title={byId.get(w.entries[noteFor]?.exerciseId)?.name ?? ''}
           value={w.entries[noteFor]?.note ?? ''}
-          onSave={(v) => {
+          pin={pins[w.entries[noteFor]?.exerciseId] ?? ''}
+          onSave={(v, pin) => {
+            const exId = w.entries[noteFor]?.exerciseId;
             setEntry(noteFor, (e) => ({ ...e, note: v || undefined }));
+            if (exId && pin !== (pins[exId] ?? '')) void setPin(exId, pin);
             setNoteFor(null);
           }}
           onClose={() => setNoteFor(null)}
@@ -438,8 +460,69 @@ function EffortSheet({
   );
 }
 
-function NoteSheet({ title, value, onSave, onClose }: { title: string; value: string; onSave: (v: string) => void; onClose: () => void }) {
+/** Same-muscle stand-ins for one exercise; tap one to swap it in. Typing searches the whole base. */
+function SwapSheet({
+  ex,
+  all,
+  history,
+  onPick,
+  onClose,
+}: {
+  ex: Exercise;
+  all: Exercise[];
+  history: Workout[];
+  onPick: (id: string) => void;
+  onClose: () => void;
+}) {
+  const [q, setQ] = useState('');
+  const alts = alternatives(ex, all, history);
+  const done = new Set(history.flatMap((w) => (w.endedAt ? w.entries.map((e) => e.exerciseId) : [])));
+  const shown = q.trim() ? all.filter((x) => x.id !== ex.id && matches(x, q)) : alts;
+  return (
+    <Sheet onClose={onClose}>
+      <div className="m muted">// {t('wk.swapTitle')}</div>
+      <div className="h h-m" style={{ marginTop: 6 }}>
+        {ex.name}
+      </div>
+      <div className="m muted" style={{ marginTop: 6, textTransform: 'none' }}>
+        {t('wk.swapHint')}
+      </div>
+      <input className="search" style={{ marginTop: 12 }} value={q} placeholder={'⌕ ' + t('exercises.search', { n: all.length })} onChange={(e) => setQ(e.target.value)} />
+      <div style={{ marginTop: 10, paddingBottom: 30 }}>
+        {shown.length === 0 && <p className="body muted">{t('wk.swapNone')}</p>}
+        {shown.slice(0, 80).map((x) => (
+          <button key={x.id} className="ex-row" onClick={() => onPick(x.id)}>
+            <ExerciseMedia ex={x} size="thumb" />
+            <div className="ex-row-text">
+              <b>{x.name}</b>
+              <span className="m muted">
+                {t(`muscle.${x.muscles[0]}`)} · {tk(`eq.${x.equipment}`, x.equipment)}
+                {done.has(x.id) && <span className="lime"> · {t('wk.swapDone')}</span>}
+              </span>
+            </div>
+            <span className="pick-mark">⇄</span>
+          </button>
+        ))}
+      </div>
+    </Sheet>
+  );
+}
+
+function NoteSheet({
+  title,
+  value,
+  pin,
+  onSave,
+  onClose,
+}: {
+  title: string;
+  value: string;
+  pin: string;
+  onSave: (v: string, pin: string) => void;
+  onClose: () => void;
+}) {
   const [v, setV] = useState(value);
+  const [p, setP] = useState(pin);
   return (
     <div className="sheet">
       <div className="sheet-in">
@@ -450,8 +533,15 @@ function NoteSheet({ title, value, onSave, onClose }: { title: string; value: st
         <div className="h h-m" style={{ marginTop: 6 }}>
           {title}
         </div>
-        <textarea rows={5} style={{ marginTop: 14 }} autoFocus value={v} placeholder={t('wk.notePh')} onChange={(e) => setV(e.target.value)} />
-        <button className="btn lime" style={{ marginTop: 12 }} onClick={() => onSave(v.trim())}>
+        <label className="field">
+          <span className="m lime">// {t('wk.pin')}</span>
+          <textarea rows={2} value={p} placeholder={t('wk.pinPh')} onChange={(e) => setP(e.target.value)} />
+        </label>
+        <label className="field">
+          <span className="m muted">// {t('wk.noteToday')}</span>
+          <textarea rows={4} value={v} placeholder={t('wk.notePh')} onChange={(e) => setV(e.target.value)} />
+        </label>
+        <button className="btn lime" style={{ marginTop: 12 }} onClick={() => onSave(v.trim(), p.trim())}>
           {t('custom.save')}
         </button>
       </div>

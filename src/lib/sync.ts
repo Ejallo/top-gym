@@ -13,7 +13,7 @@ export const ACCOUNT_API = 'https://top-gym-api.vetervlad94.workers.dev';
 
 const TABLES = ['customExercises', 'templates', 'programs', 'workouts', 'kv'] as const;
 type Tbl = (typeof TABLES)[number];
-const SYNCED_KV = new Set(['weeklyGoal', 'rehab', 'rehabTicks']); // other kv keys are device-local
+const SYNCED_KV = new Set(['weeklyGoal', 'rehab', 'rehabTicks', 'exNotes']); // other kv keys are device-local
 
 const LS = { session: 'tg.session', user: 'tg.user', seq: 'tg.seq', outbox: 'tg.outbox', photos: 'tg.photosUp', pair: 'tg.pair', full: 'tg.fullPush' };
 
