@@ -1,6 +1,7 @@
 // Builds the bundled exercise base from the downloaded ExerciseDB catalog:
 //   public/data/exercises.json     language-neutral rows
 //   public/data/exercises.ru.json  id -> { n: name, s: steps }
+//   public/data/exercises.de.json  same in German (scripts/de: by English name, extras/yoga by id)
 //   public/media/<id>.gif          gifs (skipped if already downloaded)
 // Usage: node scripts/build-base.mjs [--no-media]
 import { readFile, writeFile, mkdir, readdir, access } from 'node:fs/promises';
@@ -17,7 +18,7 @@ for (const x of catalog) if (!byName.has(x.name.toLowerCase())) byName.set(x.nam
 const override = JSON.parse(await read('scripts/media-override.json'));
 for (const [name, id] of Object.entries(override)) byName.set(name, catalog.find((x) => x.exerciseId === id));
 
-// Sections '# == stretch' and '# == yoga' set the category; '| side' marks one-side-at-a-time holds
+// Sections '# == stretch', '# == yoga' and '# == rehab' set the category; '| side' marks one-side-at-a-time holds
 const picked = [];
 let section = '';
 for (const raw of (await read('scripts/selection.txt')).split('\n')) {
@@ -25,12 +26,16 @@ for (const raw of (await read('scripts/selection.txt')).split('\n')) {
   if (line.startsWith('# ==')) section = line.slice(4).trim().split(/\s/)[0];
   if (!line || line.startsWith('#')) continue;
   const [name, flag] = line.split('|').map((x) => x.trim());
-  picked.push({ name, category: section === 'stretch' || section === 'yoga' ? section : undefined, perSide: flag === 'side' || undefined });
+  picked.push({ name, category: ['stretch', 'yoga', 'rehab'].includes(section) ? section : undefined, perSide: flag === 'side' || undefined });
 }
 const names = picked.map((p) => p.name);
+// Logging type where the name-based guess is wrong
+const TYPE_FIX = { 'side plank hip abduction': 'reps' };
 
 const ru = {};
 for (const f of await readdir(new URL('scripts/ru/', root))) Object.assign(ru, JSON.parse(await read(`scripts/ru/${f}`)));
+const de = {};
+for (const f of await readdir(new URL('scripts/de/', root))) Object.assign(de, JSON.parse(await read(`scripts/de/${f}`)));
 
 // Classics that the open catalog lacks: shipped without a gif
 const EXTRAS = [
@@ -68,6 +73,7 @@ const YOGA = [
 
 const rows = [];
 const text = {};
+const textDe = {};
 const missingRu = [];
 for (const { name, category, perSide } of picked) {
   const x = byName.get(name.toLowerCase());
@@ -83,6 +89,7 @@ for (const { name, category, perSide } of picked) {
     rows.push({ id: x.exerciseId, en: x.name, muscles: ['forearms'], secondary: ['traps', 'abs'], equipment, type: 'weight_reps' });
     const t = ru[name.toLowerCase()];
     if (t) text[x.exerciseId] = t;
+    if (de[name.toLowerCase()]) textDe[x.exerciseId] = de[name.toLowerCase()];
     continue;
   }
   rows.push({
@@ -91,29 +98,35 @@ for (const { name, category, perSide } of picked) {
     muscles,
     secondary,
     equipment,
-    type: category ? 'time' : guessType(x.name, x.bodyParts, equipment),
+    type: TYPE_FIX[x.name.toLowerCase()] ?? (category === 'stretch' || category === 'yoga' ? 'time' : guessType(x.name, x.bodyParts, equipment)),
     ...(category && { category }),
     ...(perSide && { perSide }),
   });
   const t = ru[name.toLowerCase()];
   if (t) text[x.exerciseId] = t;
   else missingRu.push(name);
+  if (de[name.toLowerCase()]) textDe[x.exerciseId] = de[name.toLowerCase()];
 }
 for (const e of EXTRAS) {
   const { ru: t, ...row } = e;
   rows.push({ ...row, noMedia: true });
   text[e.id] = t;
+  if (de[e.id]) textDe[e.id] = de[e.id];
 }
 for (const e of YOGA) {
   const { ru: t, ...row } = e;
   rows.push(JSON.parse(JSON.stringify(row))); // drops undefined perSide
   text[e.id] = t;
+  if (de[e.id]) textDe[e.id] = de[e.id];
 }
 
 await mkdir(new URL('public/data/', root), { recursive: true });
 await writeFile(new URL('public/data/exercises.json', root), JSON.stringify(rows));
 await writeFile(new URL('public/data/exercises.ru.json', root), JSON.stringify(text));
-console.log(`rows ${rows.length}, ru ${Object.keys(text).length}`);
+await writeFile(new URL('public/data/exercises.de.json', root), JSON.stringify(textDe));
+console.log(`rows ${rows.length}, ru ${Object.keys(text).length}, de ${Object.keys(textDe).length}`);
+const missingDe = rows.filter((r) => !textDe[r.id]).map((r) => r.en);
+if (missingDe.length) console.log('MISSING DE:', missingDe);
 if (missingRu.length) console.log('MISSING RU:', missingRu);
 const unused = Object.keys(ru).filter((k) => !names.some((n) => n.toLowerCase() === k));
 if (unused.length) console.log('UNUSED RU KEYS:', unused);

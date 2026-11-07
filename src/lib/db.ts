@@ -64,7 +64,15 @@ export interface SetEntry {
   time?: number;
   distance?: number;
   done: boolean;
+  /** Warm-up set: shown and kept, but left out of volume, e1RM, progression and reports */
+  warmup?: boolean;
+  /** How hard the set felt, 1 (easy) … 10 (all-out), entered by hand */
+  effort?: number;
+  comment?: string;
 }
+
+/** A ticked working set: the only kind that counts in stats. */
+export const isWork = (s: SetEntry): boolean => s.done && !s.warmup;
 
 export interface WorkoutEntry {
   exerciseId: string;

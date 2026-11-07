@@ -1,12 +1,15 @@
 import { ru, type Key } from './ru';
+import { de } from './de';
 
-export type Lang = 'ru';
+export type Lang = 'ru' | 'de';
 
-// Dictionaries by language. German ('de') joins later as Partial<Record<Key, string>>,
-// missing keys fall back to Russian.
-const dicts: Record<Lang, Partial<Record<Key, string>>> = { ru };
+// Dictionaries by language; a missing key falls back to Russian. Russian is the default.
+const dicts: Record<Lang, Partial<Record<Key, string>>> = { ru, de };
 
-export const LANGS: { id: Lang; label: string; locale: string }[] = [{ id: 'ru', label: 'Русский', locale: 'ru-RU' }];
+export const LANGS: { id: Lang; label: string; locale: string }[] = [
+  { id: 'ru', label: 'Русский', locale: 'ru-RU' },
+  { id: 'de', label: 'Deutsch', locale: 'de-DE' },
+];
 
 let lang: Lang = (localStorage.getItem('lang') as Lang) || 'ru';
 if (!dicts[lang]) lang = 'ru';

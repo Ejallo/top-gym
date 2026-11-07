@@ -86,7 +86,11 @@ export function WorkoutView({ w, onEdit, onClose }: { w: Workout; onEdit: () => 
             <div className="view-sets m">
               {done.length === 0 && <span className="muted">{t('hist.noSets')}</span>}
               {done.map((s, k) => (
-                <span key={k}>{setText(s, ex?.type)}</span>
+                <span key={k} className={s.warmup ? 'muted' : undefined}>
+                  {s.warmup && `${t('hist.warmup')} `}
+                  {setText(s, ex?.type)}
+                  {s.effort && <span className="pink"> @{s.effort}</span>}
+                </span>
               ))}
             </div>
             {e.note && <p className="body wk-note">✎ {e.note}</p>}

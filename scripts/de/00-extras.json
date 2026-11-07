@@ -1,0 +1,23 @@
+{
+  "x_plank": {"n": "Unterarmstütz (Plank)", "s": ["Stütz auf Unterarmen und Zehen, Ellbogen unter den Schultern.", "Der Körper bildet eine gerade Linie, Bauch und Gesäß angespannt.", "Halte die vorgegebene Zeit und atme ruhig."]},
+  "x_hip_thrust": {"n": "Hip Thrust mit der Langhantel", "s": ["Schulterblätter auf der Bank, Stange mit Polster auf dem Becken.", "Heb das Becken, bis Schultern und Knie eine Linie bilden.", "Oben das Gesäß anspannen und langsam ablassen."]},
+  "x_rowing": {"n": "Rudergerät", "s": ["Drück dich mit den Beinen ab, lehn dich zurück und zieh den Griff zum Bauch.", "Zurück in umgekehrter Reihenfolge: Arme, Oberkörper, Beine.", "Notiere Zeit und Distanz."]},
+  "x_wall_sit": {"n": "Wandsitzen", "s": ["Rücken an die Wand, geh runter, bis die Knie 90° gebeugt sind.", "Füße unter den Knien, Rücken an der Wand.", "Halte die vorgegebene Zeit."]},
+  "y_mountain": {"n": "Berghaltung", "s": ["Stell dich gerade hin, Füße zusammen oder hüftbreit.", "Streck dich mit dem Scheitel nach oben, Schultern runter, Arme seitlich.", "Gewicht gleichmäßig auf den Füßen, ruhig atmen."]},
+  "y_tree": {"n": "Baum", "s": ["Steh auf einem Bein, setz den anderen Fuß innen an Oberschenkel oder Unterschenkel (nicht aufs Knie).", "Hände vor der Brust zusammen oder nach oben.", "Blick auf einen Punkt, halten und Bein wechseln."]},
+  "y_warrior1": {"n": "Krieger I", "s": ["Großer Schritt nach vorn, vorderes Knie über der Ferse, hinterer Fuß im 45°-Winkel.", "Becken nach vorn ausgerichtet, Arme nach oben.", "Halten, dann Bein wechseln."]},
+  "y_warrior2": {"n": "Krieger II", "s": ["Beine weit, vorderer Fuß nach vorn, hinterer quer.", "Beuge das vordere Knie über der Ferse, Arme parallel zum Boden zur Seite.", "Blick über die vordere Hand. Seite wechseln."]},
+  "y_triangle": {"n": "Dreieck", "s": ["Beine weit, vorderer Fuß nach vorn, beide Beine gestreckt.", "Streck dich nach vorn und neig dich: untere Hand zum Schienbein, obere nach oben.", "Brust geöffnet, halten und Seite wechseln."]},
+  "y_chair": {"n": "Stuhl", "s": ["Füße zusammen, Knie beugen, Becken nach hinten wie beim Hinsetzen.", "Arme nach oben, Oberkörper leicht nach vorn.", "Gewicht auf den Fersen, halten."]},
+  "y_forwardfold": {"n": "Vorbeuge im Stand", "s": ["Füße hüftbreit, aus der Hüfte nach vorn beugen.", "Knie dürfen leicht gebeugt sein, der Kopf hängt locker.", "Hände zum Boden oder zu den Schienbeinen, halten."]},
+  "y_downdog": {"n": "Herabschauender Hund", "s": ["Aus dem Vierfüßlerstand das Becken nach oben-hinten schieben.", "Arme und Rücken in einer Linie, Fersen Richtung Boden.", "Knie beugen, wenn der Rücken rund wird. Ruhig atmen."]},
+  "y_cobra": {"n": "Kobra", "s": ["Leg dich auf den Bauch, Hände unter den Schultern.", "Heb die Brust mit der Kraft des Rückens, Ellbogen leicht gebeugt.", "Schambein am Boden, Schultern unten, halten."]},
+  "y_child": {"n": "Kindhaltung", "s": ["Setz dich auf die Fersen, Knie etwas weiter als hüftbreit.", "Beug dich vor, Stirn auf den Boden, Arme nach vorn strecken.", "Entspann dich und atme in den Rücken."]},
+  "y_catcow": {"n": "Katze-Kuh", "s": ["Geh in den Vierfüßlerstand: Hände unter den Schultern, Knie unter der Hüfte.", "Beim Ausatmen den Rücken rund nach oben, Kinn zur Brust.", "Beim Einatmen ins Hohlkreuz, Blick nach vorn. Fließend abwechseln."]},
+  "y_pigeon": {"n": "Taube", "s": ["Aus dem Stütz ein Knie nach vorn zur Hand bringen, Unterschenkel quer zur Matte.", "Das hintere Bein nach hinten strecken, Becken absenken.", "Oberkörper aufrecht oder auf dem vorderen Bein ablegen. Seite wechseln."]},
+  "y_bridge": {"n": "Brücke", "s": ["Leg dich auf den Rücken, Füße nah am Becken auf dem Boden.", "Heb das Becken nach oben, Arme neben dem Körper.", "Knie zeigen nach vorn, halten."]},
+  "y_happybaby": {"n": "Glückliches Baby", "s": ["Leg dich auf den Rücken und zieh die Knie zu den Achseln.", "Greif die Außenkanten der Füße, Unterschenkel senkrecht.", "Unterer Rücken am Boden, sanft schaukeln ist erlaubt."]},
+  "y_seatedfold": {"n": "Vorbeuge im Sitzen", "s": ["Setz dich, Beine gestreckt und zusammen, Zehen zu dir.", "Streck den Rücken nach oben und beug dich aus der Hüfte vor.", "Hände zu den Schienbeinen oder Füßen, halten."]},
+  "y_lowlunge": {"n": "Tiefer Ausfallschritt", "s": ["Geh in einen Ausfallschritt, hinteres Knie auf den Boden.", "Vorderes Knie über der Ferse, Becken nach vorn-unten sinken lassen.", "Arme nach oben, halten und Bein wechseln."]},
+  "y_shavasana": {"n": "Shavasana", "s": ["Leg dich auf den Rücken, Arme und Beine locker, Handflächen nach oben.", "Schließ die Augen und entspann den ganzen Körper.", "Ruhig atmen und einfach liegen."]}
+}

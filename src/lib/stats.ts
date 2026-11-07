@@ -1,5 +1,5 @@
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db, type SetEntry, type Workout } from './db';
+import { db, isWork, type SetEntry, type Workout } from './db';
 import type { Exercise } from './exercises';
 import { MUSCLES, type Group, type Muscle } from './muscles';
 import { weekday } from './dates';
@@ -28,7 +28,7 @@ export function sessionsFor(exerciseId: string, workouts: Workout[]): Session[] 
   const out: Session[] = [];
   for (const w of workouts) {
     if (!w.endedAt) continue;
-    const sets = w.entries.filter((e) => e.exerciseId === exerciseId).flatMap((e) => e.sets.filter((s) => s.done));
+    const sets = w.entries.filter((e) => e.exerciseId === exerciseId).flatMap((e) => e.sets.filter(isWork));
     if (!sets.length) continue;
     out.push({
       workoutId: w.id,
@@ -66,7 +66,7 @@ export function muscleLoad(workouts: Workout[], byId: Map<string, Exercise>, day
     for (const e of w.entries) {
       const ex = byId.get(e.exerciseId);
       if (!ex) continue;
-      const n = e.sets.filter((s) => s.done).length;
+      const n = e.sets.filter(isWork).length;
       ex.muscles.forEach((m) => (raw[m] += n));
       ex.secondary.forEach((m) => (raw[m] += n / 2));
     }
@@ -124,7 +124,7 @@ export function dominantGroup(w: Workout, byId: Map<string, Exercise>): Group | 
   for (const e of w.entries) {
     const ex = byId.get(e.exerciseId);
     if (!ex) continue;
-    const n = e.sets.filter((s) => s.done).length || 0.1;
+    const n = e.sets.filter(isWork).length || 0.1;
     score.set(ex.group, (score.get(ex.group) ?? 0) + n);
   }
   return [...score.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];

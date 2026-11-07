@@ -1,5 +1,5 @@
 import { num, t } from '../i18n';
-import type { Workout } from './db';
+import { isWork, type Workout } from './db';
 import { fmt, isoWeek } from './dates';
 import type { Exercise } from './exercises';
 import { MUSCLES, type Muscle } from './muscles';
@@ -43,7 +43,7 @@ function bestSet(ws: Workout[], ex: Exercise) {
     for (const e of w.entries)
       if (e.exerciseId === ex.id)
         for (const s of e.sets)
-          if (s.done) {
+          if (isWork(s)) {
             const v = score(s, ex.type);
             if (!best || v > best.v) best = { s, v };
           }
@@ -51,7 +51,7 @@ function bestSet(ws: Workout[], ex: Exercise) {
 }
 
 const volumeOf = (ws: Workout[]) =>
-  Math.round(ws.reduce((a, w) => a + w.entries.reduce((b, e) => b + e.sets.reduce((c, s) => c + (s.done ? (s.weight ?? 0) * (s.reps ?? 0) : 0), 0), 0), 0));
+  Math.round(ws.reduce((a, w) => a + w.entries.reduce((b, e) => b + e.sets.reduce((c, s) => c + (isWork(s) ? (s.weight ?? 0) * (s.reps ?? 0) : 0), 0), 0), 0));
 
 /** Collects everything about the week that starts on Monday `start`. */
 export function buildReport(all: Workout[], byId: Map<string, Exercise>, start: number, goal: number): WeekReport {
@@ -62,7 +62,7 @@ export function buildReport(all: Workout[], byId: Map<string, Exercise>, start: 
 
   // Best sets and muscle sets come from strength work; stretching/yoga is listed but not compared
   const strength = inWeek.filter((w) => w.kind !== 'mobility');
-  const ids = [...new Set(strength.flatMap((w) => w.entries.filter((e) => e.sets.some((s) => s.done)).map((e) => e.exerciseId)))];
+  const ids = [...new Set(strength.flatMap((w) => w.entries.filter((e) => e.sets.some(isWork)).map((e) => e.exerciseId)))];
   const compare: ExerciseCompare[] = [];
   for (const id of ids) {
     const ex = byId.get(id);
@@ -78,7 +78,7 @@ export function buildReport(all: Workout[], byId: Map<string, Exercise>, start: 
   for (const w of strength)
     for (const e of w.entries) {
       const ex = byId.get(e.exerciseId);
-      if (ex) ex.muscles.forEach((m) => (sets[m] += e.sets.filter((s) => s.done).length));
+      if (ex) ex.muscles.forEach((m) => (sets[m] += e.sets.filter(isWork).length));
     }
 
   const notes = inWeek.flatMap((w) => [
@@ -139,13 +139,14 @@ export function reportMarkdown(r: WeekReport, byId: Map<string, Exercise>): stri
     const parts = w.entries
       .map((e) => {
         const ex = byId.get(e.exerciseId);
-        const sets = e.sets.filter((s) => s.done).map((s) => setLabel(s, ex?.type ?? 'weight_reps'));
+        const sets = e.sets.filter(isWork).map((s) => setLabel(s, ex?.type ?? 'weight_reps') + (s.effort ? ` @${s.effort}` : '') + (s.comment ? ` «${s.comment}»` : ''));
         return sets.length ? `${ex?.name ?? e.exerciseId}${ex?.side ? ` (${t(`side.${ex.side}`)})` : ''}: ${sets.join(', ')}` : '';
       })
       .filter(Boolean);
     const mins = Math.round(((w.endedAt ?? w.startedAt) - w.startedAt) / 60000);
     lines.push(`- ${d(w.startedAt, { weekday: 'short', day: '2-digit', month: '2-digit' })} «${w.title}», ${mins} ${t('unit.min')}: ${parts.join('; ')}`);
   }
+  if (r.workouts.some((w) => w.entries.some((e) => e.sets.some((s) => isWork(s) && s.effort)))) lines.push(t('report.md.effort'));
   if (r.compare.length) {
     lines.push('', `## ${t('report.md.compare')}`);
     for (const c of r.compare) {

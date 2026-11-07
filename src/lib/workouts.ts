@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { db, uid, type ExerciseType, type PlanItem, type SetEntry, type Template, type Workout, type WorkoutEntry } from './db';
+import { db, isWork, uid, type ExerciseType, type PlanItem, type SetEntry, type Template, type Workout, type WorkoutEntry } from './db';
 import type { Exercise } from './exercises';
 
 /** First number of a reps target: '8-12' → 8, '10' → 10. */
@@ -63,23 +63,28 @@ export function fillFromPlan(set: SetEntry, entry: WorkoutEntry, type: ExerciseT
 
 export interface Totals {
   exercises: number;
-  sets: number;
-  volume: number; // kg × reps over done sets
+  sets: number; // working sets
+  ticked: number; // all ticked sets incl. warm-up
+  volume: number; // kg × reps over working sets
   durationMs: number;
 }
 
 export function totals(w: Workout): Totals {
   let sets = 0;
+  let ticked = 0;
   let volume = 0;
   for (const e of w.entries)
-    for (const s of e.sets)
-      if (s.done) {
+    for (const s of e.sets) {
+      if (s.done) ticked++;
+      if (isWork(s)) {
         sets++;
         if (s.weight && s.reps) volume += s.weight * s.reps;
       }
+    }
   return {
-    exercises: w.entries.filter((e) => e.sets.some((s) => s.done)).length,
+    exercises: w.entries.filter((e) => e.sets.some(isWork)).length,
     sets,
+    ticked,
     volume: Math.round(volume),
     durationMs: (w.endedAt ?? Date.now()) - w.startedAt,
   };

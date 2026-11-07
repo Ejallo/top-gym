@@ -1,5 +1,5 @@
 // Russian UI strings. Every visible text lives here under a key;
-// a German dictionary (de.ts) with the same keys will be added later.
+// de.ts has the same keys in German.
 export const ru = {
   'app.name': 'TOP GYM',
 
@@ -44,7 +44,7 @@ export const ru = {
 
 МОЯ ЦЕЛЬ И УСЛОВИЯ:
 `,
-  'claude.history': 'МОЯ ИСТОРИЯ ЗА 4 НЕДЕЛИ (подбери веса и объём с учётом неё):\n{lines}',
+  'claude.history': 'МОЯ ИСТОРИЯ ЗА 4 НЕДЕЛИ (подбери веса и объём с учётом неё; разминочные подходы не показаны; @8 — моя усталость после подхода по шкале 1–10, в «» — мой комментарий к подходу):\n{lines}',
   'claude.noHistory': 'Истории тренировок пока нет — подбери стартовые веса осторожно.',
 
   'import.title': 'План от Claude',
@@ -179,6 +179,17 @@ export const ru = {
   'wk.hint.last': 'Прошлый раз:',
   'wk.hint.up': 'попробуй',
   'wk.hint.reps': 'добей',
+  'wk.hint.hold': 'было тяжело — повтори',
+  'wk.warmup': 'разминка',
+  'wk.warmupShort': 'Р',
+  'wk.warmupToggle': 'Разминочный подход (тап — сделать рабочим)',
+  'wk.workToggle': 'Рабочий подход (тап — сделать разминочным)',
+  'wk.effort': 'усталость',
+  'wk.effortTitle': 'Как дался подход',
+  'wk.effortScale': '1 — легко · 10 — до отказа',
+  'wk.effortComment': 'Комментарий к подходу',
+  'wk.effortCommentPh': 'Например: тянуло плечо, последний повтор с читингом',
+  'wk.effortClear': 'Очистить',
   'wk.hint.tap': 'тап — заполнить',
   'wk.rest': 'отдых',
   'wk.reps': 'повт',
@@ -205,6 +216,7 @@ export const ru = {
   'hist.count': '{n} тренировка|{n} тренировки|{n} тренировок|{n} тренировки',
   'hist.line': '{ex} упр · {sets} подх',
   'hist.noSets': 'нет отмеченных подходов',
+  'hist.warmup': 'разм.',
   'hist.deleteConfirm': 'Удалить эту тренировку из истории?',
 
   'cal.month': '{n} тренировка за месяц|{n} тренировки за месяц|{n} тренировок за месяц|{n} тренировки за месяц',
@@ -272,6 +284,7 @@ export const ru = {
   'report.md.workouts': 'Тренировки',
   'report.md.compare': 'Лучший подход в сравнении с прошлой неделей',
   'report.md.was': 'было',
+  'report.md.effort': '_@N — усталость после подхода (1 — легко, 10 — до отказа). Разминочные подходы не включены._',
   'report.md.muscles': 'Подходов на мышцу',
   'report.md.notes': 'Мои заметки',
   'report.md.ask':

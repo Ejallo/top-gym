@@ -1,4 +1,4 @@
-import type { SetEntry, Workout, WorkoutEntry } from './db';
+import { isWork, type SetEntry, type Workout, type WorkoutEntry } from './db';
 import type { Exercise } from './exercises';
 import { repsFloor } from './workouts';
 
@@ -6,8 +6,8 @@ import { repsFloor } from './workouts';
 export interface Hint {
   last: SetEntry[]; // done sets of the previous session
   next: { weight?: number; reps?: number; time?: number };
-  /** 'up' = heavier/longer, 'reps' = same load, one more rep */
-  kind: 'up' | 'reps';
+  /** 'up' = heavier/longer, 'reps' = same load, one more rep, 'hold' = repeat: last time was near failure */
+  kind: 'up' | 'reps' | 'hold';
 }
 
 /** Upper bound of a reps target: '8-12' → 12, '10' → 10. */
@@ -25,15 +25,25 @@ function step(ex: Exercise): number {
 export function lastSets(history: Workout[], exerciseId: string, before: number, skipId: string): SetEntry[] {
   for (const w of history) {
     if (w.id === skipId || !w.endedAt || w.startedAt >= before) continue;
-    const sets = w.entries.filter((e) => e.exerciseId === exerciseId).flatMap((e) => e.sets.filter((s) => s.done));
+    const sets = w.entries.filter((e) => e.exerciseId === exerciseId).flatMap((e) => e.sets.filter(isWork));
     if (sets.length) return sets;
   }
   return [];
 }
 
+/** Average effort (1–10) over sets that have it. */
+function effortOf(sets: SetEntry[]): number | undefined {
+  const v = sets.map((s) => s.effort).filter((x): x is number => !!x);
+  return v.length ? v.reduce((a, x) => a + x, 0) / v.length : undefined;
+}
+
+/** At or above this average effort the last session counts as near failure: repeat instead of adding. */
+export const HARD = 9;
+
 /**
  * Double progression: when every working set hit the top of the rep range, add weight;
- * otherwise keep the weight and add a rep. Time holds grow by 5–10 s. Stretching and cardio get no hint.
+ * otherwise keep the weight and add a rep. If the last session felt near-maximal (effort ≥ 9),
+ * repeat it instead. Time holds grow by 5–10 s. Stretching and cardio get no hint.
  */
 export function progressionHint(entry: WorkoutEntry, ex: Exercise | undefined, last: SetEntry[]): Hint | null {
   if (!ex || !last.length || ex.category === 'stretch') return null;
@@ -44,6 +54,7 @@ export function progressionHint(entry: WorkoutEntry, ex: Exercise | undefined, l
     if (!work.length) return null;
     const minReps = Math.min(...work.map((s) => s.reps!));
     const ceil = repsCeil(entry.plan?.reps) ?? Math.max(...work.map((s) => s.reps!));
+    if ((effortOf(work) ?? 0) >= HARD) return { last, kind: 'hold', next: { weight: top, reps: minReps } };
     if (minReps >= ceil) {
       const weight = Math.round((top + step(ex)) * 4) / 4;
       return { last, kind: 'up', next: { weight, reps: repsFloor(entry.plan?.reps) ?? minReps } };
@@ -52,6 +63,7 @@ export function progressionHint(entry: WorkoutEntry, ex: Exercise | undefined, l
   }
   if (ex.type === 'reps') {
     const best = Math.max(...last.map((s) => s.reps ?? 0));
+    if (best && (effortOf(last) ?? 0) >= HARD) return { last, kind: 'hold', next: { reps: best } };
     return best ? { last, kind: 'reps', next: { reps: best + 1 } } : null;
   }
   if (ex.type === 'time') {
@@ -66,7 +78,7 @@ export function applyHint(entry: WorkoutEntry, hint: Hint): WorkoutEntry {
   return {
     ...entry,
     sets: entry.sets.map((s) =>
-      s.done
+      s.done || s.warmup
         ? s
         : {
             ...s,

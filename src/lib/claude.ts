@@ -1,5 +1,5 @@
 import { t } from '../i18n';
-import { db, uid, type ExerciseType, type PlanItem, type Program, type Template } from './db';
+import { db, isWork, uid, type ExerciseType, type PlanItem, type Program, type Template } from './db';
 import { allExercises, exercisesChanged, searchFull, type Exercise } from './exercises';
 import { addFromFull } from '../components/FullSearch';
 import { MUSCLES, type Muscle } from './muscles';
@@ -25,26 +25,28 @@ export async function historyText(days = 28): Promise<string> {
         .map((e) => {
           const ex = byId.get(e.exerciseId);
           const sets = e.sets
-            .filter((s) => s.done)
-            .map((s) =>
-              s.weight && s.reps ? `${s.weight}×${s.reps}` : s.reps ? `${s.reps}` : s.time ? `${s.time}s${s.distance ? `/${s.distance}km` : ''}` : '✓',
+            .filter(isWork)
+            .map(
+              (s) =>
+                (s.weight && s.reps ? `${s.weight}×${s.reps}` : s.reps ? `${s.reps}` : s.time ? `${s.time}s${s.distance ? `/${s.distance}km` : ''}` : '✓') +
+                (s.effort ? `@${s.effort}` : '') +
+                (s.comment ? ` «${s.comment}»` : ''),
             );
           if (!sets.length) return '';
           return `${ex?.name ?? e.exerciseId}: ${sets.join(', ')}${e.note ? ` (${e.note})` : ''}`;
         })
         .filter(Boolean);
-      return `- ${dateKey(w.startedAt)} «${w.title}», ${Math.round(((w.endedAt ?? w.startedAt) - w.startedAt) / 60000)} мин: ${parts.join('; ')}${w.note ? ` | ${w.note}` : ''}`;
+      return `- ${dateKey(w.startedAt)} «${w.title}», ${Math.round(((w.endedAt ?? w.startedAt) - w.startedAt) / 60000)} ${t('unit.min')}: ${parts.join('; ')}${w.note ? ` | ${w.note}` : ''}`;
     })
     .join('\n');
 }
 
-const CAT_MARK = { rehab: 'реаб.', stretch: 'растяжка', yoga: 'йога' } as const;
 
 /** Full text the user pastes into Claude: rules, format, catalog, optional history. */
 export async function buildPrompt(withHistory: boolean): Promise<string> {
   const list = await allExercises();
   const catalog = list
-    .map((e) => `${e.id} | ${e.name} | ${e.en} | ${t(`group.${e.group}`)}${e.category ? ` (${CAT_MARK[e.category]})` : ''} | ${TYPE_CODE[e.type]}`)
+    .map((e) => `${e.id} | ${e.name} | ${e.en} | ${t(`group.${e.group}`)}${e.category ? ` (${t(`cat.${e.category}`).toLowerCase()})` : ''} | ${TYPE_CODE[e.type]}`)
     .join('\n');
   const history = withHistory ? await historyText() : '';
   return t('claude.prompt', {
@@ -103,6 +105,7 @@ const WEEKDAYS: Record<string, number> = {
   mon: 1, monday: 1, пн: 1, понедельник: 1, tue: 2, tuesday: 2, вт: 2, вторник: 2, wed: 3, wednesday: 3, ср: 3, среда: 3,
   thu: 4, thursday: 4, чт: 4, четверг: 4, fri: 5, friday: 5, пт: 5, пятница: 5, sat: 6, saturday: 6, сб: 6, суббота: 6,
   sun: 7, sunday: 7, вс: 7, воскресенье: 7, mo: 1, di: 2, mi: 3, do: 4, fr: 5, sa: 6, so: 7,
+  montag: 1, dienstag: 2, mittwoch: 3, donnerstag: 4, freitag: 5, samstag: 6, sonntag: 7,
 };
 
 function weekdayOf(v: unknown): number | undefined {

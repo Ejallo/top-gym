@@ -35,6 +35,7 @@ export function WorkoutScreen({
   const [noteFor, setNoteFor] = useState<number | null>(null);
   const [summary, setSummary] = useState(false);
   const [hold, setHold] = useState<{ i: number; k: number } | null>(null);
+  const [effortFor, setEffortFor] = useState<{ i: number; k: number } | null>(null);
   const editingFinished = !!initial.endedAt;
   const now = useNow(1000);
   // Finished workouts, newest first: source of "last time" for the progression hint
@@ -68,16 +69,28 @@ export function WorkoutScreen({
         sets: e.sets.map((s, j) => {
           if (j !== k) return s;
           if (s.done) return { ...s, done: false };
-          return { ...fillFromPlan(s, e, ex?.type ?? 'weight_reps', e.sets[k - 1]), done: true };
+          // A working set copies the previous working set (not the lighter warm-up before it)
+          const prev = s.warmup ? e.sets[k - 1] : e.sets.slice(0, k).reverse().find((x) => !x.warmup);
+          const filled = s.warmup ? { ...s, weight: s.weight ?? prev?.weight, reps: s.reps ?? prev?.reps } : fillFromPlan(s, e, ex?.type ?? 'weight_reps', prev);
+          return { ...filled, done: true };
         }),
       };
     });
 
   const addSet = (i: number) =>
     setEntry(i, (e) => {
-      const last = e.sets[e.sets.length - 1];
+      const last = [...e.sets].reverse().find((x) => !x.warmup);
       return { ...e, sets: [...e.sets, { weight: last?.weight, reps: last?.reps, time: last?.time, distance: last?.distance, done: false }] };
     });
+  /** Warm-up set goes in after the existing warm-ups, before the working sets. */
+  const addWarmup = (i: number) =>
+    setEntry(i, (e) => {
+      const at = e.sets.findIndex((x) => !x.warmup);
+      const n = at < 0 ? e.sets.length : at;
+      return { ...e, sets: [...e.sets.slice(0, n), { done: false, warmup: true }, ...e.sets.slice(n)] };
+    });
+  const toggleWarmup = (i: number, k: number) =>
+    setEntry(i, (e) => ({ ...e, sets: e.sets.map((s, j) => (j === k ? { ...s, warmup: !s.warmup || undefined, effort: undefined } : s)) }));
   const removeSet = (i: number) => setEntry(i, (e) => ({ ...e, sets: e.sets.length > 1 ? e.sets.slice(0, -1) : e.sets }));
   const moveEntry = (i: number, d: -1 | 1) =>
     setW((x) => {
@@ -126,7 +139,7 @@ export function WorkoutScreen({
         aria-label={t('wk.title')}
       />
       <div className="m muted" style={{ marginTop: 6 }}>
-        {t('wk.progress', { sets: tt.sets, total: w.entries.reduce((a, e) => a + e.sets.length, 0) })}
+        {t('wk.progress', { sets: tt.ticked, total: w.entries.reduce((a, e) => a + e.sets.length, 0) })}
         {tt.volume > 0 && ` · ${num(tt.volume)} ${t('unit.kg')}`}
       </div>
 
@@ -191,13 +204,23 @@ export function WorkoutScreen({
             </div>
             {e.sets.map((s, k) => {
               const p = e.plan;
-              const repsPh = p?.reps ?? '';
+              const repsPh = s.warmup ? '' : (p?.reps ?? '');
+              const workNo = e.sets.slice(0, k + 1).filter((x) => !x.warmup).length;
+              const effortRow = s.done && !s.warmup && type !== 'cardio' && w.kind !== 'mobility';
               return (
-                <div key={k} className={'set-grid ' + type + (s.done ? ' done' : '')}>
-                  <span className="set-n">{k + 1}</span>
+                <div key={k}>
+                <div className={'set-grid ' + type + (s.done ? ' done' : '') + (s.warmup ? ' warm' : '')}>
+                  <button
+                    className="set-n"
+                    onClick={() => toggleWarmup(i, k)}
+                    aria-label={s.warmup ? t('wk.warmupToggle') : t('wk.workToggle')}
+                    title={s.warmup ? t('wk.warmupToggle') : t('wk.workToggle')}
+                  >
+                    {s.warmup ? t('wk.warmupShort') : workNo}
+                  </button>
                   {type === 'weight_reps' && (
                     <>
-                      <NumInput value={s.weight} decimal placeholder={p?.weight ? String(p.weight) : '—'} onChange={(v) => setSet(i, k, { weight: v })} />
+                      <NumInput value={s.weight} decimal placeholder={p?.weight && !s.warmup ? String(p.weight) : '—'} onChange={(v) => setSet(i, k, { weight: v })} />
                       <NumInput value={s.reps} placeholder={repsPh || '—'} onChange={(v) => setSet(i, k, { reps: v })} />
                     </>
                   )}
@@ -233,15 +256,30 @@ export function WorkoutScreen({
                     ✓
                   </button>
                 </div>
+                {effortRow && (
+                  <button className={'set-effort m' + (s.effort ? ' on' : '')} onClick={() => setEffortFor({ i, k })}>
+                    {s.effort ? (
+                      <>
+                        {t('wk.effort')} <b>{s.effort}/10</b>
+                        {s.comment && <span className="muted"> · {s.comment}</span>}
+                      </>
+                    ) : (
+                      <span className="muted">+ {t('wk.effort')}{s.comment ? ` · ${s.comment}` : ''}</span>
+                    )}
+                  </button>
+                )}
+                </div>
               );
             })}
             <div className="wk-entry-tools m">
               <button onClick={() => addSet(i)}>+ {t('wk.addSet')}</button>
+              {w.kind !== 'mobility' && type !== 'cardio' && <button onClick={() => addWarmup(i)}>+ {t('wk.warmup')}</button>}
               {e.sets.length > 1 && (
                 <button onClick={() => removeSet(i)} aria-label={t('wk.removeSet')}>
                   −
                 </button>
               )}
+              <span className="tools-break" />
               <button onClick={() => setNoteFor(i)}>✎ {t('wk.note')}</button>
               <span style={{ flex: 1 }} />
               <button onClick={() => moveEntry(i, -1)} aria-label="up">↑</button>
@@ -297,6 +335,17 @@ export function WorkoutScreen({
           onClose={() => setHold(null)}
         />
       )}
+      {effortFor && w.entries[effortFor.i]?.sets[effortFor.k] && (
+        <EffortSheet
+          title={byId.get(w.entries[effortFor.i].exerciseId)?.name ?? ''}
+          set={w.entries[effortFor.i].sets[effortFor.k]}
+          onSave={(effort, comment) => {
+            setSet(effortFor.i, effortFor.k, { effort, comment });
+            setEffortFor(null);
+          }}
+          onClose={() => setEffortFor(null)}
+        />
+      )}
       {noteFor !== null && (
         <NoteSheet
           title={byId.get(w.entries[noteFor]?.exerciseId)?.name ?? ''}
@@ -331,10 +380,61 @@ function HintLine({ hint, done, onApply }: { hint: Hint | null; done: boolean; o
         {t('wk.hint.last')} {last}
       </span>
       <span className="lime">
-        → {t(hint.kind === 'up' ? 'wk.hint.up' : 'wk.hint.reps')} {fmtSet(hint.next)}
+        → {t(hint.kind === 'up' ? 'wk.hint.up' : hint.kind === 'hold' ? 'wk.hint.hold' : 'wk.hint.reps')} {fmtSet(hint.next)}
         {!done && <span className="muted"> · {t('wk.hint.tap')}</span>}
       </span>
     </button>
+  );
+}
+
+/** Effort 1–10 and an optional comment for one ticked set. */
+function EffortSheet({
+  title,
+  set,
+  onSave,
+  onClose,
+}: {
+  title: string;
+  set: SetEntry;
+  onSave: (effort?: number, comment?: string) => void;
+  onClose: () => void;
+}) {
+  const [v, setV] = useState(set.effort);
+  const [c, setC] = useState(set.comment ?? '');
+  return (
+    <div className="sheet">
+      <div className="sheet-in">
+        <button className="m muted" onClick={onClose} style={{ marginBottom: 12 }}>
+          ← {t('ex.close')}
+        </button>
+        <div className="m muted">// {t('wk.effortTitle')}</div>
+        <div className="h h-m" style={{ marginTop: 6 }}>
+          {title}
+        </div>
+        <div className="effort-grid">
+          {Array.from({ length: 10 }, (_, n) => n + 1).map((n) => (
+            <button key={n} className={'effort-chip' + (v === n ? ' on' : '') + (n >= 9 ? ' hard' : '')} onClick={() => setV(v === n ? undefined : n)}>
+              {n}
+            </button>
+          ))}
+        </div>
+        <div className="m muted" style={{ marginTop: 8 }}>
+          {t('wk.effortScale')}
+        </div>
+        <label className="field">
+          <span className="m muted">// {t('wk.effortComment')}</span>
+          <textarea rows={3} value={c} placeholder={t('wk.effortCommentPh')} onChange={(e) => setC(e.target.value)} />
+        </label>
+        <button className="btn lime" style={{ marginTop: 12 }} onClick={() => onSave(v, c.trim() || undefined)}>
+          {t('custom.save')}
+        </button>
+        {(set.effort || set.comment) && (
+          <button className="link" style={{ display: 'block', margin: '14px auto 0' }} onClick={() => onSave(undefined, undefined)}>
+            {t('wk.effortClear')}
+          </button>
+        )}
+      </div>
+    </div>
   );
 }
 
