@@ -15,7 +15,7 @@ const TABLES = ['customExercises', 'templates', 'programs', 'workouts', 'kv'] as
 type Tbl = (typeof TABLES)[number];
 const SYNCED_KV = new Set(['weeklyGoal', 'rehab', 'rehabTicks']); // other kv keys are device-local
 
-const LS = { session: 'tg.session', user: 'tg.user', seq: 'tg.seq', outbox: 'tg.outbox', photos: 'tg.photosUp', pair: 'tg.pair' };
+const LS = { session: 'tg.session', user: 'tg.user', seq: 'tg.seq', outbox: 'tg.outbox', photos: 'tg.photosUp', pair: 'tg.pair', full: 'tg.fullPush' };
 
 type Outbox = Record<string, { at: number; deleted: boolean }>; // key: `${tbl}|${id}`
 
@@ -76,13 +76,16 @@ function mark(tbl: Tbl, id: string, deleted: boolean) {
   scheduleSync();
 }
 
-/** Every local record goes to the outbox: used on first sign-in and after restoring a backup. */
-export async function markAllDirty() {
+/**
+ * Every local record goes to the outbox. at = 1 (the default) uploads only what the server doesn't
+ * have yet: any version already there is newer and wins, so stale copies never overwrite other devices.
+ * Pass Date.now() to make this device's data win (e.g. after restoring a backup).
+ */
+export async function markAllDirty(at = 1) {
   const box = readJson<Outbox>(LS.outbox, {});
-  const now = Date.now();
   for (const tbl of TABLES) {
     const keys = (await db.table(tbl).toCollection().primaryKeys()) as string[];
-    for (const id of keys) if (tbl !== 'kv' || SYNCED_KV.has(id)) box[`${tbl}|${id}`] ??= { at: now, deleted: false };
+    for (const id of keys) if (tbl !== 'kv' || SYNCED_KV.has(id)) box[`${tbl}|${id}`] ??= { at, deleted: false };
   }
   localStorage.setItem(LS.outbox, JSON.stringify(box));
   setStatus({ pending: Object.keys(box).length });
@@ -249,11 +252,16 @@ export function syncNow(): Promise<void> {
   running = (async () => {
     setStatus({ state: 'syncing' });
     try {
+      // Once per device: queue everything that may never have reached the server (an earlier
+      // sign-in could finish in another browser context, so this device's data was never uploaded)
+      const firstFull = !localStorage.getItem(LS.full);
+      if (firstFull) await markAllDirty();
       do {
         again = false;
         await push();
         await pull();
       } while (again);
+      if (firstFull) localStorage.setItem(LS.full, '1');
       const now = Date.now();
       localStorage.setItem('tg.lastSync', String(now));
       setStatus({ state: 'idle', lastSync: now });
@@ -361,7 +369,7 @@ export async function takeLoginFromUrl(): Promise<'ok' | 'error' | 'elsewhere' |
 }
 
 function signOutLocal() {
-  for (const k of [LS.session, LS.user, LS.seq, LS.outbox, LS.photos, 'tg.lastSync']) localStorage.removeItem(k);
+  for (const k of [LS.session, LS.user, LS.seq, LS.outbox, LS.photos, LS.full, 'tg.lastSync']) localStorage.removeItem(k);
   setStatus({ account: null, state: 'off', pending: 0, lastSync: undefined });
 }
 
