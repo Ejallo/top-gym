@@ -120,8 +120,6 @@ export function Home({ onSettings, onOpenWorkout }: { onSettings: () => void; on
           <span className="m">{rehab ? (rehabToday ? rehabToday.day.label : t('rehab.done')) : t('rehab.tileEmpty')}</span>
           <b className="h h-m">{t('rehab.title')} →</b>
         </button>
-      </div>
-      <div className="tiles">
         {(['x', 'y'] as const).map((f) => (
           <button key={f} className={'tile f' + f} onClick={() => setSection(f)}>
             <span className="m">{t('folder.count', { n: folderCounts?.[f] ?? 0 })}</span>
