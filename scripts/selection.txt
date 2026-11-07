@@ -415,7 +415,7 @@ push to run
 Scissor Jumps
 Semi Squat Jump
 kettlebell thruster
-# == stretch (29) — logged as hold time; '| side' = each side separately
+# == stretch (47 + 8 pictograms in build-base.mjs) — logged as hold time; '| side' = each side separately
 hamstring stretch | side
 leg up hamstring stretch | side
 runners stretch | side
@@ -445,6 +445,24 @@ overhead triceps stretch | side
 side wrist pull stretch | side
 neck side stretch | side
 side push neck stretch | side
+assisted prone lying quads stretch | side
+assisted lying glutes stretch | side
+assisted lying calves stretch | side
+calf push stretch with hands against wall | side
+standing hamstring and calf stretch with strap | side
+weighted stretch lunge | side
+chair leg extended stretch | side
+Assisted Side-Lying Adductor Stretch | side
+peroneals stretch | side
+circles knee stretch
+spine twist | side
+behind head chest stretch
+back pec stretch
+triceps stretch | side
+wrist circles
+roller back stretch
+roller hip stretch
+roller side lat stretch
 # == yoga (6 with gif; 17 more as pictograms in build-base.mjs)
 upward facing dog
 sphinx
