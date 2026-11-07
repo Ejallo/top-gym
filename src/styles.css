@@ -367,3 +367,61 @@ button.set-n { height: 42px; padding: 0; font-size: 14px; }
 .cal .day { position: relative; }
 .mob-dot { position: absolute; right: 4px; bottom: 4px; width: 7px; height: 7px; border-radius: 50%; background: var(--orange); outline: 1.5px solid var(--bg); }
 .mob-dot.yoga { background: var(--violet); }
+
+/* Home tiles: yoga and rehab open their own screens */
+.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 14px; }
+.tile { display: flex; flex-direction: column; justify-content: space-between; gap: 18px; min-height: 92px; padding: 12px; text-align: left; border: 1.5px solid var(--line-2); }
+.tile.yoga { border-color: var(--violet); }
+.tile.yoga .m, .tile.yoga b { color: var(--violet); }
+.tile.rehab { border-color: var(--cyan); }
+.tile.rehab .m, .tile.rehab b { color: var(--cyan); }
+.tile .m { text-transform: none; }
+.mob-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.mob-grid .mob-card { width: auto; }
+
+/* Rehab screen */
+.prog-line { display: flex; align-items: center; gap: 10px; margin-top: 14px; }
+.prog-bar { flex: 1; height: 8px; background: var(--line); }
+.prog-bar span { display: block; height: 100%; background: var(--cyan); }
+.rehab-today { margin-top: 14px; padding: 14px; border: 1.5px solid var(--cyan); }
+.rehab-today > .m:first-child { color: var(--cyan); }
+.rehab-today.kind-rest { border-color: var(--line-2); }
+.rehab-today.kind-rest > .m:first-child { color: var(--muted); }
+.rehab-list { margin: 8px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; font-family: var(--font-mono); font-size: 13px; line-height: 1.45; color: #cfcfcf; }
+.rehab-list li::marker { color: var(--cyan); }
+.rehab-list.pink-dots li::marker { color: var(--pink); }
+.rehab-link { text-align: left; color: var(--text); text-decoration: underline; text-decoration-color: var(--cyan); text-underline-offset: 3px; font: inherit; }
+.rehab-note-b { color: var(--orange); font-weight: 700; }
+.pain-rules { display: flex; flex-direction: column; gap: 4px; }
+.pain-rule { display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; background: var(--card); border-left: 4px solid; }
+.pain-rule.ok { border-color: var(--lime); }
+.pain-rule.ok b { color: var(--lime); }
+.pain-rule.warn { border-color: var(--orange); }
+.pain-rule.warn b { color: var(--orange); }
+.pain-rule.stop { border-color: var(--pink); }
+.pain-rule.stop b { color: var(--pink); }
+.rehab-rule { margin-top: 8px; padding: 10px 12px; border: 1px dashed var(--orange); }
+.st1 { --st: var(--lime); } .st2 { --st: var(--cyan); } .st3 { --st: var(--violet); } .st4 { --st: var(--orange); }
+.stage-tag { color: var(--st); }
+.rehab-week { margin-top: 4px; background: var(--card); border-left: 4px solid var(--st); }
+.rehab-week-head { width: 100%; display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; padding: 12px; text-align: left; }
+.rehab-week-note { padding: 0 12px 8px; }
+.rehab-day { display: grid; grid-template-columns: 28px 64px 1fr; gap: 10px; padding: 10px 12px; border-top: 1px solid var(--line); }
+.rehab-day.today { background: rgba(0, 229, 255, 0.08); box-shadow: inset 3px 0 0 var(--cyan); }
+.rehab-day.done .rehab-day-body { opacity: 0.45; }
+.rehab-check { width: 26px; height: 26px; border: 1.5px solid var(--line-2); color: var(--ink); font-weight: 900; }
+.rehab-check.on { background: var(--cyan); border-color: var(--cyan); }
+.rehab-day-date { display: flex; flex-direction: column; gap: 2px; }
+.kind-tag { display: inline-block; font-family: var(--font-mono); font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 6px; background: var(--cyan); color: var(--ink); }
+.kind-tag.kind-light { background: transparent; border: 1px solid var(--line-2); color: var(--muted); }
+.kind-tag.kind-rest { background: var(--line); color: var(--muted); }
+.kind-tag.kind-run { background: var(--lime); }
+.kind-tag.kind-sport { background: var(--pink); }
+.kind-tag.kind-test { background: var(--orange); }
+.stage-block { margin-top: 10px; padding-top: 10px; border-top: 3px solid var(--st); }
+.rehab-thumb { width: 72px; height: 40px; object-fit: contain; flex: none; background: #111; }
+.rehab-fig { display: block; width: 100%; margin-top: 12px; background: #111; }
+.rehab-feel { display: flex; flex-direction: column; gap: 4px; margin-top: 12px; padding: 10px 12px; border-left: 4px solid var(--lime); background: var(--card); }
+.rehab-feel b { color: var(--lime); }
+.rehab-var { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 12px; }
+.rehab-var p { margin: 6px 0 0; }

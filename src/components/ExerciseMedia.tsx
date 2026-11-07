@@ -1,12 +1,19 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import type { Exercise } from '../lib/exercises';
 import { t } from '../i18n';
 
-/** Object URLs for blobs, revoked when the list changes or the component unmounts. */
+// One object URL per blob for the whole session. Revoking on unmount broke images under StrictMode
+// (the effect cleanup ran while the memoised URLs were still in use); photos are few, so keep them.
+const blobUrls = new WeakMap<Blob, string>();
+const urlOf = (b: Blob) => {
+  let u = blobUrls.get(b);
+  if (!u) blobUrls.set(b, (u = URL.createObjectURL(b)));
+  return u;
+};
+
+/** Object URLs for blobs. */
 export function useBlobUrls(blobs: Blob[]): string[] {
-  const urls = useMemo(() => blobs.map((b) => URL.createObjectURL(b)), [blobs]);
-  useEffect(() => () => urls.forEach((u) => URL.revokeObjectURL(u)), [urls]);
-  return urls;
+  return useMemo(() => blobs.map(urlOf), [blobs]);
 }
 
 /**

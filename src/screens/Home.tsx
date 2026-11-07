@@ -10,7 +10,10 @@ import { Sheet } from '../components/Sheet';
 import { History, WorkoutView } from './History';
 import { WorkoutRow } from '../components/WorkoutRow';
 import { ProgramBlock } from '../components/ProgramBlock';
-import { MobilityBlock } from '../components/MobilityBlock';
+import { YogaScreen } from './Yoga';
+import { RehabScreen } from './Rehab';
+import { mobilityThisWeek } from '../lib/mobility';
+import { dayFor, isoDate, useRehab } from '../lib/rehab';
 import { activeOf, usePrograms } from '../lib/programs';
 import { ImportPlan } from './ImportPlan';
 import { WeeklyReport } from './WeeklyReport';
@@ -38,11 +41,18 @@ export function Home({ onSettings, onOpenWorkout }: { onSettings: () => void; on
   const [menu, setMenu] = useState<Template | null>(null);
   const [history, setHistory] = useState(false);
   const [view, setView] = useState<Workout | null>(null);
+  const [section, setSection] = useState<'yoga' | 'rehab' | null>(null);
+  const rehab = useRehab();
+  const rehabToday = rehab ? dayFor(rehab, isoDate(now)) : null;
 
   const start = async (tpl?: Template) => {
     if (active) return onOpenWorkout(active);
     onOpenWorkout(await startWorkout(tpl?.name ?? t('home.freeTitle'), tpl));
   };
+
+  if (section === 'yoga')
+    return <YogaScreen workouts={workouts ?? []} canStart={!active} onOpen={onOpenWorkout} onBack={() => setSection(null)} />;
+  if (section === 'rehab') return <RehabScreen active={active} onOpen={onOpenWorkout} onBack={() => setSection(null)} />;
 
   return (
     <div className="screen">
@@ -93,7 +103,16 @@ export function Home({ onSettings, onOpenWorkout }: { onSettings: () => void; on
         </div>
       )}
 
-      {workouts && <MobilityBlock workouts={workouts} canStart={!active} onOpen={onOpenWorkout} />}
+      <div className="tiles">
+        <button className="tile yoga" onClick={() => setSection('yoga')}>
+          <span className="m">{t('yoga.week', { n: mobilityThisWeek(workouts ?? []) })}</span>
+          <b className="h h-m">{t('yoga.title')} →</b>
+        </button>
+        <button className="tile rehab" onClick={() => setSection('rehab')}>
+          <span className="m">{rehab ? (rehabToday ? rehabToday.day.label : t('rehab.done')) : t('rehab.tileEmpty')}</span>
+          <b className="h h-m">{t('rehab.title')} →</b>
+        </button>
+      </div>
 
       <div className="row sec">
         <span className="m muted">// {t('home.templates')}</span>

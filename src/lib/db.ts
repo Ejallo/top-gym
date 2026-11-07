@@ -94,6 +94,8 @@ export interface Workout {
   entries: WorkoutEntry[];
   /** Stretching/yoga session: run in the hold player, counted apart from strength workouts */
   kind?: 'mobility';
+  /** Rehab program day (YYYY-MM-DD) this session belongs to */
+  rehabDay?: string;
 }
 
 class TopGymDB extends Dexie {

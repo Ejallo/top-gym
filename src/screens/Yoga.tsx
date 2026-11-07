@@ -4,9 +4,10 @@ import { db, type PlanItem, type Template, type Workout } from '../lib/db';
 import { useExercises } from '../lib/exercises';
 import { unlockAudio } from '../lib/hold';
 import { ROUTINES, mobilityThisWeek, planMinutes, routineItems, startMobility, useMobilityTemplates } from '../lib/mobility';
-import { Sheet } from './Sheet';
-import { ExerciseMedia } from './ExerciseMedia';
-import { TemplateEditor } from './TemplateEditor';
+import { Sheet } from '../components/Sheet';
+import { ExerciseMedia } from '../components/ExerciseMedia';
+import { TemplateEditor } from '../components/TemplateEditor';
+import { Header } from '../components/Header';
 
 /** What a card opens: a built-in routine or an own one (template). */
 interface Card {
@@ -17,8 +18,8 @@ interface Card {
   template?: Template;
 }
 
-/** Home block: stretching and yoga routines, this week's mobility count, own routines. */
-export function MobilityBlock({ workouts, canStart, onOpen }: { workouts: Workout[]; canStart: boolean; onOpen: (w: Workout) => void }) {
+/** Yoga screen (opened from a Home tile): yoga and stretching routines, own routines, this week's count. */
+export function YogaScreen({ workouts, canStart, onOpen, onBack }: { workouts: Workout[]; canStart: boolean; onOpen: (w: Workout) => void; onBack: () => void }) {
   const list = useExercises();
   const own = useMobilityTemplates();
   const [open, setOpen] = useState<Card | null>(null);
@@ -45,25 +46,34 @@ export function MobilityBlock({ workouts, canStart, onOpen }: { workouts: Workou
     onOpen(await startMobility(c.title, c.items, c.template?.id));
   };
 
-  return (
+  const section = (cat: Card['cat']) => (
     <>
-      <div className="row sec">
-        <span className="m muted">// {t('mob.title', { n: count })}</span>
-        <button className="m lime" onClick={() => setEditing('new')}>
-          + {t('mob.own')}
-        </button>
+      <div className="m muted sec">// {t(`cat.${cat}`)}</div>
+      <div className="mob-grid">
+        {cards
+          .filter((c) => c.cat === cat)
+          .map((c) => (
+            <button key={c.key} className={'mob-card ' + c.cat} onClick={() => setOpen(c)}>
+              <span className="m">{t('mob.min', { n: planMinutes(c.items) })}</span>
+              <b className="h h-s">{c.title}</b>
+              <span className="m muted">{t('mob.count', { n: c.items.length })}</span>
+            </button>
+          ))}
       </div>
-      <div className="mob-row">
-        {cards.map((c) => (
-          <button key={c.key} className={'mob-card ' + c.cat} onClick={() => setOpen(c)}>
-            <span className="m">
-              {t(`cat.${c.cat}`)} · {t('mob.min', { n: planMinutes(c.items) })}
-            </span>
-            <b className="h h-s">{c.title}</b>
-            <span className="m muted">{t('mob.count', { n: c.items.length })}</span>
-          </button>
-        ))}
-      </div>
+    </>
+  );
+
+  return (
+    <div className="screen">
+      <button className="m muted" onClick={onBack} style={{ marginBottom: 12 }}>
+        {t('settings.back')}
+      </button>
+      <Header title={t('yoga.title')} sub={`// ${t('yoga.week', { n: count })}`} />
+      {section('yoga')}
+      {section('stretch')}
+      <button className="dash-btn m" onClick={() => setEditing('new')}>
+        + {t('mob.newTitle')}
+      </button>
 
       {open && (
         <Sheet onClose={() => setOpen(null)}>
@@ -124,6 +134,6 @@ export function MobilityBlock({ workouts, canStart, onOpen }: { workouts: Workou
         </Sheet>
       )}
       {editing && <TemplateEditor kind="mobility" edit={editing === 'new' ? undefined : editing} onClose={() => setEditing(null)} />}
-    </>
+    </div>
   );
 }
