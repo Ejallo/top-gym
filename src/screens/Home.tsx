@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { t } from '../i18n';
-import { db, type Template, type Workout } from '../lib/db';
+import { db, type Folder, type Template, type Workout } from '../lib/db';
 import { fmt, isoWeek } from '../lib/dates';
 import { clock, startWorkout, totals, useNow } from '../lib/workouts';
 import { Header } from '../components/Header';
 import { TemplateEditor } from '../components/TemplateEditor';
-import { Sheet } from '../components/Sheet';
+import { TemplateMenu } from '../components/TemplateMenu';
+import { FolderScreen } from './Folder';
 import { History, WorkoutView } from './History';
 import { WorkoutRow } from '../components/WorkoutRow';
 import { ProgramBlock } from '../components/ProgramBlock';
@@ -24,7 +25,12 @@ export function Home({ onSettings, onOpenWorkout }: { onSettings: () => void; on
   const now = new Date();
   const sub = `// ${fmt(now, { weekday: 'short', day: '2-digit', month: 'short' })} · ${t('home.week', { n: isoWeek(now) })}`;
   // Program days are templates too, but they live under the program block
-  const templates = useLiveQuery(async () => (await db.templates.orderBy('name').toArray()).filter((x) => !x.programId && x.kind !== 'mobility'), []);
+  const templates = useLiveQuery(async () => (await db.templates.orderBy('name').toArray()).filter((x) => !x.programId && x.kind !== 'mobility' && !x.folder), []);
+  const folderCounts = useLiveQuery(async () => {
+    const c = { x: 0, y: 0 };
+    for (const tpl of await db.templates.toArray()) if (tpl.folder) c[tpl.folder]++;
+    return c;
+  }, []);
   const programs = usePrograms();
   const program = activeOf(programs);
   const [importing, setImporting] = useState(false);
@@ -41,7 +47,7 @@ export function Home({ onSettings, onOpenWorkout }: { onSettings: () => void; on
   const [menu, setMenu] = useState<Template | null>(null);
   const [history, setHistory] = useState(false);
   const [view, setView] = useState<Workout | null>(null);
-  const [section, setSection] = useState<'yoga' | 'rehab' | null>(null);
+  const [section, setSection] = useState<'yoga' | 'rehab' | Folder | null>(null);
   const rehab = useRehab();
   const rehabToday = rehab ? dayFor(rehab, isoDate(now)) : null;
 
@@ -52,6 +58,8 @@ export function Home({ onSettings, onOpenWorkout }: { onSettings: () => void; on
 
   if (section === 'yoga')
     return <YogaScreen workouts={workouts ?? []} canStart={!active} onOpen={onOpenWorkout} onBack={() => setSection(null)} />;
+  if (section === 'x' || section === 'y')
+    return <FolderScreen folder={section} hasActive={!!active} onStart={(tpl) => void start(tpl)} onBack={() => setSection(null)} />;
   if (section === 'rehab') return <RehabScreen active={active} onOpen={onOpenWorkout} onBack={() => setSection(null)} />;
 
   return (
@@ -113,6 +121,14 @@ export function Home({ onSettings, onOpenWorkout }: { onSettings: () => void; on
           <b className="h h-m">{t('rehab.title')} →</b>
         </button>
       </div>
+      <div className="tiles">
+        {(['x', 'y'] as const).map((f) => (
+          <button key={f} className={'tile f' + f} onClick={() => setSection(f)}>
+            <span className="m">{t('folder.count', { n: folderCounts?.[f] ?? 0 })}</span>
+            <b className="h h-m">{t(`folder.${f}`)} →</b>
+          </button>
+        ))}
+      </div>
 
       <div className="row sec">
         <span className="m muted">// {t('home.templates')}</span>
@@ -146,47 +162,20 @@ export function Home({ onSettings, onOpenWorkout }: { onSettings: () => void; on
       ))}
 
       {menu && (
-        <Sheet onClose={() => setMenu(null)}>
-          <div className="m muted">// {t('home.template')}</div>
-          <div className="h h-l" style={{ marginTop: 6 }}>
-            {menu.name}
-          </div>
-          <p className="m muted" style={{ marginTop: 8 }}>
-            {t('home.tplCount', { n: menu.items.length, sets: menu.items.reduce((a, x) => a + (x.sets || 0), 0) })}
-          </p>
-          <button
-            className="btn lime"
-            style={{ marginTop: 18 }}
-            onClick={() => {
-              const tpl = menu;
-              setMenu(null);
-              void start(tpl);
-            }}
-          >
-            {active ? t('home.continueActive') : t('home.startTemplate')} →
-          </button>
-          <div className="btn-row" style={{ marginTop: 8 }}>
-            <button
-              className="btn ghost small"
-              onClick={() => {
-                setEditing(menu);
-                setMenu(null);
-              }}
-            >
-              {t('ex.edit')}
-            </button>
-            <button
-              className="btn ghost small pink-text"
-              onClick={async () => {
-                if (!confirm(t('home.deleteTemplate', { name: menu.name }))) return;
-                await db.templates.delete(menu.id);
-                setMenu(null);
-              }}
-            >
-              {t('home.delete')}
-            </button>
-          </div>
-        </Sheet>
+        <TemplateMenu
+          tpl={menu}
+          hasActive={!!active}
+          onStart={() => {
+            const tpl = menu;
+            setMenu(null);
+            void start(tpl);
+          }}
+          onEdit={() => {
+            setEditing(menu);
+            setMenu(null);
+          }}
+          onClose={() => setMenu(null)}
+        />
       )}
       {editing && <TemplateEditor edit={editing === 'new' ? undefined : editing} onClose={() => setEditing(null)} />}
       {report !== null && <WeeklyReport start={report} onClose={() => setReport(null)} />}

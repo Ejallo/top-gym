@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { t } from '../i18n';
-import { db, uid, type PlanItem, type Template } from '../lib/db';
+import { db, uid, type Folder, type PlanItem, type Template } from '../lib/db';
 import { useExercises } from '../lib/exercises';
 import { Sheet } from './Sheet';
 import { ExercisePicker } from './ExercisePicker';
@@ -8,7 +8,7 @@ import { ExerciseMedia } from './ExerciseMedia';
 import { NumInput } from './NumInput';
 
 /** Create or edit a workout template, or (kind = mobility) an own stretching/yoga routine of timed holds. */
-export function TemplateEditor({ edit, kind, onClose }: { edit?: Template; kind?: 'mobility'; onClose: () => void }) {
+export function TemplateEditor({ edit, kind, folder, onClose }: { edit?: Template; kind?: 'mobility'; folder?: Folder; onClose: () => void }) {
   const mobility = (kind ?? edit?.kind) === 'mobility';
   const list = useExercises();
   const [name, setName] = useState(edit?.name ?? '');
@@ -39,6 +39,7 @@ export function TemplateEditor({ edit, kind, onClose }: { edit?: Template; kind?
       items: saved,
       createdAt: edit?.createdAt ?? Date.now(),
       ...(mobility && { kind: 'mobility' as const }),
+      ...(folder && { folder }),
     });
     onClose();
   };

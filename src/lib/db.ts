@@ -47,7 +47,11 @@ export interface Template {
   programId?: string;
   /** Own stretching/yoga routine: listed under mobility and run in the hold player */
   kind?: 'mobility';
+  /** Home block (X / Y) this template belongs to; such templates are listed only inside that block */
+  folder?: Folder;
 }
+
+export type Folder = 'x' | 'y';
 
 /** Weekly program: weekday (1 = Monday … 7 = Sunday) → template. One is active at a time. */
 export interface Program {

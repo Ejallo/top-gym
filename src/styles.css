@@ -376,6 +376,11 @@ button.set-n { height: 42px; padding: 0; font-size: 14px; }
 .tile.rehab { border-color: var(--cyan); }
 .tile.rehab .m, .tile.rehab b { color: var(--cyan); }
 .tile .m { text-transform: none; }
+.tiles + .tiles { margin-top: 6px; }
+.tile.fx { border-color: var(--lime); }
+.tile.fx .m, .tile.fx b { color: var(--lime); }
+.tile.fy { border-color: var(--pink); }
+.tile.fy .m, .tile.fy b { color: var(--pink); }
 .mob-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .mob-grid .mob-card { width: auto; }
 
