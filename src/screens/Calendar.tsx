@@ -12,6 +12,8 @@ import { WorkoutRow } from '../components/WorkoutRow';
 import { WorkoutView } from './History';
 import { WeeklyReport } from './WeeklyReport';
 import { weekStartOf } from '../lib/stats';
+import { activeOf, usePrograms } from '../lib/programs';
+import { ProgramSwitcher } from '../components/ProgramBlock';
 
 /** Day colour by the main muscle group of the workout. */
 const COLOR: Partial<Record<Group, string>> = { legs: 'b', back: 'c', cardio: 'c' };
@@ -25,7 +27,8 @@ export function Calendar({ onSettings, onOpenWorkout }: { onSettings: () => void
   const [report, setReport] = useState<number | null>(null);
   const workouts = useFinishedWorkouts();
   const list = useExercises();
-  const program = useLiveQuery(() => db.programs.toArray(), [])?.[0];
+  const programs = usePrograms();
+  const program = activeOf(programs);
   const programTemplates = useLiveQuery(
     () => (program ? db.templates.where('id').anyOf(program.days.map((d) => d.templateId)).toArray() : []),
     [program?.id],
@@ -44,7 +47,7 @@ export function Calendar({ onSettings, onOpenWorkout }: { onSettings: () => void
   };
 
   const monthCount = (workouts ?? []).filter(
-    (w) => new Date(w.startedAt).getMonth() === cursor.getMonth() && new Date(w.startedAt).getFullYear() === cursor.getFullYear(),
+    (w) => w.kind !== 'mobility' && new Date(w.startedAt).getMonth() === cursor.getMonth() && new Date(w.startedAt).getFullYear() === cursor.getFullYear(),
   ).length;
   const streak = workouts ? weekStreak(workouts, goal) : 0;
   const thisWeek = workouts ? weeklyCounts(workouts, 1)[0].count : 0;
@@ -84,6 +87,15 @@ export function Calendar({ onSettings, onOpenWorkout }: { onSettings: () => void
         {t('report.open')} →
       </button>
 
+      {programs && programs.length > 1 && (
+        <>
+          <div className="m muted" style={{ marginBottom: 6 }}>
+            // {t('cal.program')}
+          </div>
+          <ProgramSwitcher programs={programs} active={program} />
+        </>
+      )}
+
       <div className="btn-row" style={{ marginBottom: 10 }}>
         <button className="btn ghost small" onClick={() => shift(-1)} aria-label={t('cal.prev')}>
           ←
@@ -101,7 +113,11 @@ export function Calendar({ onSettings, onOpenWorkout }: { onSettings: () => void
         ))}
         {cells.map((d, i) => {
           if (!d) return <div key={i} className="day blank" />;
-          const ws = onDay(d);
+          const all = onDay(d);
+          // Stretching/yoga don't colour the day: they add a dot (orange stretch, violet yoga)
+          const ws = all.filter((w) => w.kind !== 'mobility');
+          const mob = all.filter((w) => w.kind === 'mobility');
+          const yoga = mob.some((w) => w.entries.some((e) => byId.get(e.exerciseId)?.category === 'yoga'));
           const planned = ws.length ? [] : plannedOn(d);
           const g = ws[0] && dominantGroup(ws[0], byId);
           const cls = ws.length ? 'done ' + (g ? (COLOR[g] ?? 'a') : 'a') : planned.length ? 'planned' : '';
@@ -109,6 +125,7 @@ export function Calendar({ onSettings, onOpenWorkout }: { onSettings: () => void
             <button key={i} className={'day ' + cls + (sameDay(d, today) ? ' today' : '')} onClick={() => setDay(d)}>
               {String(d.getDate()).padStart(2, '0')}
               {ws.length > 1 && <i>×{ws.length}</i>}
+              {mob.length > 0 && <s className={'mob-dot ' + (yoga ? 'yoga' : 'stretch')} />}
             </button>
           );
         })}
@@ -116,7 +133,8 @@ export function Calendar({ onSettings, onOpenWorkout }: { onSettings: () => void
 
       <p className="m muted cal-legend">
         <span className="lime">■</span> {t('cal.legend.upper')} <span className="pink">■</span> {t('cal.legend.legs')}{' '}
-        <span className="cyan">■</span> {t('cal.legend.back')} <span className="lime">┅</span> {t('cal.legend.planned')}
+        <span className="cyan">■</span> {t('cal.legend.back')} <span className="lime">┅</span> {t('cal.legend.planned')}{' '}
+        <span className="orange">●</span> {t('cat.stretch')} <span className="violet">●</span> {t('cat.yoga')}
       </p>
 
       {day && (

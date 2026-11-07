@@ -61,7 +61,8 @@ export function muscleLoad(workouts: Workout[], byId: Map<string, Exercise>, day
   const since = Date.now() - days * DAY;
   const raw = Object.fromEntries(MUSCLES.map((m) => [m, 0])) as Record<Muscle, number>;
   for (const w of workouts) {
-    if (!w.endedAt || w.startedAt < since) continue;
+    // Stretching and yoga don't load muscles
+    if (!w.endedAt || w.startedAt < since || w.kind === 'mobility') continue;
     for (const e of w.entries) {
       const ex = byId.get(e.exerciseId);
       if (!ex) continue;
@@ -91,7 +92,7 @@ export function weeklyCounts(workouts: Workout[], weeks = 8): { start: number; c
   const now = weekStartOf(Date.now());
   const out = Array.from({ length: weeks }, (_, i) => ({ start: addDays(now, -(weeks - 1 - i) * 7), count: 0 }));
   for (const w of workouts) {
-    if (!w.endedAt) continue;
+    if (!w.endedAt || w.kind === 'mobility') continue; // the weekly goal counts strength workouts
     const ws = weekStartOf(w.startedAt);
     const slot = out.find((o) => o.start === ws);
     if (slot) slot.count++;
@@ -105,7 +106,7 @@ export function weeklyCounts(workouts: Workout[], weeks = 8): { start: number; c
  */
 export function weekStreak(workouts: Workout[], goal: number): number {
   const counts = new Map<number, number>();
-  for (const w of workouts) if (w.endedAt) counts.set(weekStartOf(w.startedAt), (counts.get(weekStartOf(w.startedAt)) ?? 0) + 1);
+  for (const w of workouts) if (w.endedAt && w.kind !== 'mobility') counts.set(weekStartOf(w.startedAt), (counts.get(weekStartOf(w.startedAt)) ?? 0) + 1);
   let ws = weekStartOf(Date.now());
   let streak = 0;
   if ((counts.get(ws) ?? 0) >= goal) streak++;

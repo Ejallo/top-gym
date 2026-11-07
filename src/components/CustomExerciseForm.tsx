@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { t } from '../i18n';
 import { db, uid, type Category, type ExerciseType, type Side } from '../lib/db';
 import { exercisesChanged, type Exercise } from '../lib/exercises';
+import { CATEGORIES } from '../lib/categories';
 import { MUSCLES, type Muscle } from '../lib/muscles';
 import { Sheet } from './Sheet';
 import { useBlobUrls } from './ExerciseMedia';
@@ -77,13 +78,17 @@ export function CustomExerciseForm({ edit, category: initialCategory, onClose }:
         {error && <span className="m pink">{error}</span>}
       </label>
 
-      <button className={'toggle' + (category === 'rehab' ? ' on' : '')} onClick={() => setCategory(category === 'rehab' ? undefined : 'rehab')}>
-        <span className="toggle-box">{category === 'rehab' ? '✓' : ''}</span>
-        <span>
-          <b className="h h-s">{t('custom.rehab')}</b>
-          <span className="m muted">{t('custom.rehabHint')}</span>
-        </span>
-      </button>
+      <div className="field">
+        <span className="m muted">{t('custom.section')}</span>
+        <div className="chips">
+          {CATEGORIES.map((c) => (
+            <button key={c} className={'chip chip-' + c + (category === c ? ' on' : '')} onClick={() => setCategory(category === c ? undefined : c)}>
+              {t(`cat.${c}`)}
+            </button>
+          ))}
+        </div>
+        <span className="m muted">{t('custom.sectionHint')}</span>
+      </div>
 
       <div className="field">
         <span className="m muted">{t('custom.photos', { n: photos.length, max: MAX_PHOTOS })}</span>

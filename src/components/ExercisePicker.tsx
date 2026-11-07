@@ -2,24 +2,34 @@ import { useMemo, useState } from 'react';
 import { t } from '../i18n';
 import { matches, useExercises } from '../lib/exercises';
 import { GROUPS, type Group } from '../lib/muscles';
+import { CATEGORIES, isCategory } from '../lib/categories';
+import type { Category } from '../lib/db';
 import { Sheet } from './Sheet';
 import { ExerciseMedia } from './ExerciseMedia';
 
-type Filter = 'all' | 'rehab' | Group;
+type Filter = 'all' | Category | Group;
 const PAGE = 60;
 
 /** Pick one or more exercises; returns ids in the order they were tapped. */
-export function ExercisePicker({ onPick, onClose }: { onPick: (ids: string[]) => void; onClose: () => void }) {
+export function ExercisePicker({
+  onPick,
+  onClose,
+  initialFilter,
+}: {
+  onPick: (ids: string[]) => void;
+  onClose: () => void;
+  initialFilter?: Filter;
+}) {
   const list = useExercises();
   const [q, setQ] = useState('');
-  const [filter, setFilter] = useState<Filter>('all');
+  const [filter, setFilter] = useState<Filter>(initialFilter ?? 'all');
   const [picked, setPicked] = useState<string[]>([]);
   const [limit, setLimit] = useState(PAGE);
 
   const shown = useMemo(
     () =>
       (list ?? []).filter(
-        (e) => (filter === 'all' || (filter === 'rehab' ? e.category === 'rehab' : e.group === filter)) && matches(e, q),
+        (e) => (filter === 'all' || (isCategory(filter) ? e.category === filter : e.group === filter)) && matches(e, q),
       ),
     [list, q, filter],
   );
@@ -40,16 +50,16 @@ export function ExercisePicker({ onPick, onClose }: { onPick: (ids: string[]) =>
         }}
       />
       <div className="chips" style={{ marginTop: 10 }}>
-        {(['all', 'rehab', ...GROUPS] as Filter[]).map((f) => (
+        {(['all', ...CATEGORIES, ...GROUPS] as Filter[]).map((f) => (
           <button
             key={f}
-            className={'chip' + (f === filter ? ' on' : '') + (f === 'rehab' ? ' chip-cyan' : '')}
+            className={'chip' + (f === filter ? ' on' : '') + (isCategory(f) ? ` chip-${f}` : '')}
             onClick={() => {
               setFilter(f);
               setLimit(PAGE);
             }}
           >
-            {f === 'all' ? t('exercises.all') : f === 'rehab' ? t('exercises.rehab') : t(`group.${f}`)}
+            {f === 'all' ? t('exercises.all') : isCategory(f) ? t(`cat.${f}`) : t(`group.${f}`)}
           </button>
         ))}
       </div>

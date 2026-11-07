@@ -4,7 +4,7 @@ import Dexie, { type Table } from 'dexie';
 
 export type ExerciseType = 'weight_reps' | 'reps' | 'time' | 'cardio';
 /** Section an own exercise belongs to besides its muscle group. */
-export type Category = 'rehab';
+export type Category = 'rehab' | 'stretch' | 'yoga';
 /** Which side is trained (rehab often works one limb). */
 export type Side = 'left' | 'right' | 'both';
 
@@ -45,6 +45,8 @@ export interface Template {
   createdAt: number;
   /** Set for program days: such templates live under the program, not in the templates list */
   programId?: string;
+  /** Own stretching/yoga routine: listed under mobility and run in the hold player */
+  kind?: 'mobility';
 }
 
 /** Weekly program: weekday (1 = Monday … 7 = Sunday) → template. One is active at a time. */
@@ -82,6 +84,8 @@ export interface Workout {
   endedAt?: number; // undefined while in progress
   note?: string;
   entries: WorkoutEntry[];
+  /** Stretching/yoga session: run in the hold player, counted apart from strength workouts */
+  kind?: 'mobility';
 }
 
 class TopGymDB extends Dexie {

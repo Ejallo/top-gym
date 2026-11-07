@@ -8,6 +8,7 @@ import { Progress } from './screens/Progress';
 import { Exercises } from './screens/Exercises';
 import { Settings } from './screens/Settings';
 import { WorkoutScreen } from './screens/WorkoutScreen';
+import { MobilityPlayer } from './screens/MobilityPlayer';
 import type { Workout } from './lib/db';
 import { seedDemo } from './lib/demo';
 
@@ -46,7 +47,12 @@ export function App() {
       )}
 
       {workout ? (
-        <WorkoutScreen key={workout.id} initial={workout} onClose={() => setWorkout(null)} />
+        // Running stretching/yoga opens in the player; finished ones are edited like any workout
+        workout.kind === 'mobility' && !workout.endedAt ? (
+          <MobilityPlayer key={workout.id} initial={workout} onClose={() => setWorkout(null)} />
+        ) : (
+          <WorkoutScreen key={workout.id} initial={workout} onClose={() => setWorkout(null)} onOpenWorkout={setWorkout} />
+        )
       ) : settings ? (
         <Settings onBack={() => setSettings(false)} />
       ) : (

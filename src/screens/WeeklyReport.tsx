@@ -50,7 +50,7 @@ export function WeeklyReport({ start: initialStart, onClose }: { start?: number;
           <div className="stats-grid cyan-grid">
             <div>
               <b>
-                {r.workouts.length}/{r.goal}
+                {r.strength}/{r.goal}
               </b>
               <span className="m">{t('report.workouts')}</span>
             </div>

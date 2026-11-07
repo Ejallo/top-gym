@@ -66,6 +66,21 @@ export async function seedDemo(): Promise<Workout | undefined> {
       ),
     })),
   };
+  // Two stored programs (switcher) and a stretching session yesterday
+  const progTpl = (id: string, name: string, programId: string): Template => ({ ...tpl, id, name, programId, items: tpl.items.slice(0, 2) });
+  await db.templates.bulkPut([progTpl('t_pa1', 'Верх', 'p_demo_a'), progTpl('t_pa2', 'Низ', 'p_demo_a'), progTpl('t_pb1', 'Колено ЛФК', 'p_demo_b')]);
+  await db.programs.bulkPut([
+    { id: 'p_demo_a', name: 'Масса 4 дня', days: [{ weekday: 1, templateId: 't_pa1' }, { weekday: 3, templateId: 't_pa2' }, { weekday: 5, templateId: 't_pa1' }], active: true, importedAt: Date.now() - 3 * day },
+    { id: 'p_demo_b', name: 'Реабилитация', days: [{ weekday: 2, templateId: 't_pb1' }, { weekday: 4, templateId: 't_pb1' }, { weekday: 6, templateId: 't_pb1' }], active: false, importedAt: Date.now() - 10 * day },
+  ]);
+  await db.workouts.put({
+    id: 'w_demo_mob',
+    title: 'После ног',
+    kind: 'mobility',
+    startedAt: Date.now() - 1 * day,
+    endedAt: Date.now() - 1 * day + 7 * 60000,
+    entries: ['0mB6wHO', 'BWnJR72', 'DeDThfG'].map((id) => ({ exerciseId: id, plan: { sets: 2, time: 30 }, sets: [{ time: 30, done: true }, { time: 30, done: true }] })),
+  });
   if (p === 'workout' || p === 'home') await db.workouts.put(running);
   return p === 'workout' ? running : undefined;
 }

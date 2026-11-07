@@ -38,11 +38,13 @@ export async function historyText(days = 28): Promise<string> {
     .join('\n');
 }
 
+const CAT_MARK = { rehab: 'реаб.', stretch: 'растяжка', yoga: 'йога' } as const;
+
 /** Full text the user pastes into Claude: rules, format, catalog, optional history. */
 export async function buildPrompt(withHistory: boolean): Promise<string> {
   const list = await allExercises();
   const catalog = list
-    .map((e) => `${e.id} | ${e.name} | ${e.en} | ${t(`group.${e.group}`)}${e.category === 'rehab' ? ' (реаб.)' : ''} | ${TYPE_CODE[e.type]}`)
+    .map((e) => `${e.id} | ${e.name} | ${e.en} | ${t(`group.${e.group}`)}${e.category ? ` (${CAT_MARK[e.category]})` : ''} | ${TYPE_CODE[e.type]}`)
     .join('\n');
   const history = withHistory ? await historyText() : '';
   return t('claude.prompt', {
@@ -211,7 +213,7 @@ function typeOf(x: PlanExercise): ExerciseType {
   return 'weight_reps';
 }
 
-/** Downloads/creates missing exercises, replaces the active program and its day templates. */
+/** Downloads/creates missing exercises, stores the plan as a new program and makes it active. */
 export async function activatePlan(plan: ParsedPlan, matches: Match[]): Promise<Program> {
   const idFor = new Map<string, string>(); // `${day}:${index}` → exercise id
   for (const m of matches) {
@@ -246,12 +248,8 @@ export async function activatePlan(plan: ParsedPlan, matches: Match[]): Promise<
   }
   exercisesChanged();
 
-  // Replace the previous program and its day templates
-  const old = await db.programs.toArray();
-  for (const p of old) {
-    await db.templates.where('id').anyOf(p.days.map((d) => d.templateId)).delete();
-    await db.programs.delete(p.id);
-  }
+  // Older programs stay stored; the new one becomes the active one
+  for (const p of await db.programs.toArray()) if (p.active) await db.programs.update(p.id, { active: false });
 
   const programId = uid('p_');
   const templates: Template[] = plan.days.map((d, di) => ({

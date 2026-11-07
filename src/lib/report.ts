@@ -25,6 +25,8 @@ export interface WeekReport {
   compare: ExerciseCompare[];
   muscles: { m: Muscle; sets: number }[];
   notes: { date: number; title: string; text: string }[];
+  strength: number; // strength workouts (count toward the goal)
+  mobility: number; // stretching/yoga sessions
 }
 
 /** Score of a set for "best set" comparisons: e1RM for weighted sets, else reps/time/distance. */
@@ -58,7 +60,9 @@ export function buildReport(all: Workout[], byId: Map<string, Exercise>, start: 
   const inWeek = all.filter((w) => w.endedAt && w.startedAt >= start && w.startedAt < end).sort((a, b) => a.startedAt - b.startedAt);
   const prevWeek = all.filter((w) => w.endedAt && w.startedAt >= prevStart && w.startedAt < start);
 
-  const ids = [...new Set(inWeek.flatMap((w) => w.entries.filter((e) => e.sets.some((s) => s.done)).map((e) => e.exerciseId)))];
+  // Best sets and muscle sets come from strength work; stretching/yoga is listed but not compared
+  const strength = inWeek.filter((w) => w.kind !== 'mobility');
+  const ids = [...new Set(strength.flatMap((w) => w.entries.filter((e) => e.sets.some((s) => s.done)).map((e) => e.exerciseId)))];
   const compare: ExerciseCompare[] = [];
   for (const id of ids) {
     const ex = byId.get(id);
@@ -71,7 +75,7 @@ export function buildReport(all: Workout[], byId: Map<string, Exercise>, start: 
   }
 
   const sets = Object.fromEntries(MUSCLES.map((m) => [m, 0])) as Record<Muscle, number>;
-  for (const w of inWeek)
+  for (const w of strength)
     for (const e of w.entries) {
       const ex = byId.get(e.exerciseId);
       if (ex) ex.muscles.forEach((m) => (sets[m] += e.sets.filter((s) => s.done).length));
@@ -96,6 +100,8 @@ export function buildReport(all: Workout[], byId: Map<string, Exercise>, start: 
       .map((m) => ({ m, sets: sets[m] }))
       .sort((a, b) => b.sets - a.sets),
     notes,
+    strength: strength.length,
+    mobility: inWeek.length - strength.length,
   };
 }
 
@@ -120,13 +126,14 @@ export function reportMarkdown(r: WeekReport, byId: Map<string, Exercise>): stri
   lines.push(`# ${t('report.md.title', { week: r.week, range })}`);
   lines.push(
     t('report.md.summary', {
-      done: r.workouts.length,
+      done: r.strength,
       goal: r.goal,
       time: hoursMinutes(r.minutes),
       volume: num(r.volume),
       change: change === null ? '' : ` (${change > 0 ? '+' : ''}${change}% ${t('report.md.vsPrev')})`,
     }),
   );
+  if (r.mobility) lines.push(t('report.md.mobility', { n: r.mobility }));
   lines.push('', `## ${t('report.md.workouts')}`);
   for (const w of r.workouts) {
     const parts = w.entries

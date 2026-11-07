@@ -19,6 +19,8 @@ export interface Exercise {
   videoUrl?: string;
   category?: Category;
   side?: Side;
+  /** Hold one side, then the other (the timer runs twice) */
+  perSide?: boolean;
   source: 'base' | 'own' | 'full';
 }
 
@@ -31,6 +33,9 @@ interface BaseRow {
   equipment: string;
   type: ExerciseType;
   noMedia?: true; // no gif exists for this one
+  category?: Category;
+  perSide?: true;
+  pict?: string; // drawn pictogram public/pict/<key>.svg instead of a gif
 }
 /** public/data/exercises.<lang>.json: id → name + steps */
 type BaseText = Record<string, { n: string; s: string[] }>;
@@ -57,7 +62,7 @@ async function loadBase(): Promise<Exercise[]> {
       name: text[r.id]?.n ?? r.en,
       steps: text[r.id]?.s ?? [],
       group: groupOf(r.muscles[0]),
-      gif: r.noMedia ? undefined : mediaUrl(r.id),
+      gif: r.pict ? `${BASE_URL}pict/${r.pict}.svg` : r.noMedia ? undefined : mediaUrl(r.id),
       photos: [],
       source: 'base' as const,
     }));

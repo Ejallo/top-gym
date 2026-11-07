@@ -7,8 +7,9 @@ import { ExercisePicker } from './ExercisePicker';
 import { ExerciseMedia } from './ExerciseMedia';
 import { NumInput } from './NumInput';
 
-/** Create or edit a workout template. */
-export function TemplateEditor({ edit, onClose }: { edit?: Template; onClose: () => void }) {
+/** Create or edit a workout template, or (kind = mobility) an own stretching/yoga routine of timed holds. */
+export function TemplateEditor({ edit, kind, onClose }: { edit?: Template; kind?: 'mobility'; onClose: () => void }) {
+  const mobility = (kind ?? edit?.kind) === 'mobility';
   const list = useExercises();
   const [name, setName] = useState(edit?.name ?? '');
   const [items, setItems] = useState<PlanItem[]>(edit?.items ?? []);
@@ -29,13 +30,22 @@ export function TemplateEditor({ edit, onClose }: { edit?: Template; onClose: ()
   const save = async () => {
     if (!name.trim()) return setError(t('tpl.nameRequired'));
     if (!items.length) return setError(t('tpl.itemsRequired'));
-    await db.templates.put({ ...edit, id: edit?.id ?? uid('t_'), name: name.trim(), items, createdAt: edit?.createdAt ?? Date.now() });
+    // Mobility holds: one set, or one per side for one-sided poses
+    const saved = mobility ? items.map((x) => ({ ...x, sets: byId.get(x.exerciseId)?.perSide ? 2 : 1, time: x.time ?? 30 })) : items;
+    await db.templates.put({
+      ...edit,
+      id: edit?.id ?? uid('t_'),
+      name: name.trim(),
+      items: saved,
+      createdAt: edit?.createdAt ?? Date.now(),
+      ...(mobility && { kind: 'mobility' as const }),
+    });
     onClose();
   };
 
   return (
     <Sheet onClose={onClose}>
-      <div className="h h-l">{t(edit ? 'tpl.editTitle' : 'tpl.newTitle')}</div>
+      <div className="h h-l">{t(mobility ? (edit ? 'mob.editTitle' : 'mob.newTitle') : edit ? 'tpl.editTitle' : 'tpl.newTitle')}</div>
       <label className="field">
         <span className="m muted">{t('tpl.name')}</span>
         <input
@@ -69,6 +79,18 @@ export function TemplateEditor({ edit, onClose }: { edit?: Template; onClose: ()
                 </button>
               </div>
             </div>
+            {mobility ? (
+              <div className="plan-grid two">
+                <label>
+                  <span className="m muted">
+                    {t('unit.sec')}
+                    {ex?.perSide && ` · ${t('ex.perSide')}`}
+                  </span>
+                  <NumInput value={it.time ?? 30} onChange={(v) => patch(i, { time: v })} />
+                </label>
+              </div>
+            ) : (
+            <>
             <div className="plan-grid">
               <label>
                 <span className="m muted">{t('tpl.sets')}</span>
@@ -110,6 +132,8 @@ export function TemplateEditor({ edit, onClose }: { edit?: Template; onClose: ()
                 <input value={it.note ?? ''} placeholder={t('tpl.notePh')} onChange={(e) => patch(i, { note: e.target.value || undefined })} />
               </label>
             </div>
+            </>
+            )}
           </div>
         );
       })}
@@ -125,9 +149,10 @@ export function TemplateEditor({ edit, onClose }: { edit?: Template; onClose: ()
 
       {picking && (
         <ExercisePicker
+          initialFilter={mobility ? 'stretch' : undefined}
           onClose={() => setPicking(false)}
           onPick={(ids) => {
-            setItems((xs) => [...xs, ...ids.map((id) => ({ exerciseId: id, sets: 3 }))]);
+            setItems((xs) => [...xs, ...ids.map((id) => (mobility ? { exerciseId: id, sets: 1, time: 30 } : { exerciseId: id, sets: 3 }))]);
             setError('');
             setPicking(false);
           }}

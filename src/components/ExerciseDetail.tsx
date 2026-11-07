@@ -53,7 +53,7 @@ export function ExerciseDetail({ ex, onClose }: { ex: Exercise; onClose: () => v
       <ExerciseMedia ex={ex} size="big" />
       <div className="m muted" style={{ marginTop: 12 }}>
         {t(`group.${ex.group}`)} · {tk(`eq.${ex.equipment}`, ex.equipment)}
-        {ex.category === 'rehab' && <span className="cyan"> · {t('ex.rehab')}</span>}
+        {ex.category && <span className={`cat-${ex.category}`}> · {t(`cat.${ex.category}`)}</span>}
         {ex.source !== 'base' && <span className="pink"> · {t(ex.source === 'own' ? 'ex.source.own' : 'ex.source.full')}</span>}
       </div>
       <div className="h h-l" style={{ marginTop: 6 }}>

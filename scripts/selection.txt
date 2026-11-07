@@ -415,3 +415,40 @@ push to run
 Scissor Jumps
 Semi Squat Jump
 kettlebell thruster
+# == stretch (29) — logged as hold time; '| side' = each side separately
+hamstring stretch | side
+leg up hamstring stretch | side
+runners stretch | side
+lying (side) quads stretch | side
+all fours squad stretch | side
+intermediate hip flexor and quad stretch | side
+seated glute stretch | side
+seated piriformis stretch | side
+iron cross stretch | side
+rocking frog stretch
+world greatest stretch | side
+assisted lying gluteus and piriformis stretch | side
+calf stretch with hands against wall | side
+Seated Calf Stretch | side
+standing calves calf stretch
+calf stretch with rope | side
+kneeling lat stretch
+standing lateral stretch | side
+upper back stretch
+spine stretch
+seated lower back stretch
+Side-Lying Floor Stretch | side
+chest and front of shoulder stretch
+Dynamic Chest Stretch
+rear deltoid stretch | side
+overhead triceps stretch | side
+side wrist pull stretch | side
+neck side stretch | side
+side push neck stretch | side
+# == yoga (6 with gif; 17 more as pictograms in build-base.mjs)
+upward facing dog
+sphinx
+butterfly yoga pose
+seated wide angle pose sequence
+reclining big toe pose with rope | side
+Bent Knee Lying Twist | side

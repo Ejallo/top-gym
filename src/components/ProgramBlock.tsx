@@ -4,6 +4,7 @@ import { t } from '../i18n';
 import { db, type Program, type Template, type Workout } from '../lib/db';
 import { fmt, weekday, weekdayNames } from '../lib/dates';
 import { addDays, weekStartOf } from '../lib/stats';
+import { deleteProgram, renameProgram, setActiveProgram } from '../lib/programs';
 import { Sheet } from './Sheet';
 import { TemplateEditor } from './TemplateEditor';
 
@@ -15,11 +16,13 @@ const weekStart = () => weekStartOf(Date.now());
  */
 export function ProgramBlock({
   program,
+  programs,
   workouts,
   canStart,
   onStart,
 }: {
   program: Program;
+  programs: Program[];
   workouts: Workout[];
   canStart: boolean;
   onStart: (tpl: Template) => void;
@@ -38,7 +41,7 @@ export function ProgramBlock({
   // Days of this week with a finished workout
   const ws = weekStart();
   const doneDays = new Set(
-    workouts.filter((w) => w.endedAt && w.startedAt >= ws && w.startedAt < addDays(ws, 7)).map((w) => weekday(new Date(w.startedAt))),
+    workouts.filter((w) => w.endedAt && w.kind !== 'mobility' && w.startedAt >= ws && w.startedAt < addDays(ws, 7)).map((w) => weekday(new Date(w.startedAt))),
   );
   // Today's plan counts as done only when its own template was trained today
   const dayStart = addDays(ws, today - 1);
@@ -96,19 +99,35 @@ export function ProgramBlock({
         })}
       </div>
 
-      {open && <ProgramSheet program={program} templates={byId} onClose={() => setOpen(false)} onStart={onStart} canStart={canStart} />}
+      {open && <ProgramSheet program={program} programs={programs} templates={byId} onClose={() => setOpen(false)} onStart={onStart} canStart={canStart} />}
     </>
+  );
+}
+
+/** Chips to pick which stored program is active (calendar, program sheet). */
+export function ProgramSwitcher({ programs, active }: { programs: Program[]; active?: Program }) {
+  if (programs.length < 2) return null;
+  return (
+    <div className="chips prog-switch">
+      {programs.map((p) => (
+        <button key={p.id} className={'chip' + (p.id === active?.id ? ' on' : '')} onClick={() => void setActiveProgram(p.id)}>
+          {p.name}
+        </button>
+      ))}
+    </div>
   );
 }
 
 function ProgramSheet({
   program,
+  programs,
   templates,
   canStart,
   onStart,
   onClose,
 }: {
   program: Program;
+  programs: Program[];
   templates: Map<string, Template>;
   canStart: boolean;
   onStart: (tpl: Template) => void;
@@ -119,20 +138,32 @@ function ProgramSheet({
 
   const remove = async () => {
     if (!confirm(t('prog.disableConfirm', { name: program.name }))) return;
-    await db.templates.where('id').anyOf(program.days.map((d) => d.templateId)).delete();
-    await db.programs.delete(program.id);
+    await deleteProgram(program);
+    // Hand the active flag to the newest remaining one
+    const next = programs.find((p) => p.id !== program.id);
+    if (next) await setActiveProgram(next.id);
     onClose();
+  };
+  const rename = async () => {
+    const name = prompt(t('prog.rename'), program.name)?.trim();
+    if (name) await renameProgram(program.id, name);
   };
 
   return (
     <Sheet onClose={onClose}>
       <div className="m muted">// {t('prog.title')}</div>
-      <div className="h h-l" style={{ marginTop: 6 }}>
-        {program.name}
-      </div>
+      <button className="h h-l prog-name" style={{ marginTop: 6 }} onClick={() => void rename()}>
+        {program.name} <span className="m muted">✎</span>
+      </button>
       <div className="m muted" style={{ marginTop: 8 }}>
         {t('prog.imported', { date: fmt(new Date(program.importedAt), { day: 'numeric', month: 'long' }) })}
       </div>
+      {programs.length > 1 && (
+        <>
+          <div className="m muted sec">// {t('prog.all', { n: programs.length })}</div>
+          <ProgramSwitcher programs={programs} active={program} />
+        </>
+      )}
 
       <div className="m muted sec">// {t('prog.days')}</div>
       {[...program.days]

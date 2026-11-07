@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import { useLiveQuery } from 'dexie-react-hooks';
 import { t } from '../i18n';
-import { db } from '../lib/db';
 import { activatePlan, buildPrompt, copyText, matchPlan, parsePlan, type Match, type ParsedPlan } from '../lib/claude';
 import { Sheet } from '../components/Sheet';
 import { weekdayNames } from '../lib/dates';
+import { activeOf, usePrograms } from '../lib/programs';
 
 
 /** Copy the template for Claude → paste the answer → check exercises → activate the weekly program. */
@@ -17,7 +16,7 @@ export function ImportPlan({ onClose, onDone }: { onClose: () => void; onDone: (
   const [matches, setMatches] = useState<Match[] | null>(null);
   const [busy, setBusy] = useState<'check' | 'save' | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
-  const current = useLiveQuery(() => db.programs.toArray(), [])?.[0];
+  const current = activeOf(usePrograms());
   // Built ahead of the tap: iOS Safari only allows clipboard writes synchronously inside the gesture
   const [prompt, setPrompt] = useState('');
   useEffect(() => {

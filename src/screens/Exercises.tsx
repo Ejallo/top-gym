@@ -2,13 +2,15 @@ import { useMemo, useState } from 'react';
 import { t } from '../i18n';
 import { matches, useExercises, type Exercise } from '../lib/exercises';
 import { GROUPS, type Group } from '../lib/muscles';
+import { CATEGORIES, isCategory } from '../lib/categories';
+import type { Category } from '../lib/db';
 import { Header } from '../components/Header';
 import { ExerciseMedia } from '../components/ExerciseMedia';
 import { ExerciseDetail } from '../components/ExerciseDetail';
 import { CustomExerciseForm } from '../components/CustomExerciseForm';
 import { FullSearch } from '../components/FullSearch';
 
-type Filter = 'all' | 'mine' | 'rehab' | Group;
+type Filter = 'all' | 'mine' | Category | Group;
 const PAGE = 60;
 
 export function Exercises({ onSettings }: { onSettings: () => void }) {
@@ -32,13 +34,13 @@ export function Exercises({ onSettings }: { onSettings: () => void }) {
     return list.filter(
       (e) =>
         (filter === 'all' ||
-          (filter === 'mine' ? e.source !== 'base' : filter === 'rehab' ? e.category === 'rehab' : e.group === filter)) &&
+          (filter === 'mine' ? e.source !== 'base' : isCategory(filter) ? e.category === filter : e.group === filter)) &&
         matches(e, q),
     );
   }, [list, q, filter]);
 
   const hasMine = list?.some((e) => e.source !== 'base');
-  const filters: Filter[] = ['all', ...(hasMine ? (['mine'] as const) : []), 'rehab', ...GROUPS];
+  const filters: Filter[] = ['all', ...(hasMine ? (['mine'] as const) : []), ...CATEGORIES, ...GROUPS];
 
   return (
     <div className="screen">
@@ -58,13 +60,13 @@ export function Exercises({ onSettings }: { onSettings: () => void }) {
         {filters.map((f) => (
           <button
             key={f}
-            className={'chip' + (f === filter ? ' on' : '') + (f === 'rehab' ? ' chip-cyan' : '')}
+            className={'chip' + (f === filter ? ' on' : '') + (isCategory(f) ? ` chip-${f}` : '')}
             onClick={() => {
               setFilter(f);
               setLimit(PAGE);
             }}
           >
-            {f === 'all' ? t('exercises.all') : f === 'mine' ? t('exercises.mine') : f === 'rehab' ? t('exercises.rehab') : t(`group.${f}`)}
+            {f === 'all' ? t('exercises.all') : f === 'mine' ? t('exercises.mine') : isCategory(f) ? t(`cat.${f}`) : t(`group.${f}`)}
           </button>
         ))}
       </div>
@@ -91,9 +93,10 @@ export function Exercises({ onSettings }: { onSettings: () => void }) {
               <b>{e.name}</b>
               <span className="m muted">
                 {t(`muscle.${e.muscles[0]}`)}
-                {e.category === 'rehab' && <span className="cyan"> · {t('ex.rehab')}</span>}
+                {e.category && <span className={`cat-${e.category}`}> · {t(`cat.${e.category}`)}</span>}
+                {e.perSide && <span> · {t('ex.perSide')}</span>}
                 {e.side && <span> · {t(`side.${e.side}`)}</span>}
-                {e.source !== 'base' && e.category !== 'rehab' && (
+                {e.source !== 'base' && !e.category && (
                   <span className="pink"> · {t(e.source === 'own' ? 'ex.source.own' : 'ex.source.full')}</span>
                 )}
               </span>
@@ -115,7 +118,7 @@ export function Exercises({ onSettings }: { onSettings: () => void }) {
       )}
 
       {open && <ExerciseDetail ex={open} onClose={() => setOpen(null)} />}
-      {adding && <CustomExerciseForm category={filter === 'rehab' ? 'rehab' : undefined} onClose={() => setAdding(false)} />}
+      {adding && <CustomExerciseForm category={isCategory(filter) ? filter : undefined} onClose={() => setAdding(false)} />}
       {full && list && <FullSearch initial={q} known={list} onClose={() => setFull(false)} />}
     </div>
   );

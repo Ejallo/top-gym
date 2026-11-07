@@ -7,6 +7,10 @@ import { ExerciseMedia } from '../components/ExerciseMedia';
 import { ExerciseDetail } from '../components/ExerciseDetail';
 import { ExercisePicker } from '../components/ExercisePicker';
 import { NumInput } from '../components/NumInput';
+import { useLiveQuery } from 'dexie-react-hooks';
+import { applyHint, lastSets, progressionHint, type Hint } from '../lib/progression';
+import { cue, mmss, unlockAudio, useCountdown, useWakeLock } from '../lib/hold';
+import { DEFAULT_HOLD, PREP, cooldownFor, startMobility } from '../lib/mobility';
 
 const UNITS = () => ({ kg: t('unit.kg'), min: t('unit.min'), km: t('unit.km'), sec: t('unit.sec') });
 
@@ -14,7 +18,15 @@ const UNITS = () => ({ kg: t('unit.kg'), min: t('unit.min'), km: t('unit.km'), s
  * Running workout (or editing a finished one). Every change is saved to IndexedDB right away,
  * so closing the app mid-workout loses nothing.
  */
-export function WorkoutScreen({ initial, onClose }: { initial: Workout; onClose: () => void }) {
+export function WorkoutScreen({
+  initial,
+  onClose,
+  onOpenWorkout,
+}: {
+  initial: Workout;
+  onClose: () => void;
+  onOpenWorkout: (w: Workout) => void;
+}) {
   const list = useExercises();
   const byId = new Map((list ?? []).map((e) => [e.id, e]));
   const [w, setW] = useState(initial);
@@ -22,8 +34,11 @@ export function WorkoutScreen({ initial, onClose }: { initial: Workout; onClose:
   const [info, setInfo] = useState<Exercise | null>(null);
   const [noteFor, setNoteFor] = useState<number | null>(null);
   const [summary, setSummary] = useState(false);
+  const [hold, setHold] = useState<{ i: number; k: number } | null>(null);
   const editingFinished = !!initial.endedAt;
   const now = useNow(1000);
+  // Finished workouts, newest first: source of "last time" for the progression hint
+  const history = useLiveQuery(() => db.workouts.orderBy('startedAt').reverse().toArray(), []);
 
   // Persist on every change
   const first = useRef(true);
@@ -92,7 +107,7 @@ export function WorkoutScreen({ initial, onClose }: { initial: Workout; onClose:
 
   const tt = totals(w);
 
-  if (summary) return <Summary w={w} onClose={onClose} />;
+  if (summary) return <Summary w={w} byId={byId} onClose={onClose} onOpenWorkout={onOpenWorkout} />;
 
   return (
     <div className="workout">
@@ -148,6 +163,13 @@ export function WorkoutScreen({ initial, onClose }: { initial: Workout; onClose:
               </div>
             )}
             {e.note && <p className="body wk-note">✎ {e.note}</p>}
+            {history && (
+              <HintLine
+                hint={progressionHint(e, ex, lastSets(history, e.exerciseId, w.startedAt, w.id))}
+                done={e.sets.some((s) => s.done)}
+                onApply={(h) => setEntry(i, (x) => applyHint(x, h))}
+              />
+            )}
 
             <div className={'set-grid head ' + type}>
               <span>#</span>
@@ -181,7 +203,21 @@ export function WorkoutScreen({ initial, onClose }: { initial: Workout; onClose:
                   )}
                   {type === 'reps' && <NumInput value={s.reps} placeholder={repsPh || '—'} onChange={(v) => setSet(i, k, { reps: v })} />}
                   {type === 'time' && (
-                    <NumInput value={s.time} placeholder={p?.time ? String(p.time) : '—'} onChange={(v) => setSet(i, k, { time: v })} />
+                    <span className="time-cell">
+                      <NumInput value={s.time} placeholder={p?.time ? String(p.time) : '—'} onChange={(v) => setSet(i, k, { time: v })} />
+                      {!s.done && (
+                        <button
+                          className="hold-btn"
+                          aria-label={t('hold.start')}
+                          onClick={() => {
+                            unlockAudio();
+                            setHold({ i, k });
+                          }}
+                        >
+                          ▶
+                        </button>
+                      )}
+                    </span>
                   )}
                   {type === 'cardio' && (
                     <>
@@ -250,6 +286,17 @@ export function WorkoutScreen({ initial, onClose }: { initial: Workout; onClose:
         />
       )}
       {info && <ExerciseDetail ex={info} onClose={() => setInfo(null)} />}
+      {hold && w.entries[hold.i] && (
+        <HoldSheet
+          ex={byId.get(w.entries[hold.i].exerciseId)}
+          sec={w.entries[hold.i].sets[hold.k]?.time ?? w.entries[hold.i].plan?.time ?? DEFAULT_HOLD}
+          onDone={(sec) => {
+            setSet(hold.i, hold.k, { time: sec, done: true });
+            setHold(null);
+          }}
+          onClose={() => setHold(null)}
+        />
+      )}
       {noteFor !== null && (
         <NoteSheet
           title={byId.get(w.entries[noteFor]?.exerciseId)?.name ?? ''}
@@ -262,6 +309,32 @@ export function WorkoutScreen({ initial, onClose }: { initial: Workout; onClose:
         />
       )}
     </div>
+  );
+}
+
+/** "Last time 60×8 · 60×8 → try 62.5×8": tap fills the empty sets. */
+function HintLine({ hint, done, onApply }: { hint: Hint | null; done: boolean; onApply: (h: Hint) => void }) {
+  if (!hint) return null;
+  const sec = t('unit.sec');
+  const fmtSet = (x: { weight?: number; reps?: number; time?: number }) =>
+    x.weight !== undefined && x.reps !== undefined
+      ? `${num(x.weight)}×${x.reps}`
+      : x.reps !== undefined
+        ? `${x.reps}`
+        : x.time !== undefined
+          ? `${x.time} ${sec}`
+          : '—';
+  const last = hint.last.slice(0, 5).map(fmtSet).join(' · ') + (hint.last.length > 5 ? ' …' : '');
+  return (
+    <button className="wk-hint m" disabled={done} onClick={() => onApply(hint)}>
+      <span className="muted">
+        {t('wk.hint.last')} {last}
+      </span>
+      <span className="lime">
+        → {t(hint.kind === 'up' ? 'wk.hint.up' : 'wk.hint.reps')} {fmtSet(hint.next)}
+        {!done && <span className="muted"> · {t('wk.hint.tap')}</span>}
+      </span>
+    </button>
   );
 }
 
@@ -286,8 +359,70 @@ function NoteSheet({ title, value, onSave, onClose }: { title: string; value: st
   );
 }
 
-function Summary({ w, onClose }: { w: Workout; onClose: () => void }) {
+/** Hold countdown for one time-based set: get ready, hold (both sides for one-sided holds), sound at the end. */
+function HoldSheet({ ex, sec, onDone, onClose }: { ex?: Exercise; sec: number; onDone: (sec: number) => void; onClose: () => void }) {
+  const sides = ex?.perSide ? 2 : 1;
+  const [round, setRound] = useState(0); // 0..sides-1
+  const [phase, setPhase] = useState<'prep' | 'hold'>('prep');
+  useWakeLock();
+  const timer = useCountdown(() => {
+    if (phase === 'prep') {
+      cue();
+      setPhase('hold');
+      timer.start(sec);
+    } else if (round + 1 < sides) {
+      cue(true);
+      setRound(round + 1);
+      setPhase('prep');
+      timer.start(PREP);
+    } else {
+      cue(true);
+      onDone(sec);
+    }
+  });
+  useEffect(() => {
+    timer.start(PREP);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const total = phase === 'prep' ? PREP : sec;
+  return (
+    <div className="sheet">
+      <div className="sheet-in" style={{ textAlign: 'center' }}>
+        <button className="m muted" onClick={onClose} style={{ display: 'block', marginBottom: 12 }}>
+          ← {t('ex.close')}
+        </button>
+        <div className="m muted">// {t('hold.title')}</div>
+        <div className="h h-m" style={{ marginTop: 6 }}>
+          {ex?.name}
+          {sides === 2 && <span className="lime"> · {t(round === 0 ? 'side.left' : 'side.right')}</span>}
+        </div>
+        <div className="pl-timer">
+          <div className="pl-ring" style={{ ['--p' as string]: 1 - timer.left / Math.max(1, total) }}>
+            <span className="h">{mmss(timer.left)}</span>
+            <span className="m">{phase === 'prep' ? t('player.ready') : t('player.hold')}</span>
+          </div>
+        </div>
+        <button className="btn outline" onClick={() => (timer.paused ? timer.resume() : timer.pause())}>
+          {timer.paused ? t('player.resume') : t('player.pause')}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function Summary({
+  w,
+  byId,
+  onClose,
+  onOpenWorkout,
+}: {
+  w: Workout;
+  byId: Map<string, Exercise>;
+  onClose: () => void;
+  onOpenWorkout: (w: Workout) => void;
+}) {
   const tt = totals(w);
+  const cool = w.kind === 'mobility' ? null : cooldownFor(w, byId);
   return (
     <div className="workout">
       <div className="m lime" style={{ marginTop: 30 }}>// {t('wk.summary.done')}</div>
@@ -316,7 +451,30 @@ function Summary({ w, onClose }: { w: Workout; onClose: () => void }) {
           </div>
         </div>
       )}
-      <button className="btn lime" style={{ marginTop: 24 }} onClick={onClose}>
+      {cool && cool.items.length > 0 && (
+        <div className="slab orange-bg cooldown">
+          <div className="m">
+            {t('cool.label', { n: Math.max(2, Math.round(cool.items.reduce((a, x) => a + (x.time ?? 30) * x.sets + PREP * x.sets, 0) / 60)) })}
+          </div>
+          <div className="h h-m" style={{ marginTop: 6 }}>
+            {t('cool.title')}
+          </div>
+          <div className="body" style={{ marginTop: 6 }}>
+            {cool.items.map((x) => byId.get(x.exerciseId)?.name).join(' · ')}
+          </div>
+          <button
+            className="btn ink"
+            style={{ marginTop: 12, height: 44 }}
+            onClick={async () => {
+              unlockAudio();
+              onOpenWorkout(await startMobility(t('cool.workoutTitle'), cool.items));
+            }}
+          >
+            {t('cool.start')} →
+          </button>
+        </div>
+      )}
+      <button className={'btn ' + (cool?.items.length ? 'outline' : 'lime')} style={{ marginTop: 16 }} onClick={onClose}>
         {t('wk.summary.close')}
       </button>
     </div>

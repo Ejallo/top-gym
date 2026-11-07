@@ -10,6 +10,8 @@ import { Sheet } from '../components/Sheet';
 import { History, WorkoutView } from './History';
 import { WorkoutRow } from '../components/WorkoutRow';
 import { ProgramBlock } from '../components/ProgramBlock';
+import { MobilityBlock } from '../components/MobilityBlock';
+import { activeOf, usePrograms } from '../lib/programs';
 import { ImportPlan } from './ImportPlan';
 import { WeeklyReport } from './WeeklyReport';
 import { weekday } from '../lib/dates';
@@ -19,9 +21,9 @@ export function Home({ onSettings, onOpenWorkout }: { onSettings: () => void; on
   const now = new Date();
   const sub = `// ${fmt(now, { weekday: 'short', day: '2-digit', month: 'short' })} · ${t('home.week', { n: isoWeek(now) })}`;
   // Program days are templates too, but they live under the program block
-  const templates = useLiveQuery(async () => (await db.templates.orderBy('name').toArray()).filter((x) => !x.programId), []);
-  const programs = useLiveQuery(() => db.programs.toArray(), []);
-  const program = programs?.[0];
+  const templates = useLiveQuery(async () => (await db.templates.orderBy('name').toArray()).filter((x) => !x.programId && x.kind !== 'mobility'), []);
+  const programs = usePrograms();
+  const program = activeOf(programs);
   const [importing, setImporting] = useState(false);
   const [report, setReport] = useState<number | null>(null);
   // Sunday: report for this week. Monday: for the week that just ended.
@@ -58,7 +60,7 @@ export function Home({ onSettings, onOpenWorkout }: { onSettings: () => void; on
       {active && <ActiveCard w={active} onOpen={() => onOpenWorkout(active)} />}
       {program && workouts && (
         <div>
-          <ProgramBlock program={program} workouts={workouts} canStart={!active} onStart={(tpl) => void start(tpl)} />
+          <ProgramBlock program={program} programs={programs ?? []} workouts={workouts} canStart={!active} onStart={(tpl) => void start(tpl)} />
         </div>
       )}
       {!active && programs && !program && (
@@ -90,6 +92,8 @@ export function Home({ onSettings, onOpenWorkout }: { onSettings: () => void; on
           </button>
         </div>
       )}
+
+      {workouts && <MobilityBlock workouts={workouts} canStart={!active} onOpen={onOpenWorkout} />}
 
       <div className="row sec">
         <span className="m muted">// {t('home.templates')}</span>

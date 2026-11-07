@@ -17,10 +17,17 @@ for (const x of catalog) if (!byName.has(x.name.toLowerCase())) byName.set(x.nam
 const override = JSON.parse(await read('scripts/media-override.json'));
 for (const [name, id] of Object.entries(override)) byName.set(name, catalog.find((x) => x.exerciseId === id));
 
-const names = (await read('scripts/selection.txt'))
-  .split('\n')
-  .map((s) => s.trim())
-  .filter((s) => s && !s.startsWith('#'));
+// Sections '# == stretch' and '# == yoga' set the category; '| side' marks one-side-at-a-time holds
+const picked = [];
+let section = '';
+for (const raw of (await read('scripts/selection.txt')).split('\n')) {
+  const line = raw.trim();
+  if (line.startsWith('# ==')) section = line.slice(4).trim().split(/\s/)[0];
+  if (!line || line.startsWith('#')) continue;
+  const [name, flag] = line.split('|').map((x) => x.trim());
+  picked.push({ name, category: section === 'stretch' || section === 'yoga' ? section : undefined, perSide: flag === 'side' || undefined });
+}
+const names = picked.map((p) => p.name);
 
 const ru = {};
 for (const f of await readdir(new URL('scripts/ru/', root))) Object.assign(ru, JSON.parse(await read(`scripts/ru/${f}`)));
@@ -37,10 +44,32 @@ const EXTRAS = [
     ru: { n: 'Стульчик у стены', s: ['Спиной к стене, опустись до прямого угла в коленях.', 'Стопы под коленями, спина прижата.', 'Удерживай заданное время.'] } },
 ];
 
+// Yoga poses the catalog lacks: drawn as pictograms (scripts/pictograms.mjs -> public/pict/<key>.svg)
+const Y = (key, en, muscles, secondary, perSide, n, s) => ({ id: `y_${key}`, en, muscles, secondary, equipment: 'bodyweight', type: 'time', category: 'yoga', perSide: perSide || undefined, pict: key, ru: { n, s } });
+const YOGA = [
+  Y('mountain', 'mountain pose', ['abs'], ['glutes'], false, 'Гора', ['Встань прямо, стопы вместе или на ширине таза.', 'Вытянись макушкой вверх, плечи вниз, руки вдоль тела.', 'Вес равномерно на стопах, дыши ровно.']),
+  Y('tree', 'tree pose', ['glutes'], ['calves', 'abs'], true, 'Дерево', ['Встань на одну ногу, стопу другой поставь на внутреннюю сторону бедра или голени (не на колено).', 'Ладони сложи у груди или подними вверх.', 'Взгляд в одну точку, держи и смени ногу.']),
+  Y('warrior1', 'warrior I', ['quads'], ['glutes', 'shoulders'], true, 'Воин I', ['Широкий шаг вперёд, переднее колено над пяткой, задняя стопа под углом 45°.', 'Таз развёрнут вперёд, руки подняты вверх.', 'Держи, затем смени ногу.']),
+  Y('warrior2', 'warrior II', ['quads'], ['adductors', 'shoulders'], true, 'Воин II', ['Ноги широко, передняя стопа вперёд, задняя поперёк.', 'Согни переднее колено над пяткой, руки в стороны параллельно полу.', 'Взгляд через переднюю руку. Смени сторону.']),
+  Y('triangle', 'triangle pose', ['hams'], ['adductors', 'abs'], true, 'Треугольник', ['Ноги широко, передняя стопа вперёд, обе ноги прямые.', 'Потянись вперёд и наклонись: нижняя рука к голени, верхняя вверх.', 'Грудь раскрыта, держи и смени сторону.']),
+  Y('chair', 'chair pose', ['quads'], ['glutes', 'shoulders'], false, 'Стул', ['Стопы вместе, согни колени, таз назад, как будто садишься.', 'Руки подними вверх, корпус чуть вперёд.', 'Вес на пятках, держи.']),
+  Y('forwardfold', 'standing forward fold', ['hams'], ['lowerback', 'calves'], false, 'Наклон стоя', ['Стопы на ширине таза, наклонись вперёд от таза.', 'Колени можно чуть согнуть, голова свободно висит.', 'Руки к полу или к голеням, держи.']),
+  Y('downdog', 'downward facing dog', ['hams'], ['calves', 'shoulders', 'lats'], false, 'Собака мордой вниз', ['Из упора на четвереньках подними таз вверх и назад.', 'Руки и спина в одну линию, пятки тянутся к полу.', 'Колени можно согнуть, если спина округляется. Дыши ровно.']),
+  Y('cobra', 'cobra pose', ['lowerback'], ['abs', 'chest'], false, 'Кобра', ['Ляг на живот, ладони под плечами.', 'Поднимай грудь силой спины, локти слегка согнуты.', 'Лобок на полу, плечи вниз, держи.']),
+  Y('child', 'child pose', ['lowerback'], ['lats', 'glutes'], false, 'Поза ребёнка', ['Сядь на пятки, колени чуть шире таза.', 'Наклонись вперёд, лоб на пол, руки вытяни вперёд.', 'Расслабься и дыши в спину.']),
+  Y('catcow', 'cat cow', ['lowerback'], ['abs'], false, 'Кошка-корова', ['Встань на четвереньки: руки под плечами, колени под тазом.', 'На выдохе округли спину вверх, подбородок к груди.', 'На вдохе прогнись, взгляд вперёд. Чередуй плавно.']),
+  Y('pigeon', 'pigeon pose', ['glutes'], ['quads'], true, 'Голубь', ['Из упора выведи колено вперёд к руке, голень поперёк коврика.', 'Заднюю ногу вытяни назад, таз опусти.', 'Корпус прямо или ляг на переднюю ногу. Смени сторону.']),
+  Y('bridge', 'bridge pose', ['glutes'], ['hams', 'lowerback'], false, 'Мост', ['Ляг на спину, стопы на полу у таза.', 'Подними таз вверх, руки вдоль тела.', 'Колени смотрят вперёд, держи.']),
+  Y('happybaby', 'happy baby', ['adductors'], ['glutes', 'lowerback'], false, 'Счастливый ребёнок', ['Ляг на спину, подтяни колени к подмышкам.', 'Возьмись за внешние края стоп, голени вертикально.', 'Поясница на полу, можно покачаться.']),
+  Y('seatedfold', 'seated forward fold', ['hams'], ['lowerback', 'calves'], false, 'Наклон сидя', ['Сядь, ноги вытянуты вместе, носки на себя.', 'Вытяни спину вверх и наклонись вперёд от таза.', 'Руки к голеням или стопам, держи.']),
+  Y('lowlunge', 'low lunge', ['quads'], ['glutes', 'abs'], true, 'Низкий выпад', ['Шагни вперёд в выпад, заднее колено на пол.', 'Переднее колено над пяткой, таз опусти вперёд-вниз.', 'Руки вверх, держи и смени ногу.']),
+  Y('shavasana', 'corpse pose', ['abs'], [], false, 'Шавасана', ['Ляг на спину, ноги и руки свободно, ладони вверх.', 'Закрой глаза, расслабь всё тело.', 'Дыши спокойно, просто лежи.']),
+];
+
 const rows = [];
 const text = {};
 const missingRu = [];
-for (const name of names) {
+for (const { name, category, perSide } of picked) {
   const x = byName.get(name.toLowerCase());
   if (!x) throw new Error('not in catalog: ' + name);
   const equipment = mapEquipment(x.equipments);
@@ -56,7 +85,16 @@ for (const name of names) {
     if (t) text[x.exerciseId] = t;
     continue;
   }
-  rows.push({ id: x.exerciseId, en: x.name, muscles, secondary, equipment, type: guessType(x.name, x.bodyParts, equipment) });
+  rows.push({
+    id: x.exerciseId,
+    en: x.name,
+    muscles,
+    secondary,
+    equipment,
+    type: category ? 'time' : guessType(x.name, x.bodyParts, equipment),
+    ...(category && { category }),
+    ...(perSide && { perSide }),
+  });
   const t = ru[name.toLowerCase()];
   if (t) text[x.exerciseId] = t;
   else missingRu.push(name);
@@ -64,6 +102,11 @@ for (const name of names) {
 for (const e of EXTRAS) {
   const { ru: t, ...row } = e;
   rows.push({ ...row, noMedia: true });
+  text[e.id] = t;
+}
+for (const e of YOGA) {
+  const { ru: t, ...row } = e;
+  rows.push(JSON.parse(JSON.stringify(row))); // drops undefined perSide
   text[e.id] = t;
 }
 
@@ -80,7 +123,7 @@ if (!process.argv.includes('--no-media')) {
   let got = 0;
   const missingMedia = [];
   for (const r of rows) {
-    if (r.id.startsWith('x_')) continue;
+    if (r.id.startsWith('x_') || r.pict) continue;
     const file = new URL(`public/media/${r.id}.gif`, root);
     try {
       await access(file);
