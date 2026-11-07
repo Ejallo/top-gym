@@ -27,7 +27,7 @@ export default defineConfig({
       includeAssets: ['apple-touch-icon.png', 'icon.svg'],
       workbox: {
         // data/*.json = exercise base; version.json must stay out of the precache (update check)
-        globPatterns: ['**/*.{js,css,html,svg,png,woff2}', 'data/*.json'],
+        globPatterns: ['**/*.{js,css,html,svg,png,woff2}', 'data/*.json', 'body/*.bin'],
         // Exercise gifs are large: cache each one the first time it is shown instead of precaching all
         globIgnores: ['**/media/**'],
         runtimeCaching: [

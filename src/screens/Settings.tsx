@@ -132,6 +132,11 @@ export function Settings({ onBack }: { onBack: () => void }) {
       {/* Backup */}
       <div className="m muted sec">// {t('settings.backup')}</div>
       <BackupBlock />
+
+      {/* Credits (license requirement, not translated) */}
+      <p className="m muted" style={{ fontSize: 11, marginTop: 24, lineHeight: 1.5 }}>
+        3D body: BodyParts3D, © The Database Center for Life Science, licensed under CC Attribution 4.0 International
+      </p>
     </div>
   );
 }
