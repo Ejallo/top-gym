@@ -440,6 +440,7 @@ MEIN ZIEL UND MEINE BEDINGUNGEN:
   'account.pitch': 'Melde dich mit Google an — deine Trainings werden in der Cloud gespeichert und sind auf jedem Gerät da. Ohne Anmeldung bleibt alles nur auf diesem Handy.',
   'account.loginFailed': 'Anmeldung mit Google fehlgeschlagen. Versuch es noch einmal.',
   'account.gisFailed': 'Google-Anmeldung wurde nicht geladen. Prüfe das Internet.',
+  'account.pairedElsewhere': 'Anmeldung im Browser abgeschlossen. Zurück zur TOP GYM App auf dem Home-Bildschirm – sie meldet sich selbst an.',
   'account.syncing': 'Synchronisiere…',
   'account.error': 'Synchronisierungsfehler. Ich versuche es später.',
   'account.offline': 'Kein Internet — ich synchronisiere, sobald es da ist',

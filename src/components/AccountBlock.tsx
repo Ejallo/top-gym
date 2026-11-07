@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { t } from '../i18n';
 import { fmt } from '../lib/dates';
-import { ACCOUNT_API, signOut, syncNow, useSyncStatus } from '../lib/sync';
+import { ACCOUNT_API, claimPair, pairNonce, signOut, syncNow, useSyncStatus } from '../lib/sync';
 
 // OAuth client shared with Deutsch Reader (public value)
 const GOOGLE_CLIENT_ID = '638517168513-2n5pta330caejvn46sfljo74dd4tlhk8.apps.googleusercontent.com';
@@ -24,8 +24,9 @@ function loadGis(): Promise<Gis> {
 }
 
 /**
- * «Sign in with Google» in redirect mode: popups don't work in an iOS home-screen app,
- * so Google posts the sign-in to our server, which sends the browser back with a session.
+ * «Sign in with Google» in redirect mode: popups don't work in an iOS home-screen app, so Google posts
+ * the sign-in to our server. The session is handed over by a pairing nonce (see claimPair), because on
+ * iOS the redirect back may open in Safari rather than in the app.
  */
 function GoogleButton() {
   const ref = useRef<HTMLDivElement>(null);
@@ -35,14 +36,27 @@ function GoogleButton() {
     return failed ? t('account.loginFailed') : '';
   });
 
+  const [elsewhere] = useState(() => {
+    const v = sessionStorage.getItem('pairedElsewhere');
+    sessionStorage.removeItem('pairedElsewhere');
+    return !!v;
+  });
+
+  // Sign-in may finish in another browser context: keep asking the server while this block is open
+  useEffect(() => {
+    const id = setInterval(() => void claimPair(), 3000);
+    return () => clearInterval(id);
+  }, []);
+
   useEffect(() => {
     const dev = location.hostname === 'localhost';
-    loadGis()
-      .then((google) => {
+    Promise.all([loadGis(), pairNonce()])
+      .then(([google, nonce]) => {
         google.accounts.id.initialize({
           client_id: GOOGLE_CLIENT_ID,
           ux_mode: 'redirect',
           login_uri: `${ACCOUNT_API}/auth/google/${dev ? 'dev' : 'prod'}`,
+          nonce,
         });
         if (ref.current)
           google.accounts.id.renderButton(ref.current, { theme: 'filled_black', size: 'large', shape: 'rectangular', text: 'signin_with', locale: 'ru', width: 300 });
@@ -52,6 +66,7 @@ function GoogleButton() {
 
   return (
     <div>
+      {elsewhere && <p className="status lime">{t('account.pairedElsewhere')}</p>}
       <div ref={ref} className="google-btn" />
       {error && <p className="status pink">{error}</p>}
     </div>

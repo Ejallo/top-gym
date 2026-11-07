@@ -96,9 +96,31 @@ async function googleRedirect(req, env, target) {
     return Response.redirect(back.toString(), 303);
   }
   const session = await startSession(env, claims, userAgentOf(req));
-  // The fragment never reaches any server; the app reads and clears it
+  // Paired sign-in: the app put sha256(secret) into the token's nonce and polls /auth/claim with the
+  // secret. On iOS the Google page may finish in Safari instead of the home-screen app (separate
+  // storage), so the session is handed over through the server rather than through this redirect.
+  if (typeof claims.nonce === 'string' && /^[\w-]{43}$/.test(claims.nonce)) {
+    await env.DB.prepare('INSERT OR REPLACE INTO pairs (nonce, token, name, email, created) VALUES (?1, ?2, ?3, ?4, ?5)')
+      .bind(claims.nonce, session, claims.name ?? '', claims.email ?? '', Date.now())
+      .run();
+    back.hash = 'paired';
+    return Response.redirect(back.toString(), 303);
+  }
+  // Legacy: the fragment never reaches any server; the app reads and clears it
   back.hash = new URLSearchParams({ login: session, name: claims.name ?? '', email: claims.email ?? '' }).toString();
   return Response.redirect(back.toString(), 303);
+}
+
+const PAIR_TTL = 10 * 60 * 1000;
+
+/** The app trades its pairing secret for the session that Google sign-in left under sha256(secret). One use only. */
+async function claim(req, env) {
+  const { secret } = await req.json().catch(() => ({}));
+  if (typeof secret !== 'string' || !/^[\w-]{20,100}$/.test(secret)) return json(req, { error: 'bad secret' }, 400);
+  await env.DB.prepare('DELETE FROM pairs WHERE created < ?1').bind(Date.now() - PAIR_TTL).run();
+  const row = await env.DB.prepare('DELETE FROM pairs WHERE nonce = ?1 RETURNING token, name, email').bind(await sha256(secret)).first();
+  if (!row) return json(req, { pending: true });
+  return json(req, { token: row.token, name: row.name, email: row.email });
 }
 
 const validId = (s) => typeof s === 'string' && s.length > 0 && s.length <= 120 && /^[\w.:-]+$/.test(s);
@@ -165,6 +187,7 @@ export default {
       return googleRedirect(req, env, path.endsWith('dev') ? 'dev' : 'prod');
     }
     if (path === '/') return json(req, { ok: true, service: 'top-gym-api' });
+    if (path === '/auth/claim' && req.method === 'POST') return claim(req, env);
 
     const userId = await userFromRequest(req, env);
     if (!userId) return json(req, { error: 'unauthorized' }, 401);

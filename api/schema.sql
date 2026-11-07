@@ -34,3 +34,12 @@ CREATE TABLE IF NOT EXISTS photos (
   type TEXT,
   PRIMARY KEY (user_id, id)
 );
+
+-- Paired sign-in hand-over: session waiting for the app that holds the secret (nonce = sha256(secret)); lives 10 min
+CREATE TABLE IF NOT EXISTS pairs (
+  nonce TEXT PRIMARY KEY,
+  token TEXT NOT NULL,
+  name TEXT,
+  email TEXT,
+  created INTEGER NOT NULL
+);

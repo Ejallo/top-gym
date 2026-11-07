@@ -24,6 +24,7 @@ async function start() {
   // Back from Google sign-in: the server put a session into the URL fragment
   const login = await takeLoginFromUrl();
   if (login === 'error') sessionStorage.setItem('loginError', '1');
+  if (login === 'elsewhere') sessionStorage.setItem('pairedElsewhere', '1');
   if (login) sessionStorage.setItem('openSettings', '1');
   // Ask iOS not to evict local data (works for apps added to the Home Screen)
   void navigator.storage?.persist?.();

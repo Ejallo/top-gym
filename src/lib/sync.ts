@@ -15,7 +15,7 @@ const TABLES = ['customExercises', 'templates', 'programs', 'workouts', 'kv'] as
 type Tbl = (typeof TABLES)[number];
 const SYNCED_KV = new Set(['weeklyGoal']); // other kv keys are device-local
 
-const LS = { session: 'tg.session', user: 'tg.user', seq: 'tg.seq', outbox: 'tg.outbox', photos: 'tg.photosUp' };
+const LS = { session: 'tg.session', user: 'tg.user', seq: 'tg.seq', outbox: 'tg.outbox', photos: 'tg.photosUp', pair: 'tg.pair' };
 
 type Outbox = Record<string, { at: number; deleted: boolean }>; // key: `${tbl}|${id}`
 
@@ -275,24 +275,88 @@ function scheduleSync(ms = 2500) {
 
 // ---------- sign-in / sign-out ----------
 
-/** Back from Google: the server put a session into the URL fragment. Returns what happened. */
-export async function takeLoginFromUrl(): Promise<'ok' | 'error' | null> {
-  const hash = location.hash.slice(1);
-  if (hash === 'login-error') {
-    history.replaceState(null, '', location.pathname + location.search);
-    return 'error';
+async function acceptSession(token: string, account: Account) {
+  localStorage.setItem(LS.session, token);
+  localStorage.setItem(LS.user, JSON.stringify(account));
+  localStorage.setItem(LS.seq, '0');
+  localStorage.removeItem(LS.photos);
+  localStorage.removeItem(LS.pair);
+  await markAllDirty(); // upload what's already on this device
+  setStatus({ account, state: 'idle' });
+}
+
+// ---------- paired sign-in ----------
+// The app keeps a random secret and gives Google only its hash as the ID-token nonce. After sign-in the
+// server parks the session under that hash; the app claims it with the secret. This works wherever the
+// Google page ends up (on iOS it may finish in Safari, whose storage is separate from the home-screen app).
+
+const PAIR_TTL = 10 * 60 * 1000;
+interface Pair {
+  secret: string;
+  nonce: string;
+  at: number;
+}
+
+const b64url = (bytes: Uint8Array) => btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+
+const freshPair = (): Pair | null => {
+  const p = readJson<Pair | null>(LS.pair, null);
+  return p && Date.now() - p.at < PAIR_TTL ? p : null;
+};
+
+/** Nonce for the Google button; the secret behind it stays on this device. */
+export async function pairNonce(): Promise<string> {
+  const old = freshPair();
+  if (old && Date.now() - old.at < PAIR_TTL / 2) return old.nonce;
+  const secret = b64url(crypto.getRandomValues(new Uint8Array(32)));
+  const nonce = b64url(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(secret))));
+  localStorage.setItem(LS.pair, JSON.stringify({ secret, nonce, at: Date.now() } satisfies Pair));
+  return nonce;
+}
+
+let claiming = false;
+/** Asks the server whether the sign-in for our secret has finished; signs in if so. */
+export async function claimPair(): Promise<boolean> {
+  const p = freshPair();
+  if (!p || session() || claiming) return false;
+  claiming = true;
+  try {
+    const r = await fetch(ACCOUNT_API + '/auth/claim', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ secret: p.secret }) });
+    if (!r.ok) return false;
+    const d = (await r.json()) as { token?: string; name?: string; email?: string };
+    if (!d.token) return false;
+    await acceptSession(d.token, { name: d.name ?? '', email: d.email ?? '' });
+    void syncNow();
+    return true;
+  } catch {
+    return false;
+  } finally {
+    claiming = false;
   }
+}
+
+/**
+ * Back from Google. 'paired' = the server holds a session for some device's secret: claim it if it's
+ * ours, otherwise this is a different browser (iOS Safari) and the user should return to the app.
+ */
+export async function takeLoginFromUrl(): Promise<'ok' | 'error' | 'elsewhere' | null> {
+  const hash = location.hash.slice(1);
+  if (hash === 'login-error' || hash === 'paired') history.replaceState(null, '', location.pathname + location.search);
+  if (hash === 'login-error') return 'error';
+  if (hash === 'paired') {
+    if (!freshPair()) return 'elsewhere';
+    for (let i = 0; i < 3; i++) {
+      if (await claimPair()) return 'ok';
+      await new Promise((r) => setTimeout(r, 800));
+    }
+    return session() ? 'ok' : 'error';
+  }
+  // Legacy redirect with the session in the fragment
   const p = new URLSearchParams(hash);
   const token = p.get('login');
   if (!token) return null;
   history.replaceState(null, '', location.pathname + location.search);
-  localStorage.setItem(LS.session, token);
-  const account = { name: p.get('name') ?? '', email: p.get('email') ?? '' };
-  localStorage.setItem(LS.user, JSON.stringify(account));
-  localStorage.setItem(LS.seq, '0');
-  localStorage.removeItem(LS.photos);
-  await markAllDirty(); // upload what's already on this device
-  setStatus({ account, state: 'idle' });
+  await acceptSession(token, { name: p.get('name') ?? '', email: p.get('email') ?? '' });
   return 'ok';
 }
 
@@ -313,10 +377,13 @@ export async function signOut() {
 
 export function startSync() {
   installHooks();
-  if (!session()) return;
   void syncNow();
+  void claimPair();
+  // Listeners stay on while signed out too: sign-in can finish later in this session
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') void syncNow();
+    if (document.visibilityState !== 'visible') return;
+    void claimPair();
+    void syncNow();
   });
   window.addEventListener('online', () => void syncNow());
   setInterval(() => void syncNow(), 5 * 60 * 1000);
