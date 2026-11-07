@@ -6,6 +6,7 @@ import { fmt } from '../lib/dates';
 import { useExercises } from '../lib/exercises';
 import { minutes, totals } from '../lib/workouts';
 import { Sheet } from '../components/Sheet';
+import { tonnageText } from '../lib/tonnage';
 import { WorkoutRow } from '../components/WorkoutRow';
 
 /** All finished workouts, newest first, grouped by month. */
@@ -75,6 +76,7 @@ export function WorkoutView({ w, onEdit, onClose }: { w: Workout; onEdit: () => 
         {minutes(tt.durationMs)} {t('unit.min')} · {t('hist.line', { ex: tt.exercises, sets: tt.sets })}
         {tt.volume > 0 && ` · ${num(tt.volume)} ${t('unit.kg')}`}
       </div>
+      {tonnageText(tt.volume, w.id) && <div className="m lime" style={{ marginTop: 4 }}>{tonnageText(tt.volume, w.id)}</div>}
 
       {w.entries.map((e, i) => {
         const ex = byId.get(e.exerciseId);

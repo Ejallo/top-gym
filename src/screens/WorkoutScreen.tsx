@@ -14,6 +14,7 @@ import { DEFAULT_HOLD, PREP, cooldownFor, startMobility } from '../lib/mobility'
 import { setPin, usePins } from '../lib/pins';
 import { alternatives, swapEntry } from '../lib/swap';
 import { Sheet } from '../components/Sheet';
+import { tonnageText } from '../lib/tonnage';
 
 const UNITS = () => ({ kg: t('unit.kg'), min: t('unit.min'), km: t('unit.km'), sec: t('unit.sec') });
 
@@ -639,6 +640,7 @@ function Summary({
           <div className="h h-l" style={{ marginTop: 6 }}>
             {num(tt.volume)} {t('unit.kg')}
           </div>
+          {tonnageText(tt.volume, w.id) && <div className="m" style={{ marginTop: 6 }}>{tonnageText(tt.volume, w.id)}</div>}
         </div>
       )}
       {cool && cool.items.length > 0 && (
