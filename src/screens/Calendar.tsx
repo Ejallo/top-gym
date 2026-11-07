@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { t } from '../i18n';
-import { db, type Workout } from '../lib/db';
+import { db, type Template, type Workout } from '../lib/db';
 import { fmt, monthCells, sameDay, weekday, weekdayNames } from '../lib/dates';
 import { useExercises } from '../lib/exercises';
 import { dominantGroup, useFinishedWorkouts, useWeeklyGoal, weekStreak, weeklyCounts } from '../lib/stats';
@@ -14,6 +14,12 @@ import { WeeklyReport } from './WeeklyReport';
 import { weekStartOf } from '../lib/stats';
 import { activeOf, usePrograms } from '../lib/programs';
 import { ProgramSwitcher } from '../components/ProgramBlock';
+import { ExerciseMedia } from '../components/ExerciseMedia';
+import { activeWorkout, entryFromPlan, planText, startWorkout } from '../lib/workouts';
+import { dayOn, isoDate, startRehabDay, useRehab, useRehabDone, useRehabTicks, type RehabExercise } from '../lib/rehab';
+import { DayItems, ExerciseSheet } from './Rehab';
+
+const UNITS = () => ({ kg: t('unit.kg'), min: t('unit.min'), km: t('unit.km'), sec: t('unit.sec') });
 
 /** Day colour by the main muscle group of the workout. */
 const COLOR: Partial<Record<Group, string>> = { legs: 'b', back: 'c', cardio: 'c' };
@@ -36,14 +42,25 @@ export function Calendar({ onSettings, onOpenWorkout }: { onSettings: () => void
   const [goal, setGoal] = useWeeklyGoal();
 
   const byId = new Map((list ?? []).map((e) => [e.id, e]));
-  const tplName = new Map((programTemplates ?? []).map((x) => [x.id, x.name]));
+  const tplById = new Map((programTemplates ?? []).map((x) => [x.id, x]));
+  const rehab = useRehab();
+  const rehabDone = useRehabDone();
+  const rehabTicks = useRehabTicks();
+  const [rehabEx, setRehabEx] = useState<RehabExercise | null>(null);
   const cells = monthCells(cursor.getFullYear(), cursor.getMonth());
   const shift = (n: number) => setCursor(new Date(cursor.getFullYear(), cursor.getMonth() + n, 1));
   const onDay = (d: Date) => (workouts ?? []).filter((w) => sameDay(new Date(w.startedAt), d));
   const plannedOn = (d: Date) => {
     const start = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     if (!program || d < start) return [];
-    return program.days.filter((x) => x.weekday === weekday(d)).map((x) => tplName.get(x.templateId) ?? '');
+    return program.days.filter((x) => x.weekday === weekday(d)).flatMap((x) => tplById.get(x.templateId) ?? []);
+  };
+  const isToday = (d: Date) => sameDay(d, today);
+  // Starting from the calendar: only for today; a running workout opens instead of a new one
+  const startTpl = async (tpl: Template) => {
+    const running = await activeWorkout();
+    setDay(null);
+    onOpenWorkout(running ?? (await startWorkout(tpl.name, tpl)));
   };
 
   const monthCount = (workouts ?? []).filter(
@@ -140,27 +157,77 @@ export function Calendar({ onSettings, onOpenWorkout }: { onSettings: () => void
       {day && (
         <Sheet onClose={() => setDay(null)}>
           <div className="m lime">{fmt(day, { weekday: 'long', day: 'numeric', month: 'long' })}</div>
-          {onDay(day).length === 0 && plannedOn(day).length === 0 && (
-            <p className="m muted" style={{ marginTop: 16 }}>
-              {t('cal.dayEmpty')}
-            </p>
-          )}
-          {plannedOn(day).map((name, i) =>
-            onDay(day).length ? null : (
-              <div key={i} className="dash" style={{ marginTop: 12 }}>
-                <div className="m muted">{t('cal.planned')}</div>
-                <div className="h h-m" style={{ marginTop: 6 }}>
-                  {name}
-                </div>
-              </div>
-            ),
-          )}
+          {(() => {
+            const rd = rehab ? dayOn(rehab, isoDate(day)) : null;
+            const planned = onDay(day).length ? [] : plannedOn(day);
+            const rDone = rd && (rehabDone.has(rd.day.d) || rehabTicks.includes(rd.day.d));
+            return (
+              <>
+                {onDay(day).length === 0 && planned.length === 0 && !rd && (
+                  <p className="m muted" style={{ marginTop: 16 }}>
+                    {t('cal.dayEmpty')}
+                  </p>
+                )}
+                {planned.map((tpl) => (
+                  <div key={tpl.id} className="dash" style={{ marginTop: 12 }}>
+                    <div className="m muted">{t('cal.planned')}</div>
+                    <div className="h h-m" style={{ marginTop: 6 }}>
+                      {tpl.name}
+                    </div>
+                    {tpl.items.map((it, i) => {
+                      const ex = byId.get(it.exerciseId);
+                      return (
+                        <div key={i} className="ex-row">
+                          {ex && <ExerciseMedia ex={ex} size="thumb" />}
+                          <div className="ex-row-text">
+                            <b>{ex?.name ?? it.exerciseId}</b>
+                            <span className="m muted">{planText(entryFromPlan(it), ex, UNITS())}</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                    {isToday(day) && (
+                      <button className="btn lime" style={{ marginTop: 12 }} onClick={() => void startTpl(tpl)}>
+                        {t('rehab.start')} →
+                      </button>
+                    )}
+                  </div>
+                ))}
+                {rd && (
+                  <div className="rehab-today" style={{ marginTop: 12 }}>
+                    <div className="m">
+                      {t('rehab.title')} · {rd.week.title}
+                    </div>
+                    <div className="h h-m" style={{ marginTop: 6 }}>
+                      {rd.day.label}
+                      {rDone && ' ✓'}
+                    </div>
+                    <DayItems day={rd.day} onEx={(k) => setRehabEx(rehab!.exercises.find((e) => e.key === k) ?? null)} />
+                    {isToday(day) && rd.day.items.length > 0 && (
+                      <button
+                        className="btn cyan"
+                        style={{ marginTop: 12 }}
+                        onClick={async () => {
+                          const running = await activeWorkout();
+                          setDay(null);
+                          onOpenWorkout(running ?? (await startRehabDay(rd.day, `${t('rehab.title')} · ${rd.week.title}`)));
+                        }}
+                      >
+                        {t('rehab.start')} →
+                      </button>
+                    )}
+                  </div>
+                )}
+              </>
+            );
+          })()}
           {onDay(day).map((w) => (
             <WorkoutRow key={w.id} w={w} onOpen={() => setView(w)} />
           ))}
           <button className="btn ghost small" style={{ marginTop: 14 }} onClick={() => setReport(weekStartOf(day.getTime()))}>
             {t('report.forThisWeek')} →
           </button>
+          {rehabEx && <ExerciseSheet e={rehabEx} onClose={() => setRehabEx(null)} />}
           {view && (
             <WorkoutView
               w={view}

@@ -121,6 +121,12 @@ export function allDays(p: RehabProgram): RehabDay[] {
   return p.weeks.flatMap((w) => w.days);
 }
 
+/** The program day on exactly this date, if any. */
+export function dayOn(p: RehabProgram, date: string): { day: RehabDay; week: RehabWeek } | null {
+  for (const week of p.weeks) for (const day of week.days) if (day.d === date) return { day, week };
+  return null;
+}
+
 /** The day for a date; before the start → the first day, after the end → null. */
 export function dayFor(p: RehabProgram, date: string): { day: RehabDay; week: RehabWeek } | null {
   for (const week of p.weeks) for (const day of week.days) if (day.d === date) return { day, week };

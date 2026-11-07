@@ -232,7 +232,7 @@ function TodayCard(props: {
   );
 }
 
-function DayItems({ day, onEx }: { day: RehabDay; onEx: (key: string) => void }) {
+export function DayItems({ day, onEx }: { day: RehabDay; onEx: (key: string) => void }) {
   return (
     <ul className="rehab-list">
       {day.items.map((x, i) => (
@@ -290,7 +290,7 @@ function WeekBlock({ w, today, isDone, defaultOpen, onEx }: { w: RehabWeek; toda
   );
 }
 
-function ExerciseSheet({ e, onClose }: { e: RehabExercise; onClose: () => void }) {
+export function ExerciseSheet({ e, onClose }: { e: RehabExercise; onClose: () => void }) {
   return (
     <Sheet onClose={onClose}>
       <div className="m cyan">
