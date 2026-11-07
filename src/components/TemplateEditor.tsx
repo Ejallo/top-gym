@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { t } from '../i18n';
 import { db, uid, type Folder, type PlanItem, type Template } from '../lib/db';
-import { useExercises } from '../lib/exercises';
+import { useExercises, type Exercise } from '../lib/exercises';
 import { Sheet } from './Sheet';
 import { ExercisePicker } from './ExercisePicker';
 import { ExerciseMedia } from './ExerciseMedia';
 import { NumInput } from './NumInput';
+import { ExerciseDetail } from './ExerciseDetail';
 
 /** Create or edit a workout template, or (kind = mobility) an own stretching/yoga routine of timed holds. */
 export function TemplateEditor({ edit, kind, folder, onClose }: { edit?: Template; kind?: 'mobility'; folder?: Folder; onClose: () => void }) {
@@ -14,6 +15,9 @@ export function TemplateEditor({ edit, kind, folder, onClose }: { edit?: Templat
   const [name, setName] = useState(edit?.name ?? '');
   const [items, setItems] = useState<PlanItem[]>(edit?.items ?? []);
   const [picking, setPicking] = useState(false);
+  // Index of the item being swapped for another exercise (sets, reps and weight stay)
+  const [replacing, setReplacing] = useState<number | null>(null);
+  const [info, setInfo] = useState<Exercise | null>(null);
   const [error, setError] = useState('');
   const byId = new Map((list ?? []).map((e) => [e.id, e]));
 
@@ -66,13 +70,18 @@ export function TemplateEditor({ edit, kind, folder, onClose }: { edit?: Templat
         return (
           <div key={i} className="plan-item">
             <div className="row" style={{ alignItems: 'flex-start' }}>
-              <div className="row" style={{ justifyContent: 'flex-start', gap: 10, minWidth: 0 }}>
+              <button
+                className="row"
+                style={{ justifyContent: 'flex-start', gap: 10, minWidth: 0, textAlign: 'left' }}
+                onClick={() => ex && setInfo(ex)}
+              >
                 {ex && <ExerciseMedia ex={ex} size="thumb" />}
                 <b className="h h-s" style={{ lineHeight: 1.1 }}>
                   {ex?.name ?? it.exerciseId}
                 </b>
-              </div>
+              </button>
               <div className="plan-tools">
+                <button onClick={() => setReplacing(i)} aria-label="replace">⇄</button>
                 <button onClick={() => move(i, -1)} aria-label="up">↑</button>
                 <button onClick={() => move(i, 1)} aria-label="down">↓</button>
                 <button className="pink" onClick={() => setItems((xs) => xs.filter((_, j) => j !== i))} aria-label="delete">
@@ -148,6 +157,22 @@ export function TemplateEditor({ edit, kind, folder, onClose }: { edit?: Templat
         {t('custom.save')}
       </button>
 
+      {replacing !== null && (
+        <ExercisePicker
+          single
+          // Start on the same muscle group (or section) as the exercise being replaced
+          initialFilter={(() => {
+            const cur = byId.get(items[replacing]?.exerciseId);
+            return cur?.category ?? cur?.group ?? (mobility ? 'stretch' : undefined);
+          })()}
+          onClose={() => setReplacing(null)}
+          onPick={(ids) => {
+            if (ids[0]) patch(replacing, { exerciseId: ids[0] });
+            setReplacing(null);
+          }}
+        />
+      )}
+      {info && <ExerciseDetail ex={info} onClose={() => setInfo(null)} />}
       {picking && (
         <ExercisePicker
           initialFilter={mobility ? 'stretch' : undefined}

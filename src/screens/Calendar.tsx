@@ -15,6 +15,9 @@ import { weekStartOf } from '../lib/stats';
 import { activeOf, usePrograms } from '../lib/programs';
 import { ProgramSwitcher } from '../components/ProgramBlock';
 import { ExerciseMedia } from '../components/ExerciseMedia';
+import { ExerciseDetail } from '../components/ExerciseDetail';
+import { TemplateEditor } from '../components/TemplateEditor';
+import type { Exercise } from '../lib/exercises';
 import { activeWorkout, entryFromPlan, planText, startWorkout } from '../lib/workouts';
 import { dayOn, isoDate, startRehabDay, useRehab, useRehabDone, useRehabTicks, type RehabExercise } from '../lib/rehab';
 import { DayItems, ExerciseSheet } from './Rehab';
@@ -47,6 +50,8 @@ export function Calendar({ onSettings, onOpenWorkout }: { onSettings: () => void
   const rehabDone = useRehabDone();
   const rehabTicks = useRehabTicks();
   const [rehabEx, setRehabEx] = useState<RehabExercise | null>(null);
+  const [info, setInfo] = useState<Exercise | null>(null);
+  const [editTpl, setEditTpl] = useState<Template | null>(null);
   const cells = monthCells(cursor.getFullYear(), cursor.getMonth());
   const shift = (n: number) => setCursor(new Date(cursor.getFullYear(), cursor.getMonth() + n, 1));
   const onDay = (d: Date) => (workouts ?? []).filter((w) => sameDay(new Date(w.startedAt), d));
@@ -177,20 +182,28 @@ export function Calendar({ onSettings, onOpenWorkout }: { onSettings: () => void
                     {tpl.items.map((it, i) => {
                       const ex = byId.get(it.exerciseId);
                       return (
-                        <div key={i} className="ex-row">
+                        <button key={i} className="ex-row" onClick={() => ex && setInfo(ex)}>
                           {ex && <ExerciseMedia ex={ex} size="thumb" />}
-                          <div className="ex-row-text">
+                          <span className="ex-row-text">
                             <b>{ex?.name ?? it.exerciseId}</b>
                             <span className="m muted">{planText(entryFromPlan(it), ex, UNITS())}</span>
-                          </div>
-                        </div>
+                          </span>
+                        </button>
                       );
                     })}
-                    {isToday(day) && (
-                      <button className="btn lime" style={{ marginTop: 12 }} onClick={() => void startTpl(tpl)}>
-                        {t('rehab.start')} →
+                    <div className="btn-row" style={{ marginTop: 12 }}>
+                      {isToday(day) && (
+                        <button className="btn lime small" onClick={() => void startTpl(tpl)}>
+                          {t('rehab.start')} →
+                        </button>
+                      )}
+                      <button className="btn outline small" onClick={() => setEditTpl(tpl)}>
+                        {t('ex.edit')}
                       </button>
-                    )}
+                    </div>
+                    <p className="m muted" style={{ marginTop: 8, textTransform: 'none' }}>
+                      {t('cal.editHint')}
+                    </p>
                   </div>
                 ))}
                 {rd && (
@@ -228,6 +241,8 @@ export function Calendar({ onSettings, onOpenWorkout }: { onSettings: () => void
             {t('report.forThisWeek')} →
           </button>
           {rehabEx && <ExerciseSheet e={rehabEx} onClose={() => setRehabEx(null)} />}
+          {info && <ExerciseDetail ex={info} onClose={() => setInfo(null)} />}
+          {editTpl && <TemplateEditor edit={editTpl} onClose={() => setEditTpl(null)} />}
           {view && (
             <WorkoutView
               w={view}

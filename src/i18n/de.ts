@@ -120,6 +120,7 @@ MEIN ZIEL UND MEINE BEDINGUNGEN:
   'unit.sec': 'Sek',
   'unit.km': 'km',
 
+  'picker.replaceTitle': 'Ersetzen durch',
   'picker.title': 'Übungen wählen',
   'picker.add': 'Hinzufügen ({n})',
 
@@ -265,6 +266,7 @@ MEIN ZIEL UND MEINE BEDINGUNGEN:
   'cal.legend.back': 'Rücken, Cardio',
   'cal.legend.planned': 'geplant',
   'cal.dayEmpty': 'An diesem Tag gab es kein Training',
+  'cal.editHint': 'Änderungen gelten für diesen Programmtag in allen Wochen.',
   'cal.planned': 'Geplant',
   'cal.program': 'Plan im Kalender',
 

@@ -117,6 +117,7 @@ export const ru = {
   'unit.sec': 'сек',
   'unit.km': 'км',
 
+  'picker.replaceTitle': 'Заменить на',
   'picker.title': 'Выбери упражнения',
   'picker.add': 'Добавить ({n})',
 
@@ -262,6 +263,7 @@ export const ru = {
   'cal.legend.back': 'спина, кардио',
   'cal.legend.planned': 'по плану',
   'cal.dayEmpty': 'В этот день тренировок не было',
+  'cal.editHint': 'Правка меняет этот день программы во всех неделях.',
   'cal.planned': 'По плану',
   'cal.program': 'Программа в календаре',
 

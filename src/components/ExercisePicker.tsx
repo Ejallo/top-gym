@@ -15,10 +15,13 @@ export function ExercisePicker({
   onPick,
   onClose,
   initialFilter,
+  single,
 }: {
   onPick: (ids: string[]) => void;
   onClose: () => void;
   initialFilter?: Filter;
+  /** Replace mode: one tap picks the exercise and closes */
+  single?: boolean;
 }) {
   const list = useExercises();
   const [q, setQ] = useState('');
@@ -38,7 +41,7 @@ export function ExercisePicker({
 
   return (
     <Sheet onClose={onClose}>
-      <div className="h h-l">{t('picker.title')}</div>
+      <div className="h h-l">{t(single ? 'picker.replaceTitle' : 'picker.title')}</div>
       <input
         className="search"
         style={{ marginTop: 12 }}
@@ -68,13 +71,13 @@ export function ExercisePicker({
         {shown.slice(0, limit).map((e) => {
           const n = picked.indexOf(e.id);
           return (
-            <button key={e.id} className={'ex-row' + (n >= 0 ? ' picked' : '')} onClick={() => toggle(e.id)}>
+            <button key={e.id} className={'ex-row' + (n >= 0 ? ' picked' : '')} onClick={() => (single ? onPick([e.id]) : toggle(e.id))}>
               <ExerciseMedia ex={e} size="thumb" />
               <div className="ex-row-text">
                 <b>{e.name}</b>
                 <span className="m muted">{t(`muscle.${e.muscles[0]}`)}</span>
               </div>
-              <span className="pick-mark">{n >= 0 ? n + 1 : '+'}</span>
+              <span className="pick-mark">{single ? '⇄' : n >= 0 ? n + 1 : '+'}</span>
             </button>
           );
         })}
