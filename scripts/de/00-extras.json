@@ -19,5 +19,8 @@
   "y_happybaby": {"n": "Glückliches Baby", "s": ["Leg dich auf den Rücken und zieh die Knie zu den Achseln.", "Greif die Außenkanten der Füße, Unterschenkel senkrecht.", "Unterer Rücken am Boden, sanft schaukeln ist erlaubt."]},
   "y_seatedfold": {"n": "Vorbeuge im Sitzen", "s": ["Setz dich, Beine gestreckt und zusammen, Zehen zu dir.", "Streck den Rücken nach oben und beug dich aus der Hüfte vor.", "Hände zu den Schienbeinen oder Füßen, halten."]},
   "y_lowlunge": {"n": "Tiefer Ausfallschritt", "s": ["Geh in einen Ausfallschritt, hinteres Knie auf den Boden.", "Vorderes Knie über der Ferse, Becken nach vorn-unten sinken lassen.", "Arme nach oben, halten und Bein wechseln."]},
-  "y_shavasana": {"n": "Shavasana", "s": ["Leg dich auf den Rücken, Arme und Beine locker, Handflächen nach oben.", "Schließ die Augen und entspann den ganzen Körper.", "Ruhig atmen und einfach liegen."]}
+  "y_shavasana": {"n": "Shavasana", "s": ["Leg dich auf den Rücken, Arme und Beine locker, Handflächen nach oben.", "Schließ die Augen und entspann den ganzen Körper.", "Ruhig atmen und einfach liegen."]},
+  "v_prone_band_raise": {"n": "Band-Heben in Bauchlage (einarmig)", "s": ["Leg dich bäuchlings hin, Arme nach vorn gestreckt, Band in den Händen.", "Eine Hand hält das Band am Boden, die andere zieht es nach oben und zur Seite.", "Langsam zurück. Arm wechseln."]},
+  "v_quadruped_band_row": {"n": "Einarmiges Band-Rudern im Vierfüßlerstand", "s": ["Vierfüßlerstand, Knie auf der Matte, Rücken gerade.", "Eine Hand drückt das Band zu Boden, die andere zieht es zur Hüfte, das Schulterblatt geht zur Wirbelsäule.", "Langsam zurück. Arm wechseln."]},
+  "v_overhead_band_rotation": {"n": "Oberkörperdrehung mit Band über dem Kopf (Fersensitz)", "s": ["Setz dich auf die Fersen, Band über dem Kopf gespannt, Ellbogen gebeugt.", "Mit Spannung und gesenkten Schulterblättern den Oberkörper nach rechts und links drehen.", "Langsam und kontrolliert bewegen."]}
 }

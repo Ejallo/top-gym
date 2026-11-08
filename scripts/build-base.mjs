@@ -85,6 +85,14 @@ const STRETCH = [
   S('soleus', 'soleus wall stretch', ['calves'], [], 'Растяжка камбаловидной у стены', ['Встань лицом к стене, одна стопа впереди, другая чуть сзади.', 'Согни оба колена, пятка задней ноги на полу.', 'Держи до натяжения низко в икре. Смени ногу.']),
 ];
 
+// Own exercises with a gif cut from a video (public/media/v_*.gif is committed, never downloaded)
+const V = (key, en, muscles, secondary, n, s) => ({ id: `v_${key}`, en, muscles, secondary, equipment: 'band', type: 'reps', category: 'rehab', ru: { n, s } });
+const VIDEO = [
+  V('prone_band_raise', 'prone single-arm band raise', ['traps'], ['shoulders'], 'Подъём ленты лёжа на животе одной рукой', ['Ляг лицом вниз, руки вытянуты вперёд, лента в ладонях.', 'Одна рука держит ленту у пола, другая тянет её вверх и в сторону.', 'Медленно вернись. Шея расслаблена, плечо не тянется к уху. Смени руку.']),
+  V('quadruped_band_row', 'quadruped single-arm band row', ['lats'], ['traps', 'shoulders'], 'Тяга ленты на четвереньках одной рукой', ['Встань на четвереньки, колени на коврике, спина ровная.', 'Одна рука прижимает ленту к полу, другая тянет её к бедру, лопатка идёт к позвоночнику.', 'Медленно вернись, корпус не раскачивай. Смени руку.']),
+  V('overhead_band_rotation', 'kneeling overhead band rotation', ['traps'], ['shoulders', 'abs'], 'Поворот корпуса с лентой над головой, сидя на пятках', ['Сядь на пятки, лента натянута над головой, локти согнуты.', 'Удерживая натяжение и опустив лопатки, поворачивай корпус вправо-влево.', 'Поясница не прогибается, подбородок не выезжает вперёд.']),
+];
+
 const rows = [];
 const text = {};
 const textDe = {};
@@ -127,7 +135,7 @@ for (const e of EXTRAS) {
   text[e.id] = t;
   if (de[e.id]) textDe[e.id] = de[e.id];
 }
-for (const e of [...YOGA, ...STRETCH]) {
+for (const e of [...YOGA, ...STRETCH, ...VIDEO]) {
   const { ru: t, ...row } = e;
   rows.push(JSON.parse(JSON.stringify(row))); // drops undefined perSide
   text[e.id] = t;
