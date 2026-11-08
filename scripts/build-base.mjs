@@ -2,6 +2,7 @@
 //   public/data/exercises.json     language-neutral rows
 //   public/data/exercises.ru.json  id -> { n: name, s: steps }
 //   public/data/exercises.de.json  same in German (scripts/de: by English name, extras/yoga by id)
+//   + common mistakes from scripts/mistakes (see build-mistakes.mjs)
 //   public/media/<id>.gif          gifs (skipped if already downloaded)
 // Usage: node scripts/build-base.mjs [--no-media]
 import { readFile, writeFile, mkdir, readdir, access } from 'node:fs/promises';
@@ -143,6 +144,8 @@ if (missingDe.length) console.log('MISSING DE:', missingDe);
 if (missingRu.length) console.log('MISSING RU:', missingRu);
 const unused = Object.keys(ru).filter((k) => !names.some((n) => n.toLowerCase() === k));
 if (unused.length) console.log('UNUSED RU KEYS:', unused);
+
+await import('./build-mistakes.mjs');
 
 if (!process.argv.includes('--no-media')) {
   await mkdir(new URL('public/media/', root), { recursive: true });

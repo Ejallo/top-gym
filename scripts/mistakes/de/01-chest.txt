@@ -1,0 +1,49 @@
+barbell bench press :: Becken von der Bank heben | Ellbogen im 90°-Winkel zum Körper ausstellen — die Last geht in die Schultern | Langhantel von der Brust abfedern
+barbell incline bench press :: Zu steiler Winkel — es arbeiten die Schultern statt der Brust | Langhantel zum Hals oder zur Brustmitte senken | Zusammengezogene Schulterblätter verlieren
+barbell decline bench press :: Langhantel zu hoch, zum Hals, senken | Beine nicht unter den Polstern fixieren | Unvollständiger Bewegungsumfang
+barbell wide bench press :: Griff breiter, als die Schultern zulassen — Gelenkschmerzen | Langhantel zum Hals senken | Ruckartig drücken
+barbell guillotine bench press :: Zu viel Gewicht — die Übung ist riskant für die Schultern | Ohne Sicherung arbeiten | Stange ruckartig absenken
+barbell reverse-grip incline bench press :: Handgelenke nach hinten abknicken | Ohne Sicherung arbeiten — die Stange rutscht leicht ab | Stange zum Hals senken
+dumbbell bench press :: Hanteln oben aneinanderschlagen | Hanteln zu tief unter Brusthöhe absenken | Ellbogen im 90°-Winkel ausstellen
+dumbbell incline bench press :: Bank zu steil — es arbeiten die Schultern | Hanteln unten auf die Schultern fallen lassen | Zusammengezogene Schulterblätter verlieren
+dumbbell decline bench press :: Beine nicht fixieren | Hanteln zum Hals fallen lassen | Unvollständiger Bewegungsumfang
+dumbbell incline palm-in press :: Ellbogen zur Seite ausstellen | Schultern zu den Ohren ziehen | Hanteln nicht ganz absenken
+dumbbell incline hammer press :: Ellbogen zur Seite ausstellen | Hanteln nicht ganz absenken | Schulterblätter von der Bank heben
+dumbbell lying hammer press :: Ellbogen zur Seite ausstellen | Arme ruckartig ganz durchdrücken | Becken abheben
+dumbbell incline alternate press :: Oberkörper zur Arbeitshand mitdrehen | Zweite Hantel absinken lassen, während die erste arbeitet | Zu schnell ausführen
+dumbbell single-arm incline chest press :: Oberkörper mitdrehen | Schulter von der Bank heben | Zu viel Gewicht nehmen
+dumbbell fly :: Arme zu stark beugen — daraus wird Drücken | Hanteln zu tief absenken | Ellbogen ganz durchstrecken — belastet die Gelenke
+dumbbell incline fly :: Arme zu stark beugen | Bank zu steil | Hanteln unter Schulterhöhe absenken
+dumbbell decline fly :: Arme zu stark beugen | Hanteln ruckartig absenken | Beine nicht fixieren
+dumbbell pullover :: Hantel zu weit hinter den Kopf senken | Arme beugen — es arbeitet der Trizeps | Ins Hohlkreuz gehen
+dumbbell straight arm pullover :: Ins Hohlkreuz gehen | Hantel zu weit zurückführen — Schulterbeschwerden | Ruckartige Bewegungen
+smith bench press :: Bank so stellen, dass die Stange zum Hals kommt | Becken abheben | Ellbogen im 90°-Winkel ausstellen
+smith incline bench press :: Bank steht nicht genau unter der Stange | Zu steiler Winkel | Stange von der Brust abfedern
+smith decline bench press :: Stange sinkt zum Hals — Bank steht falsch | Beine nicht fixieren | Unvollständiger Bewegungsumfang
+smith wide-grip bench press :: Griff breiter, als die Schultern zulassen | Stange zum Hals senken | Von der Brust abfedern
+machine chest press :: Sitz zu niedrig oder zu hoch — die Griffe gehören auf Höhe der Brustmitte | Schultern zu den Ohren ziehen | Ellbogen ganz durchdrücken
+machine incline chest press :: Sitz falsch einstellen | Rücken von der Lehne lösen | Ellbogen ganz durchdrücken
+machine decline chest press :: Sitz falsch einstellen | Schultern hochziehen | Gewicht nach hinten schnellen lassen
+machine seated fly :: Rücken von der Lehne lösen | Arme ruckartig zusammenführen | Arme zu weit nach hinten führen
+cable seated chest press :: Rücken abheben | Schultern hochziehen | Gewicht nach hinten schnellen lassen
+cable incline bench press :: Kabel laufen nicht auf Brustlinie | Zu steiler Winkel | Gewicht fallen lassen
+cable crossover :: Arme beugen — daraus wird Drücken | Mit dem Oberkörper schwingen | Arme ruckartig zurückschnellen lassen
+cable low fly :: Arme über Schulterhöhe heben | Arme zu stark beugen | Aus den Schultern statt aus der Brust ziehen
+cable middle fly :: Arme zu stark beugen | Oberkörper schwingen | Gewicht nach hinten schnellen lassen
+cable incline fly :: Arme zu stark beugen | Arme zu tief absenken | Spannung der Schulterblätter verlieren
+cable decline fly :: Arme zu stark beugen | Arme ruckartig fallen lassen | Unvollständiger Bewegungsumfang
+cable upper chest crossovers :: Arme über den Kopf heben | Aus den Schultern ziehen | Arme beugen
+cable standing fly :: Oberkörper schwingen | Arme beugen — daraus wird Drücken | Gewicht fallen lassen
+cable lying fly :: Arme zu stark beugen | Arme zu tief absenken | Ruckartige Bewegungen
+chest dip :: Zu tief absenken — belastet die Schultern | Oberkörper senkrecht halten — arbeitet der Trizeps statt der Brust | Schultern zu den Ohren ziehen
+assisted chest dip (kneeling) :: Zu tief absenken | Schultern hochziehen | Oberkörper senkrecht halten
+weighted straight bar dip :: Zu tief absenken | Ohne Erfahrung schweres Gewicht nehmen | Schwung holen
+wide-grip chest dip on high parallel bars :: Zu tief absenken | Schultern zu den Ohren ziehen | Schwung holen
+push-up :: Unteren Rücken durchhängen lassen | Ellbogen im 90°-Winkel ausstellen | Unvollständiger Bewegungsumfang
+incline push-up :: Unteren Rücken durchhängen lassen | Ellbogen im 90°-Winkel ausstellen | Unvollständiger Bewegungsumfang
+decline push-up :: Becken durchhängen lassen oder zu hoch heben | Ellbogen im 90°-Winkel ausstellen | Kopf statt Brust absenken
+wide hand push up :: Hände zu weit setzen | Unteren Rücken durchhängen lassen | Unvollständiger Bewegungsumfang
+kneeling push-up :: In der Hüfte abknicken | Ellbogen im 90°-Winkel ausstellen | Unvollständiger Bewegungsumfang
+archer push up :: „Gestreckten“ Arm beugen | Unteren Rücken durchhängen lassen | Oberkörper mitdrehen
+clap push up :: Mit gestreckten Armen landen | Unteren Rücken durchhängen lassen | Ohne Aufwärmen machen
+weighted svend press :: Scheibe ohne Zusammendrücken nach vorn strecken | Rundrücken machen | Schultern hochziehen

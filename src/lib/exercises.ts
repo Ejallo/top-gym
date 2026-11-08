@@ -14,6 +14,7 @@ export interface Exercise {
   equipment: string; // equipment key, see 'eq.*' in the dictionary
   type: ExerciseType;
   steps: string[];
+  mistakes: string[]; // common mistakes
   gif?: string; // url
   photos: Blob[]; // own photos, shown before the gif
   videoUrl?: string;
@@ -37,8 +38,8 @@ interface BaseRow {
   perSide?: true;
   pict?: string; // drawn pictogram public/pict/<key>.svg instead of a gif
 }
-/** public/data/exercises.<lang>.json: id → name + steps */
-type BaseText = Record<string, { n: string; s: string[] }>;
+/** public/data/exercises.<lang>.json: id → name + steps + common mistakes */
+type BaseText = Record<string, { n: string; s: string[]; e?: string[] }>;
 
 const BASE_URL = import.meta.env.BASE_URL;
 export const FULL_API = 'https://oss.exercisedb.dev/api/v1/exercises';
@@ -61,6 +62,7 @@ async function loadBase(): Promise<Exercise[]> {
       ...r,
       name: text[r.id]?.n ?? r.en,
       steps: text[r.id]?.s ?? [],
+      mistakes: text[r.id]?.e ?? [],
       group: groupOf(r.muscles[0]),
       gif: r.pict ? `${BASE_URL}pict/${r.pict}.svg` : r.noMedia ? undefined : mediaUrl(r.id),
       photos: [],
@@ -83,6 +85,7 @@ function fromCustom(c: CustomExercise): Exercise {
     equipment: c.equipment ?? 'other',
     type: c.type,
     steps: c.steps ?? [],
+    mistakes: c.mistakes ?? [],
     gif: c.gif,
     photos: c.photos ?? [],
     category: c.category,

@@ -207,7 +207,7 @@ export const ru = {
   'cool.start': 'Начать заминку',
   'cool.workoutTitle': 'Заминка',
   'hold.start': 'Таймер',
-  'wk.hint.last': 'Прошлый раз:',
+  'wk.hint.lastOn': 'Прошлый раз ({date}):',
   'wk.hint.up': 'попробуй',
   'wk.hint.reps': 'добей',
   'wk.hint.hold': 'было тяжело — повтори',
@@ -366,6 +366,8 @@ export const ru = {
   'exercises.count': '{n} упр.',
 
   'ex.technique': 'Техника',
+  'ex.mistakes': 'Частые ошибки',
+  'ex.techShow': 'Техника и ошибки',
   'ex.muscles': 'Мышцы',
   'ex.secondary': 'Также работают',
   'ex.equipment': 'Инвентарь',
@@ -453,6 +455,7 @@ export const ru = {
   'custom.videoPh': 'https://youtube.com/…',
   'custom.steps': 'Техника, заметки',
   'custom.stepsPh': 'Каждый шаг с новой строки',
+  'custom.mistakesPh': 'Каждая ошибка с новой строки',
   'custom.save': 'Сохранить',
   'custom.nameRequired': 'Впиши название',
 

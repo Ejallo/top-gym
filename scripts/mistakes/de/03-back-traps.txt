@@ -1,0 +1,36 @@
+scapular pull-up :: Ellbogen beugen — Bewegung nur aus den Schulterblättern | Schwung holen | Ruckartig nach unten fallen
+barbell bent over row :: Unteren Rücken runden | Oberkörper mit jeder Wiederholung aufrichten | Ruckartig mit Beinen und Rücken ziehen
+barbell pendlay row :: Langhantel zwischen den Wiederholungen nicht ablegen | Becken und Oberkörper beim Ziehen anheben | Unteren Rücken runden
+barbell reverse-grip bent over row :: Mit dem Bizeps statt mit dem Rücken ziehen | Mit jeder Wiederholung aufrichten | Handgelenke und Ellbogen mit zu viel Gewicht überlasten
+barbell incline row :: Brust von der Bank heben | Ruckartig ziehen | Unvollständiger Bewegungsumfang
+dumbbell bent over row :: Unteren Rücken runden | Hanteln zur Brust statt zur Hüfte ziehen | Mit jeder Wiederholung aufrichten
+dumbbell single-arm bent-over row :: Oberkörper mit dem Arm mitdrehen | Ruckartig ziehen | Hantel nicht ganz absenken
+dumbbell incline row :: Brust von der Bank heben | Schultern zu den Ohren ziehen | Hanteln ruckartig absenken
+dumbbell reverse-grip row :: Mit dem Bizeps ziehen | Unteren Rücken runden | Mit jeder Wiederholung aufrichten
+dumbbell palm rotational bent over row :: Hand ruckartig drehen | Unteren Rücken runden | Oberkörper schwingen
+kettlebell single-arm row :: Oberkörper mitdrehen | Unteren Rücken runden | Ruckartig ziehen
+kettlebell alternating renegade row :: Becken beim Ziehen mitdrehen | Füße zu eng stellen | Unteren Rücken durchhängen lassen
+cable seated row :: Mit dem Oberkörper schwingen | Unteren Rücken am tiefsten Punkt runden | Mit den Händen statt mit den Ellbogen ziehen
+cable low seated row :: Weit nach hinten lehnen | Rücken unten runden | Schultern zu den Ohren ziehen
+cable seated wide-grip row :: Zum Bauch statt zur oberen Brust ziehen | Schultern hochziehen | Mit dem Oberkörper schwingen
+cable rope seated row :: Seilenden am Körper nicht auseinanderziehen | Schwung holen | Rücken unten runden
+cable standing row (v-bar) :: Ins Hohlkreuz gehen | Nach hinten lehnen | Gewicht fallen lassen
+cable single-arm bent over row :: Oberkörper mitdrehen | Unteren Rücken runden | Ruckartig ziehen
+machine seated row :: Brust vom Polster heben | Schultern hochziehen | Gewicht nach vorn schnellen lassen
+machine high row :: Schultern zu den Ohren ziehen | Mit den Händen statt mit den Ellbogen ziehen | Gewicht fallen lassen
+machine t bar row :: Unteren Rücken runden | Mit jeder Wiederholung aufrichten | Unvollständiger Bewegungsumfang
+machine bent over row :: Brust vom Polster heben | Ruckartig ziehen | Schultern hochziehen
+machine unilateral row :: Oberkörper mitdrehen | Brust vom Polster heben | Gewicht fallen lassen
+smith bent over row :: Unteren Rücken runden | So stehen, dass die Stange an die Knie stößt | Mit jeder Wiederholung aufrichten
+ez-bar reverse-grip bent over row :: Mit dem Bizeps ziehen | Unteren Rücken runden | Mit jeder Wiederholung aufrichten
+inverted row :: Becken durchhängen lassen | Brust nicht bis zur Stange bringen | Ruckartig absenken
+inverted row bent knees :: Becken durchhängen lassen | Unvollständiger Bewegungsumfang | Schultern zu den Ohren ziehen
+barbell shrug :: Schultern kreisen — nur hoch und runter | Arme beugen | Gewicht nehmen, das nur ein paar Zentimeter Bewegung zulässt
+dumbbell shrug :: Schultern kreisen | Arme beugen | Kopf nach vorn schieben
+cable shrug :: Schultern kreisen | Arme beugen | Gewicht nach unten fallen lassen
+smith shrug :: Schultern kreisen | Unvollständiger Bewegungsumfang | Arme beugen
+machine shrug :: Schultern kreisen | Unvollständiger Bewegungsumfang | Gewicht nach unten fallen lassen
+hyperextension :: Oben überstrecken | Ruckartig ausführen | Rücken runden statt aus der Hüfte zu beugen
+hyperextension (on bench) :: Oben überstrecken | Ruckartig ausführen | Polster über den Beckenknochen einstellen
+machine back extension :: Nach hinten überstrecken | Gewicht nach vorn schnellen lassen | Zu viel Gewicht für den unteren Rücken
+lower back curl :: Kopf in den Nacken legen | Unteren Rücken ruckartig überstrecken | Zu schnell ausführen

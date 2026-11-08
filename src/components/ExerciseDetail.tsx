@@ -9,6 +9,7 @@ import { ExerciseProgress, setLabel } from './ExerciseProgress';
 import { fmt } from '../lib/dates';
 import { sessionsFor, useFinishedWorkouts } from '../lib/stats';
 import { setPin, usePins } from '../lib/pins';
+import { Technique } from './Technique';
 
 /** Pinned note: shown in every workout with this exercise; edited here or from the workout note sheet. */
 function PinNote({ ex }: { ex: Exercise }) {
@@ -122,19 +123,7 @@ export function ExerciseDetail({ ex, onClose }: { ex: Exercise; onClose: () => v
         </>
       )}
 
-      {ex.steps.length > 0 && (
-        <>
-          <div className="m muted sec">// {t('ex.technique')}</div>
-          <ol className="steps">
-            {ex.steps.map((s, i) => (
-              <li key={i}>
-                <span className="lime m">{String(i + 1).padStart(2, '0')}</span>
-                <span className="body">{s}</span>
-              </li>
-            ))}
-          </ol>
-        </>
-      )}
+      <Technique ex={ex} />
 
       {ex.videoUrl && (
         <a className="btn outline small" style={{ marginTop: 16, textDecoration: 'none' }} href={ex.videoUrl} target="_blank" rel="noreferrer">

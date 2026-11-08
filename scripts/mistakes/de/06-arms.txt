@@ -1,0 +1,45 @@
+barbell curl :: Mit dem Oberkörper schwingen | Ellbogen nach vorn schieben | Langhantel nach unten fallen lassen
+ez-bar curl :: Mit dem Oberkörper schwingen | Ellbogen nach vorn schieben | Unten nicht ganz strecken
+ez-bar close-grip curl :: Mit dem Oberkörper schwingen | Ellbogen ausstellen | Stange nach unten fallen lassen
+barbell drag curl :: Ellbogen nach vorn schieben — sie gehen nach hinten | Stange vom Körper wegführen | Schwung holen
+barbell standing wide-grip biceps curl :: Griff breiter, als die Handgelenke mitmachen | Mit dem Oberkörper schwingen | Ellbogen nach vorn schieben
+barbell preacher curl :: Arme unten ruckartig strecken — Risiko für den Bizeps | Ellbogen vom Polster heben | Becken vom Sitz heben
+ez-bar close-grip preacher curl :: Arme unten ruckartig strecken | Ellbogen vom Polster heben | Zu viel Gewicht nehmen
+ez-bar spider curl :: Brust von der Bank heben | Ellbogen nach vorn schieben | Stange nach unten fallen lassen
+barbell reverse curl :: Handgelenke beugen | Mit dem Oberkörper schwingen | Gewicht wie beim normalen Curl nehmen
+ez-bar reverse-grip curl :: Handgelenke beugen | Mit dem Oberkörper schwingen | Ellbogen nach vorn schieben
+dumbbell biceps curl :: Mit dem Oberkörper schwingen | Ellbogen nach vorn schieben | Hanteln nach unten fallen lassen
+dumbbell alternate biceps curl :: Von Seite zu Seite schwanken | Ellbogen nach vorn schieben | Beim Armwechsel hetzen
+dumbbell hammer curl :: Mit dem Oberkörper schwingen | Ellbogen vom Körper abspreizen | Hanteln nach unten fallen lassen
+dumbbell cross body hammer curl :: Oberkörper mitdrehen | Schulter nach vorn ziehen | Hantel nach unten fallen lassen
+dumbbell incline curl :: Ellbogen nach vorn schieben und die Dehnung verlieren | Schultern von der Lehne lösen | Hanteln nach unten fallen lassen
+dumbbell incline hammer curl :: Ellbogen nach vorn schieben | Schultern von der Lehne lösen | Hanteln nach unten fallen lassen
+dumbbell concentration curl :: Mit dem Oberkörper helfen | Ellbogen nicht am Oberschenkel abstützen | Hantel nach unten fallen lassen
+dumbbell preacher curl :: Arm unten ruckartig strecken | Ellbogen vom Polster heben | Handgelenk beugen
+dumbbell preacher hammer curl :: Arm unten ruckartig strecken | Ellbogen vom Polster heben | Zu viel Gewicht nehmen
+dumbbell zottman curl :: Hand vor dem höchsten Punkt drehen | Gewicht nehmen, das sich im Obergriff nicht halten lässt | Schwung holen
+dumbbell reverse spider curl :: Brust von der Bank heben | Handgelenke beugen | Hanteln nach unten fallen lassen
+dumbbell seated biceps curl :: Nach hinten lehnen | Ellbogen nach vorn schieben | Hanteln nach unten fallen lassen
+dumbbell seated hammer curl :: Nach hinten lehnen | Ellbogen vom Körper abspreizen | Hanteln nach unten fallen lassen
+dumbbell prone incline curl :: Brust von der Bank heben | Ellbogen nach vorn schieben | Hanteln nach unten fallen lassen
+dumbbell high curl :: Ellbogen unter Schulterhöhe sinken lassen | Oberkörper mitdrehen | Hanteln fallen lassen
+cable curl :: Mit dem Oberkörper schwingen | Ellbogen nach vorn schieben | Gewicht nach unten fallen lassen
+cable hammer curl (with rope) :: Mit dem Oberkörper schwingen | Ellbogen vom Körper abspreizen | Gewicht nach unten fallen lassen
+cable preacher curl :: Ellbogen vom Polster heben | Arme ruckartig strecken | Becken vom Sitz heben
+cable overhead curl :: Ellbogen unter Schulterhöhe sinken lassen | Oberkörper neigen | Gewicht fallen lassen
+cable concentration curl :: Mit dem Oberkörper helfen | Ellbogen vom Oberschenkel lösen | Gewicht fallen lassen
+cable single-arm curl :: Oberkörper mitdrehen | Ellbogen nach vorn schieben | Gewicht fallen lassen
+cable reverse curl :: Handgelenke beugen | Mit dem Oberkörper schwingen | Ellbogen abspreizen
+machine biceps curl :: Sitz falsch einstellen — die Ellbogen gehören auf die Geräteachse | Ellbogen vom Polster heben | Gewicht fallen lassen
+machine preacher curl :: Ellbogen vom Polster heben | Arme ruckartig strecken | Becken vom Sitz heben
+biceps narrow pull-ups :: Schwung holen | Nicht bis zu gestreckten Armen absenken | Hals zur Stange strecken
+barbell wrist curl :: Gewicht nehmen, bei dem der Bewegungsumfang verloren geht | Unterarme von der Auflage heben | Ruckartig ausführen
+barbell reverse wrist curl :: Zu viel Gewicht nehmen | Unterarme von der Auflage heben | Ruckartig ausführen
+dumbbell over bench wrist curl :: Unterarm von der Bank heben | Zu viel Gewicht nehmen | Unvollständiger Bewegungsumfang
+dumbbell reverse wrist curl :: Zu viel Gewicht nehmen | Unterarme abheben | Ruckartig ausführen
+dumbbell seated palms up wrist curl :: Unterarme von den Oberschenkeln heben | Unvollständiger Bewegungsumfang | Ruckartig ausführen
+cable wrist curl :: Unterarme von der Auflage heben | Ellbogen beugen | Gewicht fallen lassen
+cable reverse wrist curl :: Zu viel Gewicht nehmen | Ellbogen beugen | Ruckartig ausführen
+barbell standing back wrist curl :: Ellbogen beugen | Stange von den Oberschenkeln wegführen | Zu viel Gewicht nehmen
+wrist rollerer :: Arme unter Schulterhöhe sinken lassen | Aus den Schultern statt aus den Handgelenken drehen | Gewicht nach unten fallen lassen
+farmers walk :: Rundrücken machen und die Schultern hängen lassen | Zur Seite kippen | Mit langen Schritten schwankend gehen

@@ -21,14 +21,14 @@ function step(ex: Exercise): number {
   return ex.equipment === 'dumbbell' || ex.equipment === 'kettlebell' ? 2 : 2.5;
 }
 
-/** Done sets of this exercise in the latest finished workout before `before`. */
-export function lastSets(history: Workout[], exerciseId: string, before: number, skipId: string): SetEntry[] {
+/** Working sets of this exercise in the latest finished workout before `before`, with its start time. */
+export function lastSession(history: Workout[], exerciseId: string, before: number, skipId: string): { at: number; sets: SetEntry[] } | null {
   for (const w of history) {
     if (w.id === skipId || !w.endedAt || w.startedAt >= before) continue;
     const sets = w.entries.filter((e) => e.exerciseId === exerciseId).flatMap((e) => e.sets.filter(isWork));
-    if (sets.length) return sets;
+    if (sets.length) return { at: w.startedAt, sets };
   }
-  return [];
+  return null;
 }
 
 /** Average effort (1–10) over sets that have it. */

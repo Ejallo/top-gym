@@ -8,12 +8,14 @@ import { ExerciseDetail } from '../components/ExerciseDetail';
 import { ExercisePicker } from '../components/ExercisePicker';
 import { NumInput } from '../components/NumInput';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { applyHint, lastSets, progressionHint, type Hint } from '../lib/progression';
+import { applyHint, lastSession, progressionHint, type Hint } from '../lib/progression';
+import { fmt } from '../lib/dates';
 import { cue, mmss, unlockAudio, useCountdown, useWakeLock } from '../lib/hold';
 import { DEFAULT_HOLD, PREP, cooldownFor, startMobility } from '../lib/mobility';
 import { setPin, usePins } from '../lib/pins';
 import { alternatives, swapEntry } from '../lib/swap';
 import { Sheet } from '../components/Sheet';
+import { Technique, hasTechnique } from '../components/Technique';
 import { tonnageText } from '../lib/tonnage';
 
 const UNITS = () => ({ kg: t('unit.kg'), min: t('unit.min'), km: t('unit.km'), sec: t('unit.sec') });
@@ -36,6 +38,7 @@ export function WorkoutScreen({
   const [w, setW] = useState(initial);
   const [picking, setPicking] = useState(false);
   const [info, setInfo] = useState<Exercise | null>(null);
+  const [techOpen, setTechOpen] = useState<Set<string>>(new Set());
   const [noteFor, setNoteFor] = useState<number | null>(null);
   const [swapFor, setSwapFor] = useState<number | null>(null);
   const pins = usePins();
@@ -77,7 +80,9 @@ export function WorkoutScreen({
           if (s.done) return { ...s, done: false };
           // A working set copies the previous working set (not the lighter warm-up before it)
           const prev = s.warmup ? e.sets[k - 1] : e.sets.slice(0, k).reverse().find((x) => !x.warmup);
-          const filled = s.warmup ? { ...s, weight: s.weight ?? prev?.weight, reps: s.reps ?? prev?.reps } : fillFromPlan(s, e, ex?.type ?? 'weight_reps', prev);
+          const workNo = e.sets.slice(0, k + 1).filter((x) => !x.warmup).length;
+          const lastSet = lastSession(history ?? [], e.exerciseId, w.startedAt, w.id)?.sets[workNo - 1];
+          const filled = s.warmup ? { ...s, weight: s.weight ?? prev?.weight, reps: s.reps ?? prev?.reps } : fillFromPlan(s, e, ex?.type ?? 'weight_reps', prev, lastSet);
           return { ...filled, done: true };
         }),
       };
@@ -159,6 +164,8 @@ export function WorkoutScreen({
         const ex = byId.get(e.exerciseId);
         const type = ex?.type ?? 'weight_reps';
         const plan = planText(e, ex, UNITS());
+        const last = history ? lastSession(history, e.exerciseId, w.startedAt, w.id) : null;
+        const hint = last ? progressionHint(e, ex, last.sets) : null;
         return (
           <section key={i} className="wk-entry">
             <div className="wk-entry-head">
@@ -174,6 +181,29 @@ export function WorkoutScreen({
                 </span>
               </button>
             </div>
+            {ex && hasTechnique(ex) && (
+              <>
+                <button
+                  className="wk-tech-toggle m"
+                  aria-expanded={techOpen.has(e.exerciseId)}
+                  onClick={() =>
+                    setTechOpen((o) => {
+                      const n = new Set(o);
+                      if (n.has(e.exerciseId)) n.delete(e.exerciseId);
+                      else n.add(e.exerciseId);
+                      return n;
+                    })
+                  }
+                >
+                  {t('ex.techShow')} {techOpen.has(e.exerciseId) ? '▴' : '▾'}
+                </button>
+                {techOpen.has(e.exerciseId) && (
+                  <div className="wk-tech">
+                    <Technique ex={ex} />
+                  </div>
+                )}
+              </>
+            )}
             {(e.rest || plan) && (
               <div className="m pink" style={{ marginTop: 8 }}>
                 {plan && <span className="muted">{t('wk.plan')} {plan}</span>}
@@ -183,9 +213,10 @@ export function WorkoutScreen({
             )}
             {pins[e.exerciseId] && <p className="body wk-pin">📌 {pins[e.exerciseId]}</p>}
             {e.note && <p className="body wk-note">✎ {e.note}</p>}
-            {history && (
+            {last && (hint || w.kind !== 'mobility') && (
               <HintLine
-                hint={progressionHint(e, ex, lastSets(history, e.exerciseId, w.startedAt, w.id))}
+                hint={hint}
+                last={last}
                 done={e.sets.some((s) => s.done)}
                 onApply={(h) => setEntry(i, (x) => applyHint(x, h))}
               />
@@ -211,8 +242,18 @@ export function WorkoutScreen({
             </div>
             {e.sets.map((s, k) => {
               const p = e.plan;
-              const repsPh = s.warmup ? '' : (p?.reps ?? '');
               const workNo = e.sets.slice(0, k + 1).filter((x) => !x.warmup).length;
+              // Empty fields show what ticking the set fills in: previous set, plan, then this set last time
+              const before = s.warmup ? undefined : e.sets.slice(0, k).reverse().find((x) => !x.warmup);
+              const ls = s.warmup ? undefined : last?.sets[workNo - 1];
+              const ph = (prev?: number, plan?: number, lastTime?: number) => {
+                if (s.warmup) return '—';
+                if (prev !== undefined) return num(prev);
+                if (plan) return String(plan);
+                return lastTime !== undefined ? num(lastTime) : '—';
+              };
+              const toMin = (sec?: number) => (sec === undefined ? undefined : Math.round(sec / 60));
+              const repsPh = s.warmup ? '' : before?.reps !== undefined ? String(before.reps) : (p?.reps ?? (ls?.reps !== undefined ? String(ls.reps) : ''));
               const effortRow = s.done && !s.warmup && type !== 'cardio' && w.kind !== 'mobility';
               return (
                 <div key={k}>
@@ -227,14 +268,14 @@ export function WorkoutScreen({
                   </button>
                   {type === 'weight_reps' && (
                     <>
-                      <NumInput value={s.weight} decimal placeholder={p?.weight && !s.warmup ? String(p.weight) : '—'} onChange={(v) => setSet(i, k, { weight: v })} />
+                      <NumInput value={s.weight} decimal placeholder={ph(before?.weight, p?.weight, ls?.weight)} onChange={(v) => setSet(i, k, { weight: v })} />
                       <NumInput value={s.reps} placeholder={repsPh || '—'} onChange={(v) => setSet(i, k, { reps: v })} />
                     </>
                   )}
                   {type === 'reps' && <NumInput value={s.reps} placeholder={repsPh || '—'} onChange={(v) => setSet(i, k, { reps: v })} />}
                   {type === 'time' && (
                     <span className="time-cell">
-                      <NumInput value={s.time} placeholder={p?.time ? String(p.time) : '—'} onChange={(v) => setSet(i, k, { time: v })} />
+                      <NumInput value={s.time} placeholder={ph(before?.time, p?.time, ls?.time)} onChange={(v) => setSet(i, k, { time: v })} />
                       {!s.done && (
                         <button
                           className="hold-btn"
@@ -253,10 +294,10 @@ export function WorkoutScreen({
                     <>
                       <NumInput
                         value={s.time === undefined ? undefined : Math.round(s.time / 60)}
-                        placeholder={p?.time ? String(Math.round(p.time / 60)) : '—'}
+                        placeholder={ph(toMin(before?.time), toMin(p?.time), toMin(ls?.time))}
                         onChange={(v) => setSet(i, k, { time: v === undefined ? undefined : v * 60 })}
                       />
-                      <NumInput value={s.distance} decimal placeholder={p?.distance ? String(p.distance) : '—'} onChange={(v) => setSet(i, k, { distance: v })} />
+                      <NumInput value={s.distance} decimal placeholder={ph(before?.distance, p?.distance, ls?.distance)} onChange={(v) => setSet(i, k, { distance: v })} />
                     </>
                   )}
                   <button className="set-check" onClick={() => toggleDone(i, k)} aria-label={t('wk.done')}>
@@ -384,24 +425,40 @@ export function WorkoutScreen({
   );
 }
 
-/** "Last time 60×8 · 60×8 → try 62.5×8": tap fills the empty sets. */
-function HintLine({ hint, done, onApply }: { hint: Hint | null; done: boolean; onApply: (h: Hint) => void }) {
-  if (!hint) return null;
+/** "Last time (5 Nov): 80×8 · 80×8" for every exercise, plus the progression hint when there is one. */
+function HintLine({
+  hint,
+  last: session,
+  done,
+  onApply,
+}: {
+  hint: Hint | null;
+  last: { at: number; sets: SetEntry[] };
+  done: boolean;
+  onApply: (h: Hint) => void;
+}) {
   const sec = t('unit.sec');
-  const fmtSet = (x: { weight?: number; reps?: number; time?: number }) =>
+  const fmtSet = (x: { weight?: number; reps?: number; time?: number; distance?: number }) =>
     x.weight !== undefined && x.reps !== undefined
       ? `${num(x.weight)}×${x.reps}`
       : x.reps !== undefined
         ? `${x.reps}`
-        : x.time !== undefined
-          ? `${x.time} ${sec}`
-          : '—';
-  const last = hint.last.slice(0, 5).map(fmtSet).join(' · ') + (hint.last.length > 5 ? ' …' : '');
+        : x.distance !== undefined
+          ? `${Math.round((x.time ?? 0) / 60)} ${t('unit.min')} · ${num(x.distance)} ${t('unit.km')}`
+          : x.time !== undefined
+            ? `${x.time} ${sec}`
+            : '—';
+  const sets = session.sets;
+  const last = sets.slice(0, 5).map(fmtSet).join(' · ') + (sets.length > 5 ? ' …' : '');
+  const head = (
+    <span className="muted">
+      {t('wk.hint.lastOn', { date: fmt(new Date(session.at), { day: 'numeric', month: 'short' }) })} {last}
+    </span>
+  );
+  if (!hint) return <div className="wk-hint m">{head}</div>;
   return (
     <button className="wk-hint m" disabled={done} onClick={() => onApply(hint)}>
-      <span className="muted">
-        {t('wk.hint.last')} {last}
-      </span>
+      {head}
       <span className="lime">
         → {t(hint.kind === 'up' ? 'wk.hint.up' : hint.kind === 'hold' ? 'wk.hint.hold' : 'wk.hint.reps')} {fmtSet(hint.next)}
         {!done && <span className="muted"> · {t('wk.hint.tap')}</span>}

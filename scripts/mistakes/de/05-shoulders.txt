@@ -1,0 +1,52 @@
+barbell seated overhead press :: Ins Hohlkreuz gehen und den Rücken von der Lehne lösen | Stange im Bogen nach vorn führen | Unvollständiger Bewegungsumfang
+barbell standing close-grip military press :: Ins Hohlkreuz gehen | Mit den Beinen helfen | Ellbogen zur Seite ausstellen
+barbell standing wide military press :: Griff breiter, als die Schultern zulassen | Ins Hohlkreuz gehen | Mit den Beinen helfen
+standing behind neck press :: Ohne ausreichende Schulterbeweglichkeit arbeiten | Zu viel Gewicht nehmen | Stange unter Ohrhöhe senken
+dumbbell seated shoulder press :: Ins Hohlkreuz gehen | Hanteln oben zusammenschlagen | Hanteln nicht ganz absenken
+dumbbell seated shoulder press (parallel grip) :: Ellbogen zur Seite ausstellen | Ins Hohlkreuz gehen | Unvollständiger Bewegungsumfang
+dumbbell standing overhead press :: Ins Hohlkreuz gehen | Mit den Beinen helfen | Hanteln oben zusammenschlagen
+dumbbell single-arm shoulder press :: Oberkörper zur Seite neigen | Ins Hohlkreuz gehen | Ellbogen nach hinten führen
+dumbbell arnold press :: Hände ruckartig drehen | Ins Hohlkreuz gehen | Zu viel Gewicht nehmen
+dumbbell push press :: Nur mit den Armen drücken, ohne Beinimpuls | Ins Hohlkreuz gehen | Hanteln unkontrolliert absenken
+machine shoulder press :: Sitz zu niedrig oder zu hoch | Ins Hohlkreuz gehen | Ellbogen ganz durchdrücken
+machine military press :: Rücken von der Lehne lösen | Schultern zu den Ohren ziehen | Gewicht nach unten fallen lassen
+smith shoulder press :: Stange läuft nicht über den Schultern — Bank steht falsch | Ins Hohlkreuz gehen | Stange von den Ablagen abfedern
+smith seated shoulder press :: Sitz steht nicht genau unter der Stange | Stange zum Hals senken | Ins Hohlkreuz gehen
+cable shoulder press :: Ins Hohlkreuz gehen | Kabel weiter als schulterbreit führen | Gewicht fallen lassen
+kettlebell arnold press :: Hände ruckartig drehen | Ins Hohlkreuz gehen | Kettlebell auf den Unterarm schlagen lassen
+kettlebell two-arm military press :: Ins Hohlkreuz gehen | Ellbogen zur Seite abspreizen | Kettlebells auf die Unterarme schlagen lassen
+barbell thruster :: Drücken, bevor die Beine gestreckt sind | Rücken unten in der Kniebeuge runden | Fersen abheben
+dumbbell lateral raise :: Mit dem Oberkörper schwingen und zu viel Gewicht nehmen | Schultern zu den Ohren ziehen | Über Schulterhöhe heben
+dumbbell seated lateral raise :: Oberkörper schwingen | Schultern zu den Ohren ziehen | Hanteln unkontrolliert absenken
+dumbbell single-arm lateral raise :: Oberkörper zur Seite neigen | Mit Schwung arbeiten | Schulter zum Ohr ziehen
+dumbbell incline single-arm lateral raise :: Über Schulterhöhe heben | Mit Schwung arbeiten | Arm zu stark beugen
+cable lateral raise :: Mit dem Oberkörper ziehen | Schulter zum Ohr ziehen | Kabel nach unten schnellen lassen
+cable single-arm lateral raise :: Oberkörper zur Seite neigen | Schulter zum Ohr ziehen | Kabel nach unten schnellen lassen
+machine lateral raise :: Sitz falsch einstellen — Geräteachse und Schultern müssen übereinstimmen | Schultern zu den Ohren ziehen | Gewicht fallen lassen
+landmine lateral raise :: Oberkörper mitdrehen | Ruckartig schwingen | Schulter zum Ohr ziehen
+dumbbell lateral to front raise :: Hektisch mit Schwung arbeiten | Oberkörper schwingen | Schultern zu den Ohren ziehen
+dumbbell front raise :: Mit dem Oberkörper schwingen | Über Schulterhöhe heben | Hanteln nach unten fallen lassen
+dumbbell seated front raise :: Nach hinten lehnen | Über Schulterhöhe heben | Hanteln nach unten fallen lassen
+barbell front raise :: Mit dem Oberkörper schwingen | Ins Hohlkreuz gehen | Über Schulterhöhe heben
+cable front raise :: Nach hinten lehnen | Über Schulterhöhe heben | Gewicht nach unten fallen lassen
+weighted front raise :: Mit dem Oberkörper schwingen | Ins Hohlkreuz gehen | Scheibe über den Kopf heben
+dumbbell rear fly :: Schulterblätter zusammenziehen — es arbeitet der Rücken statt des hinteren Deltas | Mit Schwung arbeiten | Unteren Rücken runden
+dumbbell rear lateral raise :: Schulterblätter zusammenziehen | Mit Schwung arbeiten | Oberkörper aufrichten
+dumbbell reverse fly :: Schulterblätter zusammenziehen | Arme beugen — daraus wird Rudern | Mit Schwung arbeiten
+dumbbell incline rear lateral raise :: Brust von der Bank heben | Schulterblätter zusammenziehen | Mit Schwung arbeiten
+dumbbell lying rear lateral raise :: Schulterblätter zusammenziehen | Arme beugen — daraus wird Rudern | Mit Schwung arbeiten
+machine seated reverse fly :: Sitz falsch einstellen — die Griffe gehören auf Schulterhöhe | Schulterblätter zusammenziehen | Brust vom Polster heben
+cable crossover reverse fly :: Oberkörper schwingen | Schulterblätter zusammenziehen | Arme beugen
+cable seated rear lateral raise :: Oberkörper schwingen | Schulterblätter zusammenziehen | Gewicht fallen lassen
+cable rear delt row (with rope) :: Ellbogen unter Schulterhöhe sinken lassen | Schulterblätter zusammenziehen — es arbeitet der Rücken | Nach hinten lehnen
+cable standing rear delt row (with rope) :: Ellbogen unter Schulterhöhe sinken lassen | Nach hinten lehnen | Gewicht fallen lassen
+barbell rear delt row :: Zum Bauch ziehen — die Ellbogen bleiben auf Schulterhöhe | Schulterblätter zusammenziehen | Unteren Rücken runden
+barbell upright row :: Zu enger Griff — klemmt die Schultern ein | Ellbogen über Schulterhöhe heben | Schwung holen
+barbell wide-grip upright row :: Ellbogen über Schulterhöhe heben | Schwung holen | Stange unkontrolliert absenken
+dumbbell upright row :: Ellbogen über Schulterhöhe heben | Schwung holen | Hanteln unkontrolliert absenken
+cable upright row :: Zu engen Griff nehmen | Ellbogen über Schulterhöhe heben | Nach hinten lehnen
+smith upright row :: Zu engen Griff nehmen | Ellbogen über Schulterhöhe heben | Stange nach unten fallen lassen
+dumbbell cuban press :: Zu viel Gewicht — die Übung ist für die Rotatoren | Ruckartig drehen | Ellbogen beim Drehen sinken lassen
+cable standing shoulder external rotation :: Ellbogen vom Körper abspreizen | Oberkörper mitdrehen | Zu viel Gewicht nehmen
+battling ropes :: Nur mit den Armen arbeiten, ohne Beine und Rumpf | Unteren Rücken runden | Beine durchstrecken
+kettlebell thruster :: Mit den Armen drücken, bevor die Beine gestreckt sind | Fersen abheben | Rücken unten in der Kniebeuge runden

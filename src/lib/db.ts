@@ -18,6 +18,7 @@ export interface CustomExercise {
   equipment?: string;
   type: ExerciseType;
   steps?: string[];
+  mistakes?: string[]; // common mistakes, one per line
   gif?: string; // media url (cached by the service worker)
   photos?: Blob[]; // up to 8, downscaled JPEG
   category?: Category;

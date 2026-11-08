@@ -210,7 +210,7 @@ MEIN ZIEL UND MEINE BEDINGUNGEN:
   'cool.start': 'Cool-down starten',
   'cool.workoutTitle': 'Cool-down',
   'hold.start': 'Timer',
-  'wk.hint.last': 'Letztes Mal:',
+  'wk.hint.lastOn': 'Letztes Mal ({date}):',
   'wk.hint.up': 'versuch',
   'wk.hint.reps': 'schaff',
   'wk.hint.hold': 'war schwer — wiederhole',
@@ -369,6 +369,8 @@ MEIN ZIEL UND MEINE BEDINGUNGEN:
   'exercises.count': '{n} Üb.',
 
   'ex.technique': 'Technik',
+  'ex.mistakes': 'Häufige Fehler',
+  'ex.techShow': 'Technik und Fehler',
   'ex.muscles': 'Muskeln',
   'ex.secondary': 'Arbeiten mit',
   'ex.equipment': 'Ausrüstung',
@@ -456,6 +458,7 @@ MEIN ZIEL UND MEINE BEDINGUNGEN:
   'custom.videoPh': 'https://youtube.com/…',
   'custom.steps': 'Technik, Notizen',
   'custom.stepsPh': 'Jeder Schritt in einer neuen Zeile',
+  'custom.mistakesPh': 'Jeder Fehler in einer neuen Zeile',
   'custom.save': 'Speichern',
   'custom.nameRequired': 'Gib einen Namen ein',
 

@@ -43,20 +43,23 @@ export async function startWorkout(title: string, template?: Template): Promise<
   return w;
 }
 
-/** Fills a ticked set with the plan values the user left empty. */
-export function fillFromPlan(set: SetEntry, entry: WorkoutEntry, type: ExerciseType, prev?: SetEntry): SetEntry {
+/**
+ * Fills an empty set when it is ticked: previous set of this workout, then the plan,
+ * then the same set of the last session (`last`).
+ */
+export function fillFromPlan(set: SetEntry, entry: WorkoutEntry, type: ExerciseType, prev?: SetEntry, last?: SetEntry): SetEntry {
   const p = entry.plan;
   const s = { ...set };
   if (type === 'weight_reps') {
-    s.weight ??= prev?.weight ?? p?.weight;
-    s.reps ??= prev?.reps ?? repsFloor(p?.reps);
+    s.weight ??= prev?.weight ?? p?.weight ?? last?.weight;
+    s.reps ??= prev?.reps ?? repsFloor(p?.reps) ?? last?.reps;
   } else if (type === 'reps') {
-    s.reps ??= prev?.reps ?? repsFloor(p?.reps);
+    s.reps ??= prev?.reps ?? repsFloor(p?.reps) ?? last?.reps;
   } else if (type === 'time') {
-    s.time ??= prev?.time ?? p?.time;
+    s.time ??= prev?.time ?? p?.time ?? last?.time;
   } else {
-    s.time ??= prev?.time ?? p?.time;
-    s.distance ??= prev?.distance ?? p?.distance;
+    s.time ??= prev?.time ?? p?.time ?? last?.time;
+    s.distance ??= prev?.distance ?? p?.distance ?? last?.distance;
   }
   return s;
 }

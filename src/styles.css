@@ -152,6 +152,10 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 .steps { list-style: none; }
 .steps li { display: flex; gap: 10px; padding: 10px 0; border-top: 1px dashed var(--line); }
 .steps li:first-child { border-top: none; }
+.wk-tech-toggle { display: block; margin-top: 8px; color: var(--muted); text-decoration: underline dashed; text-underline-offset: 3px; }
+.wk-tech { margin-top: 4px; padding: 0 10px 4px; border-left: 3px solid var(--line); }
+.wk-tech .sec { margin-top: 10px; }
+.mistakes li .body { color: var(--text); }
 
 /* ===== Sheet ===== */
 .sheet { position: fixed; inset: 0; z-index: 40; background: var(--bg); overflow-y: auto; -webkit-overflow-scrolling: touch; }

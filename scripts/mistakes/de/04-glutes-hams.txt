@@ -1,0 +1,42 @@
+machine reverse hyperextension :: Gewicht mit Schwung bewegen | Unteren Rücken oben überstrecken | Beine fallen lassen
+sled 45° leg wide press :: Becken unten von der Lehne heben | Knie nach innen fallen lassen | Knie ganz durchdrücken
+barbell deadlift :: Unteren Rücken runden | Mit der Stange weit vor den Schienbeinen starten | Becken vor der Langhantel hochschnellen lassen
+barbell sumo deadlift :: Knie nach innen fallen lassen | Becken vor der Brust anheben | Unteren Rücken runden
+trap bar deadlift :: Bewegung in eine Kniebeuge mit hohem Becken verwandeln | Unteren Rücken runden | Auf die Zehen kippen
+barbell romanian deadlift :: Unteren Rücken runden | Kniebeuge statt Becken nach hinten schieben | Stange von den Beinen wegführen
+barbell rack pull :: Oben nach hinten lehnen | Unteren Rücken runden | Langhantel auf die Ablagen fallen lassen
+barbell single leg deadlift :: Becken nach außen aufdrehen | Rücken runden | Langhantel vom Standbein wegführen
+dumbbell deadlift :: Unteren Rücken runden | Hanteln weit vor den Beinen absenken | Becken vor den Hanteln hochschnellen lassen
+dumbbell romanian deadlift :: Unteren Rücken runden | Kniebeuge statt Becken nach hinten schieben | Hanteln von den Beinen wegführen
+dumbbell stiff leg deadlift :: Unteren Rücken runden | Tiefer gehen, als die Beweglichkeit zulässt | Knie ganz durchdrücken
+dumbbell single leg deadlift :: Becken nach außen aufdrehen | Rücken runden | Durch Hektik das Gleichgewicht verlieren
+smith deadlift :: So stehen, dass sich die Stange von den Schienbeinen entfernt | Unteren Rücken runden | Becken vor der Stange hochschnellen lassen
+cable deadlift :: Zu weit vom Kabelzug stehen | Unteren Rücken runden | Mit den Armen ziehen
+kettlebell swing :: Kniebeuge statt Hüftbeuge machen | Kettlebell mit den Armen heben | Unteren Rücken oben überstrecken
+cable pull through (with rope) :: Kniebeuge statt Becken nach hinten schieben | Mit den Armen ziehen | Unteren Rücken oben überstrecken
+barbell glute bridge :: Oben ins Hohlkreuz gehen statt das Gesäß anzuspannen | Füße zu weit weg stellen | Knie zusammenführen
+barbell glute bridge two-leg on bench :: Oben ins Hohlkreuz gehen | Füße zu nah oder zu weit stellen | Kopf in den Nacken legen
+low glute bridge on floor :: Ins Hohlkreuz gehen | Mit den Zehen abdrücken | Gesäß oben nicht anspannen
+single leg bridge with outstretched leg :: Becken zur Seite des freien Beins sinken lassen | Ins Hohlkreuz gehen | Zu schnell ausführen
+glute bridge march :: Becken beim Beinheben fallen lassen | Ins Hohlkreuz gehen | Zu schnell ausführen
+cable standing hip extension :: Ins Hohlkreuz gehen | Oberkörper schwingen | Bein mit Schwung schwingen
+machine hip extension :: Ins Hohlkreuz gehen | Becken vom Polster heben | Gewicht fallen lassen
+machine seated hip abduction :: Oberkörper schwingen | Gewicht fallen lassen | Unvollständiger Bewegungsumfang
+side hip abduction :: Becken nach hinten drehen | Bein mit Hilfe des Oberkörpers zu hoch heben | Mit Schwung arbeiten
+monster walk :: Knie nach innen fallen lassen | Aufrichten und die halbe Kniebeuge verlieren | Von Seite zu Seite schwanken
+dumbbell clean :: Hanteln mit den Armen statt mit den Beinen heben | Unteren Rücken runden | Hanteln mit gestreckten Beinen annehmen
+dumbbell single-arm snatch :: Mit dem Arm ziehen statt aus den Beinen zu drücken | Unteren Rücken runden | Hantel hinter den Kopf führen
+flutter kicks :: Unteren Rücken vom Boden heben | Beine beugen | Kopf in den Nacken legen
+barbell hip thrust :: Oben ins Hohlkreuz gehen | Auflage unter den unteren Rücken statt unter die Schulterblätter legen | Mit den Zehen abdrücken
+machine seated leg curl :: Becken vom Sitz heben | Polster falsch einstellen — es gehört über die Ferse | Gewicht nach oben schnellen lassen
+machine lying leg curl :: Becken von der Bank heben | Gewicht nach unten fallen lassen | Ruckartig beugen
+machine kneeling leg curl :: Becken mitdrehen | Ruckartig ausführen | Gewicht fallen lassen
+standing single leg curl :: Oberschenkel nach hinten führen | Ruckartig ausführen | Unkontrolliert absenken
+lying dumbbell leg curl :: Becken abheben | Hantel nicht fest einklemmen — sie kann fallen | Gewicht nach unten fallen lassen
+glute-ham raise :: Beim Absenken in der Hüfte abknicken | Unkontrolliert nach unten fallen | Zu stark mit den Händen abdrücken
+inverse leg curl (bench support) :: In der Hüfte abknicken | Unkontrolliert nach unten fallen | Ins Hohlkreuz gehen
+barbell straight-leg deadlift :: Unteren Rücken runden | Knie ganz durchdrücken | Stange von den Beinen wegführen
+barbell good morning :: Unteren Rücken runden | Zu viel Gewicht nehmen | Knie beugen und in die Kniebeuge gehen
+power clean :: Mit den Armen ziehen, bevor die Beine strecken | Unteren Rücken runden | Langhantel mit gestreckten Beinen annehmen
+machine seated hip adduction :: Sofort den vollen Spreizwinkel einstellen | Oberkörper schwingen | Gewicht fallen lassen
+cable hip adduction :: Oberkörper schwingen | Bein ruckartig führen | Becken mitdrehen

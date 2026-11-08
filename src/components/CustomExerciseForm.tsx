@@ -25,6 +25,7 @@ export function CustomExerciseForm({ edit, category: initialCategory, onClose }:
   const photoUrls = useBlobUrls(photos);
   const [video, setVideo] = useState(edit?.videoUrl ?? '');
   const [steps, setSteps] = useState(edit?.steps.join('\n') ?? '');
+  const [mistakes, setMistakes] = useState(edit?.mistakes.join('\n') ?? '');
   const [error, setError] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -54,6 +55,7 @@ export function CustomExerciseForm({ edit, category: initialCategory, onClose }:
       side,
       videoUrl: video.trim() || undefined,
       steps: steps.split('\n').map((s) => s.trim()).filter(Boolean),
+      mistakes: mistakes.split('\n').map((s) => s.trim()).filter(Boolean),
       source: edit?.source === 'full' ? 'full' : 'own',
       createdAt: prev?.createdAt ?? Date.now(),
     });
@@ -174,6 +176,11 @@ export function CustomExerciseForm({ edit, category: initialCategory, onClose }:
       <label className="field">
         <span className="m muted">{t('custom.steps')}</span>
         <textarea rows={4} value={steps} placeholder={t('custom.stepsPh')} onChange={(e) => setSteps(e.target.value)} />
+      </label>
+
+      <label className="field">
+        <span className="m muted">{t('ex.mistakes')}</span>
+        <textarea rows={3} value={mistakes} placeholder={t('custom.mistakesPh')} onChange={(e) => setMistakes(e.target.value)} />
       </label>
 
       <button className="btn lime" style={{ marginTop: 18 }} onClick={() => void save()}>
