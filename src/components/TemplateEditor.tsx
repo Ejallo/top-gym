@@ -127,7 +127,7 @@ export function TemplateEditor({ edit, kind, folder, onClose }: { edit?: Templat
                 </label>
               ) : (
                 <label>
-                  <span className="m muted">{t('unit.kg')}</span>
+                  <span className="m muted">{ex?.perHand ? t('unit.kgHand') : t('unit.kg')}</span>
                   <NumInput value={it.weight} decimal onChange={(v) => patch(i, { weight: v })} />
                 </label>
               )}

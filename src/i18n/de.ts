@@ -33,7 +33,7 @@ REGELN FÜR DIE ANTWORT
 \`\`\`
 3. weekday: 1 = Montag … 7 = Sonntag. Ruhetage nicht aufnehmen.
 4. Nimm Übungen NUR aus dem Katalog unten und gib ihre id an. Fehlt eine passende Übung im Katalog — "id": null, "name" auf Deutsch, "en" — exakter englischer Name, "muscle" — ein Schlüssel aus der Muskelliste.
-5. reps — als Text: "10" oder Bereich "8-12". weight — Arbeitsgewicht in kg (oder weglassen). Für Übungen auf Zeit — time_sec. Für Cardio — time_sec und distance_km. rest und note — optional, kurz.
+5. reps — als Text: "10" oder Bereich "8-12". weight — Arbeitsgewicht in kg (oder weglassen); bei Übungen mit dem Vermerk „pro Hand“ im Katalog — Gewicht für eine Hand. Für Übungen auf Zeit — time_sec. Für Cardio — time_sec und distance_km. rest und note — optional, kurz.
 6. Typ im Katalog: W — Gewicht × Wiederholungen, R — Wiederholungen, T — Zeit, C — Cardio.
 7. Am Ende jedes Krafttags ein Cool-down: 2–4 Übungen mit der Markierung (dehnen) für die Muskeln dieses Tages, "sets": 1, "time_sec": 30. Übungen mit der Markierung (yoga) können als eigener Tag geplant werden, wenn es zu meinem Ziel passt.
 
@@ -46,6 +46,7 @@ KATALOG (id | Name | english | Gruppe | Typ)
 
 MEIN ZIEL UND MEINE BEDINGUNGEN:
 `,
+  'claude.perHand': 'pro Hand',
   'claude.history':
     'MEIN VERLAUF DER LETZTEN 4 WOCHEN (wähle Gewichte und Umfang danach; Aufwärmsätze sind nicht aufgeführt; @8 — meine Anstrengung nach dem Satz auf einer Skala von 1–10, in «» — mein Kommentar zum Satz):\n{lines}',
   'claude.noHistory': 'Noch kein Trainingsverlauf — wähle die Startgewichte vorsichtig.',
@@ -116,6 +117,7 @@ MEIN ZIEL UND MEINE BEDINGUNGEN:
   'home.continue': 'Fortsetzen',
 
   'unit.kg': 'kg',
+  'unit.kgHand': 'kg/Hand',
   'unit.min': 'Min',
   'unit.sec': 'Sek',
   'unit.km': 'km',
@@ -392,6 +394,7 @@ MEIN ZIEL UND MEINE BEDINGUNGEN:
   'ex.noMedia': 'Kein Bild',
 
   'type.weight_reps': 'Gewicht × Wdh.',
+  'type.perHand': 'Gewicht pro Hand × Wdh.',
   'type.reps': 'Wiederholungen',
   'type.time': 'Zeit',
   'type.cardio': 'Cardio: Zeit + Distanz',

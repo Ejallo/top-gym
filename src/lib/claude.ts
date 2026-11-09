@@ -46,7 +46,7 @@ export async function historyText(days = 28): Promise<string> {
 export async function buildPrompt(withHistory: boolean): Promise<string> {
   const list = await allExercises();
   const catalog = list
-    .map((e) => `${e.id} | ${e.name} | ${e.en} | ${t(`group.${e.group}`)}${e.category ? ` (${t(`cat.${e.category}`).toLowerCase()})` : ''} | ${TYPE_CODE[e.type]}`)
+    .map((e) => `${e.id} | ${e.name} | ${e.en} | ${t(`group.${e.group}`)}${e.category ? ` (${t(`cat.${e.category}`).toLowerCase()})` : ''} | ${TYPE_CODE[e.type]}${e.perHand ? ` (${t('claude.perHand')})` : ''}`)
     .join('\n');
   const history = withHistory ? await historyText() : '';
   return t('claude.prompt', {

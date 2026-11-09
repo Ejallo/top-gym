@@ -112,7 +112,7 @@ export function ExerciseDetail({ ex, onClose }: { ex: Exercise; onClose: () => v
       </div>
 
       <div className="m muted sec">// {t('ex.type')}</div>
-      <div className="m">{t(`type.${ex.type}`)}</div>
+      <div className="m">{ex.perHand ? t('type.perHand') : t(`type.${ex.type}`)}</div>
 
       <ExerciseHistory ex={ex} />
 

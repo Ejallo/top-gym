@@ -22,6 +22,8 @@ export interface Exercise {
   side?: Side;
   /** Hold one side, then the other (the timer runs twice) */
   perSide?: boolean;
+  /** Weight is entered for one hand, not the total */
+  perHand?: boolean;
   source: 'base' | 'own' | 'full';
 }
 
@@ -36,6 +38,7 @@ interface BaseRow {
   noMedia?: true; // no gif exists for this one
   category?: Category;
   perSide?: true;
+  perHand?: true;
   pict?: string; // drawn pictogram public/pict/<key>.svg instead of a gif
 }
 /** public/data/exercises.<lang>.json: id → name + steps + common mistakes */

@@ -88,6 +88,8 @@ const STRETCH = [
 // Own exercises with a gif cut from a video (public/media/v_*.gif is committed, never downloaded)
 const V = (key, en, muscles, secondary, n, s) => ({ id: `v_${key}`, en, muscles, secondary, equipment: 'band', type: 'reps', category: 'rehab', ru: { n, s } });
 const VIDEO = [
+  { id: 'v_low_row', en: 'low row machine', muscles: ['traps'], secondary: ['lats', 'biceps', 'forearms'], equipment: 'machine', type: 'weight_reps', perHand: true,
+    ru: { n: 'Нижняя тяга Low Row в рычажном тренажёре', s: ['Сядь, грудь прижми к упору, рукояти впереди внизу.', 'Тяни рукояти к низу живота, сводя лопатки, локти вдоль корпуса.', 'Верни медленно до растяжения спины, грудь не отрывай.'] } },
   V('prone_band_raise', 'prone single-arm band raise', ['traps'], ['shoulders'], 'Подъём ленты лёжа на животе одной рукой', ['Ляг лицом вниз, руки вытянуты вперёд, лента в ладонях.', 'Одна рука держит ленту у пола, другая тянет её вверх и в сторону.', 'Медленно вернись. Шея расслаблена, плечо не тянется к уху. Смени руку.']),
   V('quadruped_band_row', 'quadruped single-arm band row', ['lats'], ['traps', 'shoulders'], 'Тяга ленты на четвереньках одной рукой', ['Встань на четвереньки, колени на коврике, спина ровная.', 'Одна рука прижимает ленту к полу, другая тянет её к бедру, лопатка идёт к позвоночнику.', 'Медленно вернись, корпус не раскачивай. Смени руку.']),
   V('overhead_band_rotation', 'kneeling overhead band rotation', ['traps'], ['shoulders', 'abs'], 'Поворот корпуса с лентой над головой, сидя на пятках', ['Сядь на пятки, лента натянута над головой, локти согнуты.', 'Удерживая натяжение и опустив лопатки, поворачивай корпус вправо-влево.', 'Поясница не прогибается, подбородок не выезжает вперёд.']),
@@ -140,6 +142,14 @@ for (const e of [...YOGA, ...STRETCH, ...VIDEO]) {
   rows.push(JSON.parse(JSON.stringify(row))); // drops undefined perSide
   text[e.id] = t;
   if (de[e.id]) textDe[e.id] = de[e.id];
+}
+
+// Weight is entered per hand: dumbbells/kettlebells (except one weight held in both hands) and one-arm work
+const ONE_WEIGHT = /pullover|goblet|leg curl|swing|kettlebell front squat|dumbbell seated triceps extension/i;
+for (const r of rows) {
+  if (r.type !== 'weight_reps' || r.category) continue;
+  const free = (r.equipment === 'dumbbell' || r.equipment === 'kettlebell') && !ONE_WEIGHT.test(r.en);
+  if (free || /single-arm|unilateral/i.test(r.en)) r.perHand = true;
 }
 
 await mkdir(new URL('public/data/', root), { recursive: true });

@@ -1,4 +1,5 @@
 {
+  "v_low_row": {"n": "Low Row an der Hebelmaschine", "s": ["Setz dich, Brust gegen das Polster, Griffe vorn unten.", "Zieh die Griffe zum Unterbauch, Schulterblätter zusammen, Ellbogen am Körper.", "Langsam bis zur Dehnung im Rücken zurückführen, Brust bleibt am Polster."]},
   "x_plank": {"n": "Unterarmstütz (Plank)", "s": ["Stütz auf Unterarmen und Zehen, Ellbogen unter den Schultern.", "Der Körper bildet eine gerade Linie, Bauch und Gesäß angespannt.", "Halte die vorgegebene Zeit und atme ruhig."]},
   "x_hip_thrust": {"n": "Hip Thrust mit der Langhantel", "s": ["Schulterblätter auf der Bank, Stange mit Polster auf dem Becken.", "Heb das Becken, bis Schultern und Knie eine Linie bilden.", "Oben das Gesäß anspannen und langsam ablassen."]},
   "x_rowing": {"n": "Rudergerät", "s": ["Drück dich mit den Beinen ab, lehn dich zurück und zieh den Griff zum Bauch.", "Zurück in umgekehrter Reihenfolge: Arme, Oberkörper, Beine.", "Notiere Zeit und Distanz."]},

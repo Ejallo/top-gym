@@ -22,6 +22,7 @@ cable pushdown (with rope attachment) :: Отводить локти от кор
 cable triceps pushdown (v-bar) :: Отводить локти | Наваливаться корпусом | Неполное разгибание
 cable reverse-grip pushdown :: Отводить локти | Сгибать запястья | Брать слишком большой вес
 cable single-arm triceps pushdown :: Отводить локоть | Разворачивать корпус | Неполное разгибание
+cable standing reverse-grip single-arm overhead triceps extension :: Отводить локоть в сторону | Прогибаться в пояснице | Неполное разгибание
 cable overhead triceps extension (rope attachment) :: Разводить локти | Прогибать поясницу | Опускать локти вниз во время движения
 cable high pulley overhead triceps extension :: Разводить локти | Прогибать поясницу | Двигать плечами
 cable kickback :: Опускать плечо | Махать по инерции | Округлять спину

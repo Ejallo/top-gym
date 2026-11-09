@@ -226,7 +226,7 @@ export function WorkoutScreen({
               <span>#</span>
               {type === 'weight_reps' && (
                 <>
-                  <span>{t('unit.kg')}</span>
+                  <span>{ex?.perHand ? t('unit.kgHand') : t('unit.kg')}</span>
                   <span>{t('wk.reps')}</span>
                 </>
               )}

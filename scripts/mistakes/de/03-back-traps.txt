@@ -17,6 +17,7 @@ cable rope seated row :: Seilenden am Körper nicht auseinanderziehen | Schwung 
 cable standing row (v-bar) :: Ins Hohlkreuz gehen | Nach hinten lehnen | Gewicht fallen lassen
 cable single-arm bent over row :: Oberkörper mitdrehen | Unteren Rücken runden | Ruckartig ziehen
 machine seated row :: Brust vom Polster heben | Schultern hochziehen | Gewicht nach vorn schnellen lassen
+low row machine :: Brust vom Polster heben | Schultern hochziehen | Arme ungleichmäßig ziehen
 machine high row :: Schultern zu den Ohren ziehen | Mit den Händen statt mit den Ellbogen ziehen | Gewicht fallen lassen
 machine t bar row :: Unteren Rücken runden | Mit jeder Wiederholung aufrichten | Unvollständiger Bewegungsumfang
 machine bent over row :: Brust vom Polster heben | Ruckartig ziehen | Schultern hochziehen

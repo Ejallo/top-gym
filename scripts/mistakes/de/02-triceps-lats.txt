@@ -22,6 +22,7 @@ cable pushdown (with rope attachment) :: Ellbogen vom Körper abspreizen | Seile
 cable triceps pushdown (v-bar) :: Ellbogen abspreizen | Sich mit dem Oberkörper auflehnen | Unvollständige Streckung
 cable reverse-grip pushdown :: Ellbogen abspreizen | Handgelenke beugen | Zu viel Gewicht nehmen
 cable single-arm triceps pushdown :: Ellbogen abspreizen | Oberkörper mitdrehen | Unvollständige Streckung
+cable standing reverse-grip single-arm overhead triceps extension :: Ellbogen zur Seite ausstellen | Hohlkreuz machen | Unvollständige Streckung
 cable overhead triceps extension (rope attachment) :: Ellbogen ausstellen | Ins Hohlkreuz gehen | Ellbogen während der Bewegung sinken lassen
 cable high pulley overhead triceps extension :: Ellbogen ausstellen | Ins Hohlkreuz gehen | Oberarme mitbewegen
 cable kickback :: Oberarm sinken lassen | Mit Schwung arbeiten | Rücken runden

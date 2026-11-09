@@ -222,6 +222,7 @@ cable pushdown (with rope attachment)
 cable triceps pushdown (v-bar)
 cable reverse-grip pushdown
 Cable Single-Arm Triceps Pushdown
+Cable Standing Reverse-Grip Single-Arm Overhead Triceps Extension
 cable overhead triceps extension (rope attachment)
 Cable High Pulley Overhead Triceps Extension
 cable kickback
