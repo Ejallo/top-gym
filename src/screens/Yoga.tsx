@@ -8,6 +8,7 @@ import { Sheet } from '../components/Sheet';
 import { ExerciseMedia } from '../components/ExerciseMedia';
 import { TemplateEditor } from '../components/TemplateEditor';
 import { Header } from '../components/Header';
+import { ActiveCard } from './Home';
 
 /** What a card opens: a built-in routine or an own one (template). */
 interface Card {
@@ -19,7 +20,8 @@ interface Card {
 }
 
 /** Yoga screen (opened from a Home tile): yoga and stretching routines, own routines, this week's count. */
-export function YogaScreen({ workouts, canStart, onOpen, onBack }: { workouts: Workout[]; canStart: boolean; onOpen: (w: Workout) => void; onBack: () => void }) {
+export function YogaScreen({ workouts, active, onOpen, onBack }: { workouts: Workout[]; active?: Workout; onOpen: (w: Workout) => void; onBack: () => void }) {
+  const canStart = !active;
   const list = useExercises();
   const own = useMobilityTemplates();
   const [open, setOpen] = useState<Card | null>(null);
@@ -69,6 +71,7 @@ export function YogaScreen({ workouts, canStart, onOpen, onBack }: { workouts: W
         {t('settings.back')}
       </button>
       <Header title={t('yoga.title')} sub={`// ${t('yoga.week', { n: count })}`} />
+      {active && <ActiveCard w={active} onOpen={() => onOpen(active)} />}
       {section('yoga')}
       {section('stretch')}
       <button className="dash-btn m" onClick={() => setEditing('new')}>
@@ -87,7 +90,7 @@ export function YogaScreen({ workouts, canStart, onOpen, onBack }: { workouts: W
           <button
             className={'btn ' + (open.cat === 'yoga' ? 'violet-bg' : 'orange-bg')}
             style={{ marginTop: 16 }}
-            onClick={() => (canStart ? void start(open) : setOpen(null))}
+            onClick={() => (active ? onOpen(active) : void start(open))}
           >
             {canStart ? t('player.start') : t('home.continueActive')} →
           </button>

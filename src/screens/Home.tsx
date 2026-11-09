@@ -57,7 +57,7 @@ export function Home({ onSettings, onOpenWorkout }: { onSettings: () => void; on
   };
 
   if (section === 'yoga')
-    return <YogaScreen workouts={workouts ?? []} canStart={!active} onOpen={onOpenWorkout} onBack={() => setSection(null)} />;
+    return <YogaScreen workouts={workouts ?? []} active={active} onOpen={onOpenWorkout} onBack={() => setSection(null)} />;
   if (section === 'x' || section === 'y')
     return <FolderScreen folder={section} hasActive={!!active} onStart={(tpl) => void start(tpl)} onBack={() => setSection(null)} />;
   if (section === 'rehab') return <RehabScreen active={active} onOpen={onOpenWorkout} onBack={() => setSection(null)} />;
@@ -194,7 +194,7 @@ export function Home({ onSettings, onOpenWorkout }: { onSettings: () => void; on
   );
 }
 
-function ActiveCard({ w, onOpen }: { w: Workout; onOpen: () => void }) {
+export function ActiveCard({ w, onOpen }: { w: Workout; onOpen: () => void }) {
   const now = useNow(1000);
   const tt = totals(w);
   return (
