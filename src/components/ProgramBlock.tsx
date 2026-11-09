@@ -5,8 +5,12 @@ import { db, type Program, type Template, type Workout } from '../lib/db';
 import { fmt, weekday, weekdayNames } from '../lib/dates';
 import { addDays, weekStartOf } from '../lib/stats';
 import { deleteProgram, renameProgram, setActiveProgram } from '../lib/programs';
+import { useExercises, type Exercise } from '../lib/exercises';
+import { entryFromPlan, planText } from '../lib/workouts';
 import { Sheet } from './Sheet';
 import { TemplateEditor } from './TemplateEditor';
+import { ExerciseMedia } from './ExerciseMedia';
+import { ExerciseDetail } from './ExerciseDetail';
 
 const weekStart = () => weekStartOf(Date.now());
 
@@ -29,6 +33,7 @@ export function ProgramBlock({
 }) {
   const templates = useLiveQuery(() => db.templates.where('id').anyOf(program.days.map((d) => d.templateId)).toArray(), [program.id]);
   const [open, setOpen] = useState(false);
+  const [openDay, setOpenDay] = useState<number | null>(null);
   const byId = new Map((templates ?? []).map((x) => [x.id, x]));
   const names = weekdayNames();
   const today = weekday(new Date());
@@ -45,7 +50,13 @@ export function ProgramBlock({
   );
   // Today's plan counts as done only when its own template was trained today
   const dayStart = addDays(ws, today - 1);
-  const doneToday = workouts.some((w) => w.endedAt && w.templateId === todayDay?.templateId && w.startedAt >= dayStart);
+  const trainedToday = (templateId?: string) => workouts.some((w) => w.endedAt && w.templateId === templateId && w.startedAt >= dayStart);
+  const doneToday = trainedToday(todayDay?.templateId);
+  // Starting a day already trained today is almost always a misclick: ask first
+  const startChecked = (tpl: Template) => {
+    if (trainedToday(tpl.id) && !confirm(t('prog.againConfirm'))) return;
+    onStart(tpl);
+  };
 
   if (!templates) return null;
 
@@ -63,7 +74,7 @@ export function ProgramBlock({
           <div className="m" style={{ marginTop: 8 }}>
             {t('home.tplCount', { n: todayTpl.items.length, sets: todayTpl.items.reduce((a, x) => a + (x.sets || 0), 0) })}
           </div>
-          {canStart && (
+          {!doneToday && (
             <button className="btn ink" style={{ marginTop: 12, height: 44 }} onClick={() => onStart(todayTpl)}>
               {t('prog.start')} →
             </button>
@@ -90,17 +101,87 @@ export function ProgramBlock({
           const planned = plannedOn(wd).length > 0;
           const done = doneDays.has(wd);
           const cls = done ? 'done' : planned ? 'planned' : '';
-          return (
-            <div key={wd} className={'wd ' + cls + (wd === today ? ' today' : '')}>
+          const className = 'wd ' + cls + (wd === today ? ' today' : '');
+          const label = (
+            <>
               <span>{n.toUpperCase()}</span>
               <b>{done ? '✓' : wd === today ? '●' : planned ? '·' : ''}</b>
+            </>
+          );
+          return planned ? (
+            <button key={wd} className={className} onClick={() => setOpenDay(wd)}>
+              {label}
+            </button>
+          ) : (
+            <div key={wd} className={className}>
+              {label}
             </div>
           );
         })}
       </div>
 
-      {open && <ProgramSheet program={program} programs={programs} templates={byId} onClose={() => setOpen(false)} onStart={onStart} canStart={canStart} />}
+      {openDay !== null && (
+        <DayPlanSheet
+          date={new Date(addDays(ws, openDay - 1))}
+          templates={plannedOn(openDay).flatMap((d) => byId.get(d.templateId) ?? [])}
+          canStart={canStart && openDay === today}
+          onStart={(tpl) => {
+            setOpenDay(null);
+            startChecked(tpl);
+          }}
+          onClose={() => setOpenDay(null)}
+        />
+      )}
+      {open && <ProgramSheet program={program} programs={programs} templates={byId} onClose={() => setOpen(false)} onStart={startChecked} canStart={canStart} />}
     </>
+  );
+}
+
+/** Plan of one weekday: exercises with sets and reps. Starting is offered only for today. */
+function DayPlanSheet({
+  date,
+  templates,
+  canStart,
+  onStart,
+  onClose,
+}: {
+  date: Date;
+  templates: Template[];
+  canStart: boolean;
+  onStart: (tpl: Template) => void;
+  onClose: () => void;
+}) {
+  const list = useExercises();
+  const [info, setInfo] = useState<Exercise | null>(null);
+  const exById = new Map((list ?? []).map((e) => [e.id, e]));
+  const units = { kg: t('unit.kg'), min: t('unit.min'), km: t('unit.km'), sec: t('unit.sec') };
+  return (
+    <Sheet onClose={onClose}>
+      <div className="m lime">{fmt(date, { weekday: 'long', day: 'numeric', month: 'long' })}</div>
+      {templates.map((tpl) => (
+        <div key={tpl.id} className="dash" style={{ marginTop: 12 }}>
+          <div className="h h-m">{tpl.name}</div>
+          {tpl.items.map((it, i) => {
+            const ex = exById.get(it.exerciseId);
+            return (
+              <button key={i} className="ex-row" onClick={() => ex && setInfo(ex)}>
+                {ex && <ExerciseMedia ex={ex} size="thumb" />}
+                <span className="ex-row-text">
+                  <b>{ex?.name ?? it.exerciseId}</b>
+                  <span className="m muted">{planText(entryFromPlan(it), ex, units)}</span>
+                </span>
+              </button>
+            );
+          })}
+          {canStart && (
+            <button className="btn lime small" style={{ marginTop: 12 }} onClick={() => onStart(tpl)}>
+              {t('prog.start')} →
+            </button>
+          )}
+        </div>
+      ))}
+      {info && <ExerciseDetail ex={info} onClose={() => setInfo(null)} />}
+    </Sheet>
   );
 }
 

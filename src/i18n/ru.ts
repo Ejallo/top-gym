@@ -82,6 +82,7 @@ export const ru = {
   'prog.rest': 'Сегодня отдых',
   'prog.next': 'Следующая: {day} — {title}',
   'prog.start': 'Начать',
+  'prog.againConfirm': 'Этот день сегодня уже сделан. Начать ещё раз?',
   'prog.week': 'Неделя · {name}',
   'prog.days': 'Дни',
   'prog.disable': 'Удалить программу',

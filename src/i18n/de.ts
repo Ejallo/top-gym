@@ -85,6 +85,7 @@ MEIN ZIEL UND MEINE BEDINGUNGEN:
   'prog.rest': 'Heute Ruhetag',
   'prog.next': 'Nächstes: {day} — {title}',
   'prog.start': 'Starten',
+  'prog.againConfirm': 'Dieser Tag ist heute schon erledigt. Noch einmal starten?',
   'prog.week': 'Woche · {name}',
   'prog.days': 'Tage',
   'prog.disable': 'Plan löschen',
