@@ -6,7 +6,8 @@ import { fmt, weekday, weekdayNames } from '../lib/dates';
 import { addDays, weekStartOf } from '../lib/stats';
 import { deleteProgram, renameProgram, setActiveProgram } from '../lib/programs';
 import { useExercises, type Exercise } from '../lib/exercises';
-import { entryFromPlan, planText } from '../lib/workouts';
+import { entryFromPlan, movedDays, planText } from '../lib/workouts';
+import { isoDate } from '../lib/rehab';
 import { Sheet } from './Sheet';
 import { TemplateEditor } from './TemplateEditor';
 import { ExerciseMedia } from './ExerciseMedia';
@@ -37,7 +38,9 @@ export function ProgramBlock({
   const byId = new Map((templates ?? []).map((x) => [x.id, x]));
   const names = weekdayNames();
   const today = weekday(new Date());
-  const plannedOn = (wd: number) => program.days.filter((d) => d.weekday === wd);
+  // Days of this week already trained early from the calendar are no longer planned
+  const moved = movedDays(workouts);
+  const plannedOn = (wd: number) => (moved.has(isoDate(new Date(addDays(weekStart(), wd - 1)))) ? [] : program.days.filter((d) => d.weekday === wd));
   const todayDay = plannedOn(today)[0];
   const todayTpl = todayDay && byId.get(todayDay.templateId);
   const next = [...program.days].sort((a, b) => ((a.weekday - today + 7) % 7 || 7) - ((b.weekday - today + 7) % 7 || 7))[0];
@@ -88,11 +91,6 @@ export function ProgramBlock({
               {t('prog.next', { day: names[next.weekday - 1], title: nextTpl.name })}
             </p>
           )}
-          {nextTpl && (
-            <button className="btn outline small" style={{ marginTop: 12 }} onClick={() => startChecked(nextTpl)}>
-              {t('prog.startNext', { title: nextTpl.name })} →
-            </button>
-          )}
         </div>
       )}
 
@@ -129,8 +127,7 @@ export function ProgramBlock({
         <DayPlanSheet
           date={new Date(addDays(ws, openDay - 1))}
           templates={plannedOn(openDay).flatMap((d) => byId.get(d.templateId) ?? [])}
-          canStart={canStart}
-          isToday={openDay === today}
+          canStart={canStart && openDay === today}
           onStart={(tpl) => {
             setOpenDay(null);
             startChecked(tpl);
@@ -143,19 +140,17 @@ export function ProgramBlock({
   );
 }
 
-/** Plan of one weekday: exercises with sets and reps. Any planned day can be started now or edited ahead. */
+/** Plan of one weekday: exercises with sets and reps, editable ahead. Starting here is only for today; other days start from the calendar. */
 function DayPlanSheet({
   date,
   templates,
   canStart,
-  isToday,
   onStart,
   onClose,
 }: {
   date: Date;
   templates: Template[];
   canStart: boolean;
-  isToday: boolean;
   onStart: (tpl: Template) => void;
   onClose: () => void;
 }) {
@@ -185,7 +180,7 @@ function DayPlanSheet({
           <div className="btn-row" style={{ marginTop: 12 }}>
             {canStart && (
               <button className="btn lime small" onClick={() => onStart(tpl)}>
-                {isToday ? t('prog.start') : t('prog.startNow')} →
+                {t('prog.start')} →
               </button>
             )}
             <button className="btn outline small" onClick={() => setEdit(tpl)}>
@@ -283,7 +278,7 @@ function ProgramSheet({
                 <button className="btn ghost small" onClick={() => setEdit(tpl)}>
                   {t('ex.edit')}
                 </button>
-                {canStart && (
+                {canStart && d.weekday === weekday(new Date()) && (
                   <button
                     className="btn outline small"
                     onClick={() => {

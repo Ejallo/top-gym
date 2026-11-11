@@ -86,7 +86,6 @@ MEIN ZIEL UND MEINE BEDINGUNGEN:
   'prog.next': 'Nächstes: {day} — {title}',
   'prog.start': 'Starten',
   'prog.startNow': 'Jetzt starten',
-  'prog.startNext': 'Jetzt starten: {title}',
   'prog.againConfirm': 'Dieser Tag ist heute schon erledigt. Noch einmal starten?',
   'prog.week': 'Woche · {name}',
   'prog.days': 'Tage',

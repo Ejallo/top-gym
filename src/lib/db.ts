@@ -103,6 +103,8 @@ export interface Workout {
   kind?: 'mobility';
   /** Rehab program day (YYYY-MM-DD) this session belongs to */
   rehabDay?: string;
+  /** Program day (YYYY-MM-DD) this workout was moved from when started early from the calendar */
+  plannedFor?: string;
 }
 
 class TopGymDB extends Dexie {

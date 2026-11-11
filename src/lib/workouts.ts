@@ -25,12 +25,17 @@ export function entryFor(exerciseId: string, rest?: string): WorkoutEntry {
   return { exerciseId, rest, sets: [{ done: false }] };
 }
 
+/** Program days (YYYY-MM-DD) already trained on another day: they no longer show as planned. */
+export function movedDays(workouts: Workout[]): Set<string> {
+  return new Set(workouts.flatMap((w) => (w.plannedFor ? [w.plannedFor] : [])));
+}
+
 export async function activeWorkout(): Promise<Workout | undefined> {
   // endedAt is undefined for the running one; Dexie can't index undefined, so filter
   return (await db.workouts.orderBy('startedAt').reverse().toArray()).find((w) => !w.endedAt);
 }
 
-export async function startWorkout(title: string, template?: Template): Promise<Workout> {
+export async function startWorkout(title: string, template?: Template, plannedFor?: string): Promise<Workout> {
   const running = await activeWorkout();
   if (running) return running;
   const w: Workout = {
@@ -39,6 +44,7 @@ export async function startWorkout(title: string, template?: Template): Promise<
     templateId: template?.id,
     startedAt: Date.now(),
     entries: template ? template.items.map(entryFromPlan) : [],
+    plannedFor,
   };
   await db.workouts.put(w);
   return w;

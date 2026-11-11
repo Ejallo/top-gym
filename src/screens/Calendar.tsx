@@ -18,7 +18,7 @@ import { ExerciseMedia } from '../components/ExerciseMedia';
 import { ExerciseDetail } from '../components/ExerciseDetail';
 import { TemplateEditor } from '../components/TemplateEditor';
 import type { Exercise } from '../lib/exercises';
-import { activeWorkout, entryFromPlan, planText, startWorkout } from '../lib/workouts';
+import { activeWorkout, entryFromPlan, movedDays, planText, startWorkout } from '../lib/workouts';
 import { dayOn, isoDate, startRehabDay, useRehab, useRehabDone, useRehabTicks, type RehabExercise } from '../lib/rehab';
 import { DayItems, ExerciseSheet } from './Rehab';
 
@@ -55,17 +55,20 @@ export function Calendar({ onSettings, onOpenWorkout }: { onSettings: () => void
   const cells = monthCells(cursor.getFullYear(), cursor.getMonth());
   const shift = (n: number) => setCursor(new Date(cursor.getFullYear(), cursor.getMonth() + n, 1));
   const onDay = (d: Date) => (workouts ?? []).filter((w) => sameDay(new Date(w.startedAt), d));
+  // Program days trained early (moved to the day they were started) are no longer planned
+  const moved = useLiveQuery(async () => movedDays(await db.workouts.filter((w) => !!w.plannedFor).toArray()), []);
   const plannedOn = (d: Date) => {
     const start = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    if (!program || d < start) return [];
+    if (!program || d < start || moved?.has(isoDate(d))) return [];
     return program.days.filter((x) => x.weekday === weekday(d)).flatMap((x) => tplById.get(x.templateId) ?? []);
   };
   const isToday = (d: Date) => sameDay(d, today);
-  // Starting from the calendar works for any planned day; a running workout opens instead of a new one
-  const startTpl = async (tpl: Template) => {
+  // Any planned day can be started from the calendar: it runs today and the day it came from is marked as moved.
+  // A running workout opens instead of a new one.
+  const startTpl = async (tpl: Template, from: Date) => {
     const running = await activeWorkout();
     setDay(null);
-    onOpenWorkout(running ?? (await startWorkout(tpl.name, tpl)));
+    onOpenWorkout(running ?? (await startWorkout(tpl.name, tpl, isToday(from) ? undefined : isoDate(from))));
   };
 
   const monthCount = (workouts ?? []).filter(
@@ -192,7 +195,7 @@ export function Calendar({ onSettings, onOpenWorkout }: { onSettings: () => void
                       );
                     })}
                     <div className="btn-row" style={{ marginTop: 12 }}>
-                      <button className="btn lime small" onClick={() => void startTpl(tpl)}>
+                      <button className="btn lime small" onClick={() => void startTpl(tpl, day)}>
                         {isToday(day) ? t('rehab.start') : t('prog.startNow')} →
                       </button>
                       <button className="btn outline small" onClick={() => setEditTpl(tpl)}>
