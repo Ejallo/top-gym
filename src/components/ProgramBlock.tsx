@@ -88,6 +88,11 @@ export function ProgramBlock({
               {t('prog.next', { day: names[next.weekday - 1], title: nextTpl.name })}
             </p>
           )}
+          {nextTpl && (
+            <button className="btn outline small" style={{ marginTop: 12 }} onClick={() => startChecked(nextTpl)}>
+              {t('prog.startNext', { title: nextTpl.name })} →
+            </button>
+          )}
         </div>
       )}
 
@@ -124,7 +129,8 @@ export function ProgramBlock({
         <DayPlanSheet
           date={new Date(addDays(ws, openDay - 1))}
           templates={plannedOn(openDay).flatMap((d) => byId.get(d.templateId) ?? [])}
-          canStart={canStart && openDay === today}
+          canStart={canStart}
+          isToday={openDay === today}
           onStart={(tpl) => {
             setOpenDay(null);
             startChecked(tpl);
@@ -137,22 +143,25 @@ export function ProgramBlock({
   );
 }
 
-/** Plan of one weekday: exercises with sets and reps. Starting is offered only for today. */
+/** Plan of one weekday: exercises with sets and reps. Any planned day can be started now or edited ahead. */
 function DayPlanSheet({
   date,
   templates,
   canStart,
+  isToday,
   onStart,
   onClose,
 }: {
   date: Date;
   templates: Template[];
   canStart: boolean;
+  isToday: boolean;
   onStart: (tpl: Template) => void;
   onClose: () => void;
 }) {
   const list = useExercises();
   const [info, setInfo] = useState<Exercise | null>(null);
+  const [edit, setEdit] = useState<Template | null>(null);
   const exById = new Map((list ?? []).map((e) => [e.id, e]));
   const units = { kg: t('unit.kg'), min: t('unit.min'), km: t('unit.km'), sec: t('unit.sec') };
   return (
@@ -173,14 +182,23 @@ function DayPlanSheet({
               </button>
             );
           })}
-          {canStart && (
-            <button className="btn lime small" style={{ marginTop: 12 }} onClick={() => onStart(tpl)}>
-              {t('prog.start')} →
+          <div className="btn-row" style={{ marginTop: 12 }}>
+            {canStart && (
+              <button className="btn lime small" onClick={() => onStart(tpl)}>
+                {isToday ? t('prog.start') : t('prog.startNow')} →
+              </button>
+            )}
+            <button className="btn outline small" onClick={() => setEdit(tpl)}>
+              {t('ex.edit')}
             </button>
-          )}
+          </div>
+          <p className="m muted" style={{ marginTop: 8, textTransform: 'none' }}>
+            {t('cal.editHint')}
+          </p>
         </div>
       ))}
       {info && <ExerciseDetail ex={info} onClose={() => setInfo(null)} />}
+      {edit && <TemplateEditor edit={edit} onClose={() => setEdit(null)} />}
     </Sheet>
   );
 }

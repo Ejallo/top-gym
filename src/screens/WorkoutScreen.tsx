@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { num, t, tk } from '../i18n';
 import { db, type SetEntry, type Workout, type WorkoutEntry } from '../lib/db';
 import { matches, useExercises, type Exercise } from '../lib/exercises';
-import { clock, entryFor, fillFromPlan, minutes, planText, totals, useNow } from '../lib/workouts';
+import { clock, entryFor, fillFromPlan, minutes, offerTemplateUpdate, planText, totals, useNow } from '../lib/workouts';
 import { ExerciseMedia } from '../components/ExerciseMedia';
 import { ExerciseDetail } from '../components/ExerciseDetail';
 import { ExercisePicker } from '../components/ExercisePicker';
@@ -116,9 +116,10 @@ export function WorkoutScreen({
     setW((x) => ({ ...x, entries: x.entries.filter((_, j) => j !== i) }));
   };
 
-  const finish = () => {
+  const finish = async () => {
     const tt = totals(w);
     if (tt.sets === 0 && !confirm(t('wk.finishEmpty'))) return;
+    await offerTemplateUpdate(w, (name) => confirm(t('wk.saveToPlan', { name })));
     setW((x) => ({ ...x, endedAt: Date.now() }));
     setSummary(true);
   };
@@ -139,7 +140,14 @@ export function WorkoutScreen({
         <button className="m muted" onClick={onClose}>
           ← {editingFinished ? t('wk.back') : t('wk.minimize')}
         </button>
-        {!editingFinished && <span className="m lime">● {clock(now - w.startedAt)}</span>}
+        {!editingFinished && (
+          <span className="wk-top-r">
+            <span className="m lime">● {clock(now - w.startedAt)}</span>
+            <button className="m pink" onClick={() => void finish()}>
+              ■ {t('wk.finishShort')}
+            </button>
+          </span>
+        )}
       </div>
       <div className="wk-bar" />
 
@@ -354,7 +362,7 @@ export function WorkoutScreen({
         </button>
       ) : (
         <>
-          <button className="btn pink" style={{ marginTop: 18 }} onClick={finish}>
+          <button className="btn pink" style={{ marginTop: 18 }} onClick={() => void finish()}>
             {t('wk.finish')}
           </button>
           <button className="link" style={{ display: 'block', margin: '16px auto 0' }} onClick={() => void discard()}>

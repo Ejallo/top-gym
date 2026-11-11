@@ -61,7 +61,7 @@ export function Calendar({ onSettings, onOpenWorkout }: { onSettings: () => void
     return program.days.filter((x) => x.weekday === weekday(d)).flatMap((x) => tplById.get(x.templateId) ?? []);
   };
   const isToday = (d: Date) => sameDay(d, today);
-  // Starting from the calendar: only for today; a running workout opens instead of a new one
+  // Starting from the calendar works for any planned day; a running workout opens instead of a new one
   const startTpl = async (tpl: Template) => {
     const running = await activeWorkout();
     setDay(null);
@@ -192,11 +192,9 @@ export function Calendar({ onSettings, onOpenWorkout }: { onSettings: () => void
                       );
                     })}
                     <div className="btn-row" style={{ marginTop: 12 }}>
-                      {isToday(day) && (
-                        <button className="btn lime small" onClick={() => void startTpl(tpl)}>
-                          {t('rehab.start')} →
-                        </button>
-                      )}
+                      <button className="btn lime small" onClick={() => void startTpl(tpl)}>
+                        {isToday(day) ? t('rehab.start') : t('prog.startNow')} →
+                      </button>
                       <button className="btn outline small" onClick={() => setEditTpl(tpl)}>
                         {t('ex.edit')}
                       </button>

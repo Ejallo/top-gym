@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { db, isWork, uid, type ExerciseType, type PlanItem, type SetEntry, type Template, type Workout, type WorkoutEntry } from './db';
 import type { Exercise } from './exercises';
+import { t } from '../i18n';
 
 /** First number of a reps target: '8-12' → 8, '10' → 10. */
 export function repsFloor(reps?: string): number | undefined {
@@ -62,6 +63,54 @@ export function fillFromPlan(set: SetEntry, entry: WorkoutEntry, type: ExerciseT
     s.distance ??= prev?.distance ?? p?.distance ?? last?.distance;
   }
   return s;
+}
+
+/**
+ * Template items rebuilt from what was actually done: exercises swapped, added, removed or reordered
+ * during the workout. Kept exercises keep their template item; new ones get sets/reps from their plan
+ * (swap carries it over) or from the logged sets. Returns null when the exercise list matches the template.
+ */
+export function itemsFromWorkout(w: Workout, tpl: Template): PlanItem[] | null {
+  // An exercise swapped away with some sets already done stays as its own entry: leave it out
+  const entries = w.entries.filter((e, i) => !w.entries.some((x, j) => j > i && x.swappedFrom === e.exerciseId));
+  const ids = entries.map((e) => e.exerciseId);
+  if (!ids.length || ids.join('|') === tpl.items.map((x) => x.exerciseId).join('|')) return null;
+  const pool = [...tpl.items];
+  return entries.map((e) => {
+    const k = pool.findIndex((x) => x.exerciseId === e.exerciseId);
+    if (k >= 0) return pool.splice(k, 1)[0];
+    const work = e.sets.filter((s) => !s.warmup);
+    const first = work.find((s) => s.done) ?? work[0];
+    const p = e.plan;
+    return {
+      exerciseId: e.exerciseId,
+      sets: p?.sets ?? Math.max(1, work.length),
+      reps: p?.reps ?? (first?.reps ? String(first.reps) : undefined),
+      time: p?.time ?? first?.time,
+      distance: p?.distance ?? first?.distance,
+      rest: e.rest,
+    };
+  });
+}
+
+/**
+ * Before finishing: if the exercise list differs from the template it came from, ask whether to keep
+ * the new list for the next times. Mobility routines are left alone.
+ */
+export async function offerTemplateUpdate(w: Workout, ask: (name: string) => boolean): Promise<void> {
+  if (!w.templateId || w.kind === 'mobility') return;
+  const tpl = await db.templates.get(w.templateId);
+  if (!tpl) return;
+  const items = itemsFromWorkout(w, tpl);
+  if (items && ask(tpl.name)) await db.templates.update(tpl.id, { items });
+}
+
+/** Finish a running workout from outside its screen (Home card): same checks as the Finish button. */
+export async function finishWorkout(w: Workout): Promise<boolean> {
+  if (totals(w).sets === 0 && !confirm(t('wk.finishEmpty'))) return false;
+  await offerTemplateUpdate(w, (name) => confirm(t('wk.saveToPlan', { name })));
+  await db.workouts.update(w.id, { endedAt: Date.now() });
+  return true;
 }
 
 export interface Totals {

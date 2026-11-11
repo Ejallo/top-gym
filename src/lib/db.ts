@@ -87,6 +87,8 @@ export interface WorkoutEntry {
   plan?: { sets: number; reps?: string; weight?: number; time?: number; distance?: number };
   side?: Side;
   sets: SetEntry[];
+  /** Exercise this entry replaced during the workout (swap) */
+  swappedFrom?: string;
 }
 
 export interface Workout {

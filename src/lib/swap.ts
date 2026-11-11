@@ -29,10 +29,10 @@ export function swapEntry(entries: WorkoutEntry[], i: number, toId: string): Wor
   const plan = e.plan && { ...e.plan, weight: undefined };
   const left = e.sets.filter((s) => !s.done).map((s) => ({ done: false, warmup: s.warmup }));
   if (!done.length) {
-    const next: WorkoutEntry = { ...e, exerciseId: toId, side: undefined, plan, sets: left.length ? left : [{ done: false }] };
+    const next: WorkoutEntry = { ...e, exerciseId: toId, side: undefined, plan, swappedFrom: e.swappedFrom ?? e.exerciseId, sets: left.length ? left : [{ done: false }] };
     return entries.map((x, j) => (j === i ? next : x));
   }
   const kept: WorkoutEntry = { ...e, sets: done };
-  const moved: WorkoutEntry = { exerciseId: toId, rest: e.rest, plan, sets: left.length ? left : [{ done: false }] };
+  const moved: WorkoutEntry = { exerciseId: toId, rest: e.rest, plan, swappedFrom: e.exerciseId, sets: left.length ? left : [{ done: false }] };
   return [...entries.slice(0, i), kept, moved, ...entries.slice(i + 1)];
 }

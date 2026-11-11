@@ -71,6 +71,7 @@ button:active { transform: translateY(1px); }
 .btn.cyan { background: var(--cyan); color: var(--ink); }
 .btn.ink { background: var(--ink); color: var(--lime); }
 .btn.outline { border: 1.5px solid var(--lime); color: var(--lime); }
+.btn.ink-outline { border: 1.5px solid var(--ink); color: var(--ink); }
 .btn.ghost { border: 1.5px solid var(--line-2); color: var(--text); }
 .btn.small { height: 40px; font-size: 12px; }
 .btn-row { display: flex; gap: 8px; }
@@ -217,6 +218,7 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 /* ===== Workout screen ===== */
 .workout { padding: calc(var(--safe-top) + 16px) 16px calc(var(--safe-bottom) + 40px); }
 .wk-top { display: flex; justify-content: space-between; align-items: center; }
+.wk-top-r { display: flex; gap: 14px; align-items: center; }
 .wk-bar { height: 2px; background: var(--lime); margin: 10px 0 12px; }
 .wk-title { background: transparent; border: none; border-bottom: 1px dashed var(--line-2); padding: 4px 0; font-size: 28px; color: var(--text); }
 .wk-title:focus { border-color: var(--lime); }

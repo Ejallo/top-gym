@@ -3,7 +3,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { t } from '../i18n';
 import { db, type Folder, type Template, type Workout } from '../lib/db';
 import { fmt, isoWeek } from '../lib/dates';
-import { clock, startWorkout, totals, useNow } from '../lib/workouts';
+import { clock, finishWorkout, startWorkout, totals, useNow } from '../lib/workouts';
 import { Header } from '../components/Header';
 import { TemplateEditor } from '../components/TemplateEditor';
 import { TemplateMenu } from '../components/TemplateMenu';
@@ -209,9 +209,14 @@ export function ActiveCard({ w, onOpen }: { w: Workout; onOpen: () => void }) {
       <div className="m" style={{ marginTop: 8 }}>
         {t('wk.progress', { sets: tt.sets, total: w.entries.reduce((a, e) => a + e.sets.length, 0) })}
       </div>
-      <button className="btn ink" style={{ marginTop: 12, height: 44 }} onClick={onOpen}>
-        {t('home.continue')} →
-      </button>
+      <div className="btn-row" style={{ marginTop: 12 }}>
+        <button className="btn ink" style={{ height: 44 }} onClick={onOpen}>
+          {t('home.continue')} →
+        </button>
+        <button className="btn ink-outline" style={{ height: 44 }} onClick={() => void finishWorkout(w)}>
+          ■ {t('wk.finishShort')}
+        </button>
+      </div>
     </div>
   );
 }
