@@ -11,6 +11,7 @@ import { WorkoutScreen } from './screens/WorkoutScreen';
 import { MobilityPlayer } from './screens/MobilityPlayer';
 import type { Workout } from './lib/db';
 import { seedDemo } from './lib/demo';
+import { seedTemplates } from './lib/seed';
 
 export function App() {
   // ?screen=calendar|progress|exercises|settings opens a screen directly (handy for screenshots)
@@ -27,6 +28,10 @@ export function App() {
   const updateAvailable = useUpdateAvailable();
   const openSettings = () => setSettings(true);
   const [workout, setWorkout] = useState<Workout | null>(null);
+
+  useEffect(() => {
+    void seedTemplates();
+  }, []);
 
   useEffect(() => {
     if (import.meta.env.DEV) void seedDemo().then((w) => w && setWorkout(w));
