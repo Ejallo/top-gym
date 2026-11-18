@@ -22,7 +22,9 @@ for (const [name, id] of Object.entries(override)) byName.set(name, catalog.find
 // Sections '# == stretch', '# == yoga' and '# == rehab' set the category; '| side' marks one-side-at-a-time holds
 const picked = [];
 let section = '';
-for (const raw of (await read('scripts/selection.txt')).split('\n')) {
+// selection-more.txt: the rest of the open catalog (deduplicated, translated in scripts/ru|de/10-more-*.json)
+const moreSel = await read('scripts/selection-more.txt').catch(() => '');
+for (const raw of ((await read('scripts/selection.txt')) + '\n' + moreSel).split('\n')) {
   const line = raw.trim();
   if (line.startsWith('# ==')) section = line.slice(4).trim().split(/\s/)[0];
   if (!line || line.startsWith('#')) continue;
